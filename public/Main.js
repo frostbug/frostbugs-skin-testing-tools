@@ -5,9 +5,9 @@ function createWindow () {
     win = new BrowserWindow({width: 800, height: 600})
 
     // for exporting
-    // win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
+    win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
 
     //for local development
-    win.loadURL('http://localhost:3000/')
+    // win.loadURL('http://localhost:3000/')
 }
     app.on('ready', createWindow)
