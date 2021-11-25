@@ -1,0 +1,1 @@
+Created with the following tutorial: https://medium.com/@brockhoff/using-electron-with-react-the-basics-e93f9761f86f
