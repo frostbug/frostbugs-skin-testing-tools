@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import "bootswatch/dist/morph/bootstrap.min.css";
+import "bootswatch/dist/minty/bootstrap.min.css";
 import './App.css';
 import WeaponForm from "./WeaponForm";
 
