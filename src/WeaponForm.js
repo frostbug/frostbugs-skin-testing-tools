@@ -1,9 +1,21 @@
 function WeaponForm() {
 
+    var nodeConsole = require('console');
+    var myConsole = new nodeConsole.Console(process.stdout, process.stderr); // use this to log to console because electon is janky. These two lines MUST be in the file you want to log in. 
+
+
     window.fs = require('fs');
-    const {dialog} = require('electron').remote;
-    const submitWeaponForm = (evt) =>  {
-        evt.preventDefault();
+    const { dialog } = require('electron');
+
+    const outputDirectory = (location, evt) => {
+        myConsole.log(location)
+        document.getElementById("filePathName").innerText = location;
+    }
+
+    const submitWeaponForm = (evt) => {
+        var installLocation = "weee"; // path cuasing app to crash at the moment. 
+        installLocation = document.getElementById('csgoInstallFileInput').files[0].path;
+        outputDirectory(installLocation); 
     }
 
     const submitGloveForm = (evt) => {
@@ -23,29 +35,30 @@ function WeaponForm() {
             <div id="windowTabs" className="tab-content">
                 {/*<----------------------------------------------------Weapon Tab---------------------------------------------------->*/}
                 <div className="tab-pane active" id="weapon">
-                    <form onSubmit={submitWeaponForm}>
+                    <form onSubmit={submitWeaponForm} >
                         <div>
                             <label id="weaponLabel" htmlFor="csgoInstallFileInput" className="form-label mt-4">CSGO
                                 Install Root</label>
-                            <input className="form-control" type="file" id="csgoInstallFileInput" onClick={submitWeaponForm}/>
+                            <div id="filePathName">Seleted path</div>
+                            <input className="form-control" type="file" id="csgoInstallFileInput" onChange={submitWeaponForm} />
                         </div>
                         <div>
                             <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text
                                 File</label>
-                            <input className="form-control" type="file" id="textFileInput"/>
+                            <input className="form-control" type="file" id="textFileInput" />
                         </div>
                         <div>
                             <label id="weaponLabel" htmlFor="diffuseFileInput" className="form-label mt-4">Diffuse
                                 Map</label>
-                            <input className="form-control" type="file" id="diffuseFileInput"/>
+                            <input className="form-control" type="file" id="diffuseFileInput" />
                         </div>
                         <div>
                             <div className="form-check form-switch">
-                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"/>
+                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
                                 <label id="weaponLabel" className="form-check-label" htmlFor="flexSwitchCheckDefault">Normal
                                     Map</label>
                             </div>
-                            <input className="form-control" type="file" id="normalFileInput"/>
+                            <input className="form-control" type="file" id="normalFileInput" />
                         </div>
                         <div>
                             <label id="weaponLabel" htmlFor="weaponDropDown" className="form-label mt-4">Skin To
@@ -62,13 +75,13 @@ function WeaponForm() {
                         <div>
                             <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinNameInput">New Skin
                                 Name</label>
-                            <input className="form-control" placeholder="Weapon | Skin Name" id="newSkinNameInput"/>
+                            <input className="form-control" placeholder="Weapon | Skin Name" id="newSkinNameInput" />
                         </div>
                         <div>
                             <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinDescription">New
                                 Skin Name</label>
                             <textarea className="form-control" placeholder="Custom Skin Description"
-                                      id="newSkinDescription" rows="3"/>
+                                id="newSkinDescription" rows="3" />
                         </div>
                         <div id="buttonDiv">
                             <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace
