@@ -23,6 +23,7 @@
   "homepage": "./",
   "dependencies": {
     "@craco/craco": "^6.4.2",
+    "@electron/remote": "^2.0.1",
     "@node-steam/vdf": "^2.2.0",
     "@popperjs/core": "^2.10.2",
     "@testing-library/jest-dom": "^5.15.0",

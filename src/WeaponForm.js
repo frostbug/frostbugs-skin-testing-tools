@@ -1,20 +1,9 @@
-import {useState} from "react";
-
 function WeaponForm() {
 
-    const [csgoInstallFileInput, textFileInput, diffuseFileInput, normalFileInput] = useState('')
-
-
     window.fs = require('fs');
-
+    const {dialog} = require('electron').remote;
     const submitWeaponForm = (evt) =>  {
         evt.preventDefault();
-        console.log('Attempting to read directory...')
-        const {dialog} = require('electron').remote;
-        const path = dialog.showOpenDialog({
-            properties: ['openDirectory']
-        });
-        console.log(path)
     }
 
     const submitGloveForm = (evt) => {
