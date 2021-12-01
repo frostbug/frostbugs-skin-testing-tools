@@ -24,6 +24,7 @@
   },
   "homepage": "./",
   "dependencies": {
+    "@node-steam/vdf": "^2.2.0",
     "@popperjs/core": "^2.10.2",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",

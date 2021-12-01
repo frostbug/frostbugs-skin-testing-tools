@@ -1,5 +1,63 @@
+#flexSwitchCheckDefault {
+    margin-top: 18px !important;
+    margin-left: -35px !important;
+    margin-right: 5px !important;
+}
+
+#weaponLabel {
+    padding: 0;
+    margin-top: 14px !important;
+    margin-bottom: 6px !important;
+    margin-left: 6px !important;
+    display: inline-block;
+}
+
+#buttonDiv {
+    float: right;
+}
+
+#weaponSkin {
+    font-size: 0.9rem;
+}
+
+#currentGloves {
+    font-size: 0.9rem;
+}
+
+#newGloves {
+    font-size: 0.9rem;
+}
+
+textarea {
+    font-size: 0.95rem !important;
+}
+
+button {
+    margin-top: 12px;
+}
+
+body {
+    font-size: 0.9rem !important;
+}
+
+input {
+    font-size: 0.9rem !important;
+    padding: 4px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+button {
+    font-size: 0.9rem !important;
+}
+
+
 div {
     margin: 1px;
     padding: 1px;
     border: 1px;
+}
+
+option {
+    font-size: 0.9rem !important;
 }
