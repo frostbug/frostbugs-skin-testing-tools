@@ -8,17 +8,14 @@ function WeaponForm() {
     const { dialog } = require('electron');
 
     const outputDirectory = (location, evt) => {
-        myConsole.log(location.toString())
-        document.getElementById("csgoInstallFileInput").setAttribute('value',location);
-        // evt.preventDefault();
+        myConsole.log(location)
+        document.getElementById("filePathName").innerText = location;
     }
 
     const submitWeaponForm = (evt) => {
-        // evt.preventDefault();
-        var installLocation = document.getElementById('csgoInstallFileInput').files[0].path; // path cuasing app to crash at the moment. 
+        var installLocation = "weee"; // path cuasing app to crash at the moment. 
+        installLocation = document.getElementById('csgoInstallFileInput').files[0].path;
         outputDirectory(installLocation); 
-    
-        
     }
 
     const submitGloveForm = (evt) => {
@@ -42,7 +39,8 @@ function WeaponForm() {
                         <div>
                             <label id="weaponLabel" htmlFor="csgoInstallFileInput" className="form-label mt-4">CSGO
                                 Install Root</label>
-                            <input className="form-control" type="file" id="csgoInstallFileInput" onClick={submitWeaponForm} />
+                            <div id="filePathName">Seleted path</div>
+                            <input className="form-control" type="file" id="csgoInstallFileInput" onChange={submitWeaponForm} />
                         </div>
                         <div>
                             <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text
