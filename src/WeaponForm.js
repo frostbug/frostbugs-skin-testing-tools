@@ -4,9 +4,17 @@ function WeaponForm() {
 
     const [csgoInstallFileInput, textFileInput, diffuseFileInput, normalFileInput] = useState('')
 
+
+    window.fs = require('fs');
+
     const submitWeaponForm = (evt) =>  {
         evt.preventDefault();
-        console.log('mem')
+        console.log('Attempting to read directory...')
+        const {dialog} = require('electron').remote;
+        const path = dialog.showOpenDialog({
+            properties: ['openDirectory']
+        });
+        console.log(path)
     }
 
     const submitGloveForm = (evt) => {
@@ -30,7 +38,7 @@ function WeaponForm() {
                         <div>
                             <label id="weaponLabel" htmlFor="csgoInstallFileInput" className="form-label mt-4">CSGO
                                 Install Root</label>
-                            <input className="form-control" type="file" id="csgoInstallFileInput"/>
+                            <input className="form-control" type="file" id="csgoInstallFileInput" onClick={submitWeaponForm}/>
                         </div>
                         <div>
                             <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text
