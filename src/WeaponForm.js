@@ -1,21 +1,24 @@
+import {CSGO_EXECUTABLE_NAME} from "./constants";
+
 function WeaponForm() {
 
-    var nodeConsole = require('console');
-    var myConsole = new nodeConsole.Console(process.stdout, process.stderr); // use this to log to console because electon is janky. These two lines MUST be in the file you want to log in. 
-
-
     window.fs = require('fs');
-    const { dialog } = require('electron');
 
-    const outputDirectory = (location, evt) => {
-        myConsole.log(location)
-        document.getElementById("filePathName").innerText = location;
+    let csgoInstallDir = "";
+    const diffMap = "";
+    const normMap = "";
+    const textFile = "";
+    const skinName = "";
+    const skinDesc = "";
+
+    const setCsgoDir = () => {
+        const csgoExeFilePath = document.getElementById('csgoInstallFileInput').files[0].path;
+        csgoInstallDir = csgoExeFilePath.replace(CSGO_EXECUTABLE_NAME,'');
+        console.log(csgoInstallDir);
     }
 
     const submitWeaponForm = (evt) => {
-        var installLocation = "weee"; // path cuasing app to crash at the moment. 
-        installLocation = document.getElementById('csgoInstallFileInput').files[0].path;
-        outputDirectory(installLocation); 
+        evt.preventDefault();
     }
 
     const submitGloveForm = (evt) => {
@@ -37,10 +40,8 @@ function WeaponForm() {
                 <div className="tab-pane active" id="weapon">
                     <form onSubmit={submitWeaponForm} >
                         <div>
-                            <label id="weaponLabel" htmlFor="csgoInstallFileInput" className="form-label mt-4">CSGO
-                                Install Root</label>
-                            <div id="filePathName">Seleted path</div>
-                            <input className="form-control" type="file" id="csgoInstallFileInput" onChange={submitWeaponForm} />
+                            <label id="weaponLabel" htmlFor="csgoInstallFileInput" className="form-label mt-4">csgo.exe location</label>
+                            <input className="form-control" type="file" id="csgoInstallFileInput" onChange={setCsgoDir} />
                         </div>
                         <div>
                             <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text
