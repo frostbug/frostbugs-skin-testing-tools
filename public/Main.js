@@ -1,7 +1,7 @@
 const {app, BrowserWindow} = require('electron')
 function createWindow () {
     require('@electron/remote/main').initialize()
-    mainWindow = new BrowserWindow
+    let mainWindow = new BrowserWindow
     ({
         width: 500,
         height: 744,
@@ -17,6 +17,7 @@ function createWindow () {
     // win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
 
     // uncomment for developing, comment out when exporting
+    mainWindow.webContents.openDevTools()
     mainWindow.loadURL('http://localhost:3000/')
 }
     app.on('ready', createWindow)
