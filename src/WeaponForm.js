@@ -7,11 +7,7 @@ class WeaponForm extends Component {
         window.fs = require('fs');
 
         let csgoInstallDir = "";
-        // const diffMap = "";
-        // const normMap = "";
         const textFileContents = "";
-        // const skinName = "";
-        // const skinDesc = "";
 
         const setCsgoDir = () => {
             const csgoExeFilePath = document.getElementById('csgoInstallFileInput').files[0].path;
