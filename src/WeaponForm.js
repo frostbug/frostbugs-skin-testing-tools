@@ -1,19 +1,48 @@
 import {CSGO_EXECUTABLE_NAME} from "./constants";
 import {Component} from "react";
 import {getObjectsFromText} from "./fileUtils";
+import * as util from "util";
 
 class WeaponForm extends Component {
     render() {
         window.fs = require('fs');
 
         let csgoInstallDir = "";
-        const textFileContents = "";
+        let completeSkinArray = "";
 
         const setCsgoDir = () => {
             const csgoExeFilePath = document.getElementById('csgoInstallFileInput').files[0].path;
             csgoInstallDir = csgoExeFilePath.replace(CSGO_EXECUTABLE_NAME, '');
-            console.log(csgoInstallDir);
-            getObjectsFromText(csgoInstallDir)
+            console.log('CSGO Installed at: ' + csgoInstallDir);
+            let unsortedWeaponArray =  getObjectsFromText(csgoInstallDir)
+            unsortedWeaponArray.sort((a, b) => getSkinWeaponDisplayName(a) > getSkinWeaponDisplayName(b) ? 1 : -1);
+            return unsortedWeaponArray;
+        }
+
+        const populateSkinDropdown = (skinArray) => {
+            const dropDown = document.getElementById('weaponSkinDropDown');
+            skinArray.forEach(skin => {
+                const dropDownElement = document.createElement("option");
+                dropDownElement.value = skin['skinWeaponId'];
+                dropDownElement.text = getSkinWeaponDisplayName(skin)
+
+                dropDown.appendChild(dropDownElement);
+            })
+        }
+
+        function getCurrentSelectedDropdownSkin(){
+            const weaponDropDownPicker = document.getElementById('weaponSkinDropDown');
+            const selectedId = weaponDropDownPicker.options[weaponDropDownPicker.selectedIndex].value;
+            console.log('Selected skinWeapon object is: ' + util.inspect(completeSkinArray.find(skinWeapon => Number(skinWeapon.skinWeaponId) === Number(selectedId))));
+        }
+
+        function getSkinWeaponDisplayName(skinWeapon){
+            return skinWeapon['weaponDisplayName'] + ' | ' + skinWeapon['skinDisplayName'];
+        }
+
+        const onCsgoDirUpdate = () => {
+            completeSkinArray = setCsgoDir()
+            populateSkinDropdown(completeSkinArray)
         }
 
         const submitWeaponForm = (evt) => {
@@ -41,8 +70,7 @@ class WeaponForm extends Component {
                             <div>
                                 <label id="weaponLabel" htmlFor="csgoInstallFileInput" className="form-label mt-4">csgo.exe
                                     location</label>
-                                <input className="form-control" type="file" id="csgoInstallFileInput"
-                                       onChange={setCsgoDir}/>
+                                <input className="form-control" type="file" id="csgoInstallFileInput" onChange={onCsgoDirUpdate}/>
                             </div>
                             <div>
                                 <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text
@@ -64,14 +92,11 @@ class WeaponForm extends Component {
                                 <input className="form-control" type="file" id="normalFileInput"/>
                             </div>
                             <div>
-                                <label id="weaponLabel" htmlFor="weaponDropDown" className="form-label mt-4">Skin To
+                                <label id="weaponLabel" htmlFor="weaponDropDownDiv" className="form-label mt-4">Skin To
                                     Replace</label>
-                                <div className="dropdown" id="weaponDropDown">
-                                    <select name="weaponSkin" id="weaponSkin" className="form-select">
+                                <div className="dropdown" id="weaponDropDownDiv">
+                                    <select name="weaponSkinDropDown" id="weaponSkinDropDown" className="form-select" onChange={getCurrentSelectedDropdownSkin}>
                                         <option value="">--Please choose an option--</option>
-                                        <option value="ak forty sevem">ak forty sevem</option>
-                                        <option value="em four">em four</option>
-                                        <option value="em pee five">em pee five</option>
                                     </select>
                                 </div>
                             </div>

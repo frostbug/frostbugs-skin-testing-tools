@@ -2,7 +2,6 @@ import {readFileSync} from 'fs';
 import {CSGO_ENGLISH_FILE_PATH, ITEMS_GAME_FILE_PATH, WEAPON_LIST} from "./constants";
 import * as VDF from '@node-steam/vdf';
 import * as util from "util";
-import * as Console from "console";
 
 const fs = require('fs');
 
@@ -20,13 +19,11 @@ export function getObjectsFromText(csgoInstallDir) {
     const skinNamesWithWeaponsArray = buildSkinWeaponArray(clientLootListsJsonObject);
 
     let paintKitNamesJsonObject = csgoEnglishObject["lang"]["Tokens"]; //contains references for and display names and descriptions
-    const completeSkinArray = createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject)
-
-    findSkinByNameAndWeapon(completeSkinArray, "Wildfire", "AWP");
-
+    return createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject)
 }
 
 function createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject){
+    let currentWeaponId = 0;
     const completeSkinArray = [];
     skinNamesWithWeaponsArray.forEach(skinWeapon => {
         let combinedSkinItem = paintKitInfoArray.find(paintKit => paintKit.name === skinWeapon.paintKitName)
@@ -36,7 +33,8 @@ function createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, p
             weaponDisplayName: weaponForPaintKit.displayName,
             weaponId: weaponForPaintKit.weaponId,
             skinDescription: paintKitNamesJsonObject[combinedSkinItem['description_string'].replace("#", "")],
-            skinDisplayName: paintKitNamesJsonObject[combinedSkinItem['description_tag'].replace("#", "")]
+            skinDisplayName: paintKitNamesJsonObject[combinedSkinItem['description_tag'].replace("#", "")],
+            skinWeaponId: currentWeaponId++
         }
         completeSkinArray.push(combinedSkinItem)
     })
@@ -84,7 +82,7 @@ function createJsonObjectFromSkinWeapon(skinWeapon) {
     }
 }
 
-function findSkinByNameAndWeapon(completeSkinArray, skinDisplayName, weaponDisplayName){
+function findSkinByNameAndWeapon(completeSkinArray, weaponDisplayName, skinDisplayName){
     console.log(completeSkinArray.find(skin => skin.skinDisplayName === skinDisplayName && skin.weaponDisplayName === weaponDisplayName))
 }
 
