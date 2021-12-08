@@ -15,7 +15,7 @@ class WeaponForm extends Component {
             csgoInstallDir = csgoExeFilePath.replace(CSGO_EXECUTABLE_NAME, '');
             console.log('CSGO Installed at: ' + csgoInstallDir);
             let unsortedWeaponArray =  getObjectsFromText(csgoInstallDir)
-            unsortedWeaponArray.sort((a, b) => getSkinWeaponDisplayName(a) > getSkinWeaponDisplayName(b) ? 1 : -1);
+            unsortedWeaponArray.sort((a, b) => a['fullItemDisplayName'] > b['fullItemDisplayName'] ? 1 : -1);
             return unsortedWeaponArray;
         }
 
@@ -23,8 +23,8 @@ class WeaponForm extends Component {
             const dropDown = document.getElementById('weaponSkinDropDown');
             skinArray.forEach(skin => {
                 const dropDownElement = document.createElement("option");
-                dropDownElement.value = skin['skinWeaponId'];
-                dropDownElement.text = getSkinWeaponDisplayName(skin)
+                dropDownElement.value = skin['fullItemDisplayName'];
+                dropDownElement.text = skin['fullItemDisplayName'];
 
                 dropDown.appendChild(dropDownElement);
             })
@@ -32,12 +32,8 @@ class WeaponForm extends Component {
 
         function getCurrentSelectedDropdownSkin(){
             const weaponDropDownPicker = document.getElementById('weaponSkinDropDown');
-            const selectedId = weaponDropDownPicker.options[weaponDropDownPicker.selectedIndex].value;
-            console.log('Selected skinWeapon object is: ' + util.inspect(completeSkinArray.find(skinWeapon => Number(skinWeapon.skinWeaponId) === Number(selectedId))));
-        }
-
-        function getSkinWeaponDisplayName(skinWeapon){
-            return skinWeapon['weaponDisplayName'] + ' | ' + skinWeapon['skinDisplayName'];
+            const selectedSkinWeapon = weaponDropDownPicker.options[weaponDropDownPicker.selectedIndex].value;
+            console.log('Selected skinWeapon object is: ' + util.inspect(completeSkinArray.find(skinWeapon => skinWeapon['fullItemDisplayName'] === selectedSkinWeapon)));
         }
 
         const onCsgoDirUpdate = () => {

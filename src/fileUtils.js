@@ -23,18 +23,18 @@ export function getObjectsFromText(csgoInstallDir) {
 }
 
 function createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject){
-    let currentWeaponId = 0;
     const completeSkinArray = [];
     skinNamesWithWeaponsArray.forEach(skinWeapon => {
         let combinedSkinItem = paintKitInfoArray.find(paintKit => paintKit.name === skinWeapon.paintKitName)
         const weaponForPaintKit = WEAPON_LIST[skinWeapon['weapon']];
+        const textureDisplayName = paintKitNamesJsonObject[combinedSkinItem['description_tag'].replace("#", "")]
         combinedSkinItem = {...combinedSkinItem,
             weaponShortName: skinWeapon['weapon'],
             weaponDisplayName: weaponForPaintKit.displayName,
             weaponId: weaponForPaintKit.weaponId,
             skinDescription: paintKitNamesJsonObject[combinedSkinItem['description_string'].replace("#", "")],
-            skinDisplayName: paintKitNamesJsonObject[combinedSkinItem['description_tag'].replace("#", "")],
-            skinWeaponId: currentWeaponId++
+            skinDisplayName: textureDisplayName,
+            fullItemDisplayName: weaponForPaintKit.displayName + ' | ' + textureDisplayName
         }
         completeSkinArray.push(combinedSkinItem)
     })
