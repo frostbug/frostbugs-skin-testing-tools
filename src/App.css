@@ -1,4 +1,4 @@
-#flexSwitchCheckDefault {
+#normalCheckBox {
     margin-top: 18px !important;
     margin-left: -35px !important;
     margin-right: 5px !important;
@@ -12,7 +12,30 @@
     display: inline-block;
 }
 
+#diffuseWeaponLabel {
+    padding: 0;
+    margin-top: 14px !important;
+    margin-bottom: 6px !important;
+    margin-left: 6px !important;
+    display: inline-block;
+}
+
+#normalWeaponLabel {
+    padding: 0;
+    margin-top: 14px !important;
+    margin-bottom: 6px !important;
+    margin-left: 6px !important;
+    display: inline-block;
+}
+
+#inputDiv {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 #buttonDiv {
+    margin-left: 10px;
+    margin-right: 10px;
     float: right;
 }
 
@@ -51,13 +74,16 @@ button {
     font-size: 0.9rem !important;
 }
 
-
-div {
-    margin: 1px;
-    padding: 1px;
-    border: 1px;
+option {
+    font-size: 0.9rem !important;
 }
 
-option {
+ul {
+    margin-top: 20px !important;
+    padding-left: 25px !important;
+}
+
+
+.form-select {
     font-size: 0.9rem !important;
 }

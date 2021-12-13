@@ -1,9 +1,6 @@
 import {readFileSync} from 'fs';
 import {CSGO_ENGLISH_FILE_PATH, ITEMS_GAME_FILE_PATH, WEAPON_LIST} from "./constants";
 import * as VDF from '@node-steam/vdf';
-import * as util from "util";
-
-const fs = require('fs');
 
 export function getObjectsFromText(csgoInstallDir) {
     const itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
