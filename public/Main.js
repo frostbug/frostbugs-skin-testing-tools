@@ -14,10 +14,10 @@ function createWindow () {
     })
 
     // uncomment for exporting, comment out when developing
-    // win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
+    mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
 
     // uncomment for developing, comment out when exporting
-    mainWindow.webContents.openDevTools()
-    mainWindow.loadURL('http://localhost:3000/')
+    // mainWindow.webContents.openDevTools()
+    // mainWindow.loadURL('http://localhost:3000/')
 }
     app.on('ready', createWindow)

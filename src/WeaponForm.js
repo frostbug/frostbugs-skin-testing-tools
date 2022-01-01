@@ -91,21 +91,38 @@ class WeaponForm extends Component {
         }
 
         const getFileName = (fileName) => new URL(fileName).pathname.split("/").pop();
+
         const onCsgoDirUpdate = () => {
             completeSkinArray = setCsgoDir()
             populateSkinDropdown()
+        }
+
+        const findAlternateMapsIfSelected = () => {
+            if(document.getElementById("diffuseFileInput").files.length !== 0){
+                jsonFromTextFile["workshop preview"]["pattern"] = document.getElementById("diffuseFileInput").files[0].path;
+            }
+            if(document.getElementById("normalFileInput").files.length !== 0){
+                jsonFromTextFile["workshop preview"]["normal"] = document.getElementById("normalFileInput").files[0].path;
+            }
+        }
+
+        const saveAllVtfMapsToFolders = () => {
+            saveMapToFolder(jsonFromTextFile["workshop preview"]["pattern"], jsonFromTextFile["workshop preview"]["style"], csgoInstallDir)
+            if(jsonFromTextFile["workshop preview"]["normal"]){
+                saveMapToFolder(jsonFromTextFile["workshop preview"]["normal"], jsonFromTextFile["workshop preview"]["style"], csgoInstallDir)
+            }
         }
 
         const submitWeaponForm = (evt) => {
             evt.preventDefault();
             const selectedWeaponToReplaceName = document.getElementById('weaponSkinDropDown').value;
             const selectedWeaponToReplace = completeSkinArray.find(({fullItemDisplayName}) => fullItemDisplayName === selectedWeaponToReplaceName);
-            console.log("Weapon to Replace is: " + util.inspect(selectedWeaponToReplace));
-            saveMapToFolder(jsonFromTextFile["workshop preview"]["pattern"], jsonFromTextFile["workshop preview"]["style"], csgoInstallDir)
-            if(jsonFromTextFile["workshop preview"]["normal"]){
-                saveMapToFolder(jsonFromTextFile["workshop preview"]["normal"], jsonFromTextFile["workshop preview"]["style"], csgoInstallDir)
-            }
+
+            findAlternateMapsIfSelected()
+            saveAllVtfMapsToFolders()
             replaceSkinWithCustom(csgoInstallDir, selectedWeaponToReplace, jsonFromTextFile);
+
+            console.log("FINAL SAVED OBJECT: " + util.inspect(jsonFromTextFile));
         }
 
         const submitGloveForm = (evt) => {
