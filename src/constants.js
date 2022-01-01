@@ -1,6 +1,6 @@
-export const CSGO_ENGLISH_FILE_PATH = "/csgo/resource/csgo_english.txt";
-export const ITEMS_GAME_FILE_PATH = "/csgo/scripts/items/items_game.txt";
-export const MATERIALS_FOLDERS_PATH = "/csgo/materials/models/weapons/customization/paints";
+export const CSGO_ENGLISH_FILE_PATH = "\\csgo\\resource\\csgo_english.txt";
+export const ITEMS_GAME_FILE_PATH = "\\csgo\\scripts\\items\\items_game.txt";
+export const MATERIALS_FOLDERS_PATH = "\\csgo\\materials\\models\\weapons\\customization\\paints\\";
 export const CSGO_EXECUTABLE_NAME = "\\csgo.exe";
 
 export const WEAPON_LIST = {
@@ -38,4 +38,14 @@ export const WEAPON_LIST = {
     "cz75a": {weaponId: "31", displayName: "CZ75-Auto"},
     "revolver": {weaponId: "32", displayName: "R8 Revolver"},
     "mp5sd": {weaponId: "33", displayName: "MP5-SD"}
+}
+
+export const FINISH_FOLDERS = {
+    "2":{finishStyle: "hydrographic"},
+    "3":{finishStyle: "spray"},
+    "5":{finishStyle: "anodized_multi"},
+    "6":{finishStyle: "anodized_air"},
+    "7":{finishStyle: "custom"},
+    "8":{finishStyle: "antiqued"},
+    "9":{finishStyle: "gunsmith"}
 }

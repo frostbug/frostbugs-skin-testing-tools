@@ -1,6 +1,6 @@
 import {CSGO_EXECUTABLE_NAME} from "./constants";
 import {Component} from "react";
-import {getObjectsFromText} from "./fileUtils";
+import {getObjectsFromText, replaceSkinWithCustom, saveMapToFolder} from "./fileUtils";
 import * as util from "util";
 import * as VDF from '@node-steam/vdf';
 
@@ -8,10 +8,8 @@ const fs = require('fs');
 
 class WeaponForm extends Component {
     render() {
-        window.fs = require('fs');
-
         let csgoInstallDir = "";
-        let completeSkinArray = "";
+        let completeSkinArray = [];
         let jsonFromTextFile = "";
 
         const setCsgoDir = () => {
@@ -93,7 +91,6 @@ class WeaponForm extends Component {
         }
 
         const getFileName = (fileName) => new URL(fileName).pathname.split("/").pop();
-
         const onCsgoDirUpdate = () => {
             completeSkinArray = setCsgoDir()
             populateSkinDropdown()
@@ -101,6 +98,14 @@ class WeaponForm extends Component {
 
         const submitWeaponForm = (evt) => {
             evt.preventDefault();
+            const selectedWeaponToReplaceName = document.getElementById('weaponSkinDropDown').value;
+            const selectedWeaponToReplace = completeSkinArray.find(({fullItemDisplayName}) => fullItemDisplayName === selectedWeaponToReplaceName);
+            console.log("Weapon to Replace is: " + util.inspect(selectedWeaponToReplace));
+            saveMapToFolder(jsonFromTextFile["workshop preview"]["pattern"], jsonFromTextFile["workshop preview"]["style"], csgoInstallDir)
+            if(jsonFromTextFile["workshop preview"]["normal"]){
+                saveMapToFolder(jsonFromTextFile["workshop preview"]["normal"], jsonFromTextFile["workshop preview"]["style"], csgoInstallDir)
+            }
+            replaceSkinWithCustom(csgoInstallDir, selectedWeaponToReplace, jsonFromTextFile);
         }
 
         const submitGloveForm = (evt) => {
@@ -158,9 +163,7 @@ class WeaponForm extends Component {
                                 <textarea className="form-control" placeholder="Custom Skin Description" id="newSkinDescription" rows="3"/>
                             </div>
                             <div id="buttonDiv">
-                                <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace
-                                    Textures
-                                </button>
+                                <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace Textures</button>
                             </div>
                         </form>
                     </div>
@@ -190,8 +193,7 @@ class WeaponForm extends Component {
                                 </div>
                             </div>
                             <div id="buttonDiv">
-                                <button id="replaceGloveTexturesBtn" type="submit" className="btn btn-primary">Replace Textures
-                                </button>
+                                <button id="replaceGloveTexturesBtn" type="submit" className="btn btn-primary">Replace Textures</button>
                             </div>
                         </form>
                     </div>
