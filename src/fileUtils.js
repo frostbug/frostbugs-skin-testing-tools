@@ -1,4 +1,4 @@
-import {readFileSync, writeFileSync, copyFileSync} from 'fs';
+import {readFileSync, writeFileSync, copyFileSync, mkdirSync} from 'fs';
 import {
     CSGO_ENGLISH_FILE_PATH,
     FINISH_FOLDERS,
@@ -120,6 +120,7 @@ export function replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSki
         ...customSkinString["workshop preview"]};
 
     try {
+        mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, { recursive: true });
         writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, VDF.stringify(itemsTextObject), 'ascii');
     }
     catch(e) {
@@ -131,8 +132,10 @@ export function replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSki
 export function saveMapToFolder(mapToSavePath, finishStyle, csgoInstallDir){
     if(FINISH_FOLDERS[finishStyle]){
         try{
-            copyFileSync(mapToSavePath, csgoInstallDir + MATERIALS_FOLDERS_PATH + FINISH_FOLDERS[finishStyle].finishStyle + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf");
-            const pathCopiedTo = csgoInstallDir + MATERIALS_FOLDERS_PATH + FINISH_FOLDERS[finishStyle].finishStyle + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf"
+            const file_path = csgoInstallDir + MATERIALS_FOLDERS_PATH + FINISH_FOLDERS[finishStyle].finishStyle;
+            mkdirSync(file_path, { recursive: true });
+            copyFileSync(mapToSavePath, file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf");
+            const pathCopiedTo = file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf"
             alert("Copied File to " + pathCopiedTo);
         }
         catch(e) {
