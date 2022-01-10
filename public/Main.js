@@ -11,14 +11,15 @@ function createWindow () {
             enableRemoteModule: true,
             nodeIntegration: true,
             contextIsolation: false
-        }
+        },
+        icon: path.join(__dirname, 'frostbug.ico'),
     })
 
     // uncomment for exporting, comment out when developing
-    mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
+    // mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
 
     // uncomment for developing, comment out when exporting
-    // mainWindow.webContents.openDevTools()
-    // mainWindow.loadURL('http://localhost:3000/')
+    mainWindow.webContents.openDevTools()
+    mainWindow.loadURL('http://localhost:3000/')
 }
     app.on('ready', createWindow)

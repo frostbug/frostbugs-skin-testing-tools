@@ -119,8 +119,13 @@ export function replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSki
         description_tag: objectToReplace["description_tag"],
         ...customSkinString["workshop preview"]};
 
-    try {
+    try{
         mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, { recursive: true });
+    }catch (e){
+        console.log(e)
+    }
+
+    try {
         writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, VDF.stringify(itemsTextObject), 'ascii');
     }
     catch(e) {
@@ -131,9 +136,13 @@ export function replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSki
 
 export function saveMapToFolder(mapToSavePath, finishStyle, csgoInstallDir){
     if(FINISH_FOLDERS[finishStyle]){
+        const file_path = csgoInstallDir + MATERIALS_FOLDERS_PATH + FINISH_FOLDERS[finishStyle].finishStyle;
         try{
-            const file_path = csgoInstallDir + MATERIALS_FOLDERS_PATH + FINISH_FOLDERS[finishStyle].finishStyle;
             mkdirSync(file_path, { recursive: true });
+        }catch (e){
+            console.log(e)
+        }
+        try{
             copyFileSync(mapToSavePath, file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf");
             const pathCopiedTo = file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf"
             alert("Copied File to " + pathCopiedTo);

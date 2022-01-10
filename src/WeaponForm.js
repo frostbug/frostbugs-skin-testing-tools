@@ -23,7 +23,7 @@ class WeaponForm extends Component {
         }
 
         const populateSkinDropdown = () => {
-            if (completeSkinArray !== ""){
+            if (completeSkinArray !== "" && csgoInstallDir !== ""){
                 let arrayForDropdown = completeSkinArray;
 
                 if (jsonFromTextFile !== ""){
@@ -54,19 +54,26 @@ class WeaponForm extends Component {
         }
 
         const readTextFileOnInput = () => {
-            const textFileInput = document.getElementById('textFileInput').files[0];
-            const textFileReader = new FileReader();
-            textFileReader.onload=function(){
-                jsonFromTextFile = VDF.parse(textFileReader.result.toString());
-                populateSkinDropdown();
-                checkIfVtfsExist();
+            if(document.getElementById('textFileInput').files[0]){
+                const textFileInput = document.getElementById('textFileInput').files[0];
+                const textFileReader = new FileReader();
+                textFileReader.onload=function(){
+                    jsonFromTextFile = VDF.parse(textFileReader.result.toString());
+                    if(jsonFromTextFile["workshop preview"]["dialog_config"]){
+                        populateSkinDropdown();
+                        checkIfVtfsExist();
+                    }else{
+                        alert('Cannot find skin parameters in text file, please make sure it is in the correct format or generate a new one from the workbench.');
+                    }
+
+                }
+                textFileReader.readAsText(textFileInput)
             }
-            textFileReader.readAsText(textFileInput)
         }
 
         const checkIfVtfsExist = () => {
             if(fs.existsSync(jsonFromTextFile["workshop preview"]["pattern"])){
-                document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + decodeURIComponent(getFileName(jsonFromTextFile["workshop preview"]["pattern"])));
+                document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + decodeURIComponent(getFileNameWithExtension(jsonFromTextFile["workshop preview"]["pattern"])));
                 document.getElementById('diffuseWeaponLabel').style.color = "#009900";
             }else {
                 document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map')
@@ -78,7 +85,7 @@ class WeaponForm extends Component {
                 document.getElementById('normalCheckBox').checked = true;
 
                 if(fs.existsSync(jsonFromTextFile["workshop preview"]["normal"])){
-                    document.getElementById('normalWeaponLabel').textContent = ('Normal Map - using ' + decodeURIComponent(getFileName(jsonFromTextFile["workshop preview"]["normal"])));
+                    document.getElementById('normalWeaponLabel').textContent = ('Normal Map - using ' + decodeURIComponent(getFileNameWithExtension(jsonFromTextFile["workshop preview"]["normal"])));
                     document.getElementById('normalWeaponLabel').style.color = "#009900";
                 }else {
                     document.getElementById('normalWeaponLabel').textContent = ('Normal Map')
@@ -90,7 +97,7 @@ class WeaponForm extends Component {
 
         }
 
-        const getFileName = (fileName) => new URL(fileName).pathname.split("/").pop();
+        const getFileNameWithExtension = (fileName) => new URL(fileName).pathname.split("/").pop();
 
         const onCsgoDirUpdate = () => {
             completeSkinArray = setCsgoDir()
@@ -121,8 +128,6 @@ class WeaponForm extends Component {
             findAlternateMapsIfSelected()
             saveAllVtfMapsToFolders()
             replaceSkinWithCustom(csgoInstallDir, selectedWeaponToReplace, jsonFromTextFile);
-
-            console.log("FINAL SAVED OBJECT: " + util.inspect(jsonFromTextFile));
         }
 
         const submitGloveForm = (evt) => {
