@@ -1,6 +1,6 @@
 import {CSGO_EXECUTABLE_NAME} from "./constants";
 import {Component} from "react";
-import {getObjectsFromText, replaceSkinWithCustom, saveMapToFolder} from "./fileUtils";
+import {addCustomNameAndDescription, getObjectsFromText, replaceSkinWithCustom, saveMapToFolder} from "./fileUtils";
 import * as util from "util";
 import * as VDF from '@node-steam/vdf';
 
@@ -128,6 +128,10 @@ class WeaponForm extends Component {
             findAlternateMapsIfSelected()
             saveAllVtfMapsToFolders()
             replaceSkinWithCustom(csgoInstallDir, selectedWeaponToReplace, jsonFromTextFile);
+
+            if(document.getElementById('newSkinNameInput').value !== "" || document.getElementById('newSkinDescription').value !== ""){
+                addCustomNameAndDescription(csgoInstallDir, document.getElementById('newSkinNameInput').value, document.getElementById('newSkinDescription').value, selectedWeaponToReplace)
+            }
         }
 
         const submitGloveForm = (evt) => {
@@ -178,10 +182,10 @@ class WeaponForm extends Component {
                             </div>
                             <div id="inputDiv">
                                 <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinNameInput">New Skin Name</label>
-                                <input className="form-control" placeholder="Weapon | Skin Name" id="newSkinNameInput"/>
+                                <input className="form-control" placeholder="Custom Skin Name" id="newSkinNameInput"/>
                             </div>
                             <div id="inputDiv">
-                                <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinDescription">New Skin Name</label>
+                                <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinDescription">New Skin Description</label>
                                 <textarea className="form-control" placeholder="Custom Skin Description" id="newSkinDescription" rows="3"/>
                             </div>
                             <div id="buttonDiv">

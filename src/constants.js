@@ -49,3 +49,13 @@ export const FINISH_FOLDERS = {
     "8":{finishStyle: "antiqued"},
     "9":{finishStyle: "gunsmith"}
 }
+
+export const GLOVES_LIST = {
+    "leather":{finishStyle: "hydrographic"},
+    "bloodhound":{finishStyle: "spray"},
+    "slick":{finishStyle: "anodized_multi"},
+    "sporty":{finishStyle: "anodized_air"},
+    "motorcycle":{finishStyle: "custom"},
+    "specialist":{finishStyle: "antiqued"},
+    "9":{finishStyle: "gunsmith"}
+}

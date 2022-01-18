@@ -8,7 +8,6 @@ import {
 } from "./constants";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
-import {stringify} from "@node-steam/vdf";
 
 function getPaintKitInfoArray(itemsTextFile) {
     const itemsTextObject = VDF.parse(itemsTextFile);
@@ -35,6 +34,10 @@ export function getObjectsFromText(csgoInstallDir) {
     const skinNamesWithWeaponsArray = getSkinNamesWeaponArray(itemsTextFile);
     const paintKitNamesJsonObject = getPaintKitNamesObject(csgoEnglishFile); //contains references for and display names and descriptions
 
+    let itemLists = {
+        weaponSkinArray: createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject),
+        gloveSkinArray: createGloveArray(paintKitInfoArray, paintKitNamesJsonObject)
+    }
     return createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject)
 }
 
@@ -55,6 +58,23 @@ function createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, p
         completeSkinArray.push(combinedSkinItem)
     })
     return completeSkinArray;
+}
+
+function createGloveArray(paintKitInfoArray, paintKitNamesJsonObject){
+    let glovesArray = [];
+    paintKitInfoArray.forEach(paintKitInfo => {
+        if(paintKitInfo.hasOwnProperty("vmt_path")){
+                if(paintKitInfo["vmt_path"].includes("materials/models/weapons/customization/paints_gloves/")){
+                    paintKitInfo = {...paintKitInfo,
+
+
+                    }
+                    glovesArray.push(paintKitInfo)
+                }
+            }
+        }
+    )
+
 }
 
 function buildPaintKitsArray(paintKitJsonObject) {
@@ -103,21 +123,17 @@ function getFileNameFromPath(texturePath){
 }
 
 export function replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSkinString){
-    const itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
-    const csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
+    let itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
 
-    const itemsTextObject = VDF.parse(itemsTextFile);
     customSkinString["workshop preview"]["pattern"] = getFileNameFromPath(customSkinString["workshop preview"]["pattern"])
     if(customSkinString["workshop preview"]["normal"]){
         customSkinString["workshop preview"]["normal"] = getFileNameFromPath(customSkinString["workshop preview"]["normal"])
     }
     delete customSkinString["workshop preview"]["dialog_config"]
 
-    itemsTextObject["items_game"]["paint_kits"][objectToReplace["textFileKey"]] = {
-        name: objectToReplace["name"],
-        description_string: objectToReplace["description_string"],
-        description_tag: objectToReplace["description_tag"],
-        ...customSkinString["workshop preview"]};
+    let stringToReplace = itemsTextFile.split(objectToReplace["description_tag"])[1]
+    stringToReplace = stringToReplace.split("}")[0]
+    itemsTextFile = itemsTextFile.replace(stringToReplace,"\"\n" + VDF.stringify(customSkinString["workshop preview"]))
 
     try{
         mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, { recursive: true });
@@ -126,11 +142,28 @@ export function replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSki
     }
 
     try {
-        writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, VDF.stringify(itemsTextObject), 'ascii');
+        writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
+        alert('Successfully added custom skin to text file!');
     }
     catch(e) {
         console.log(e)
-        alert('Failed to swap skin textures!');
+        alert('Failed to add custom skin to text file!');
+    }
+}
+
+export function addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, skinToReplace) {
+    let csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
+
+    csgoEnglishFile = csgoEnglishFile.replace(skinToReplace["skinDisplayName"], customSkinName);
+    csgoEnglishFile = csgoEnglishFile.replace(skinToReplace["skinDescription"], customSkinDescription);
+
+    try {
+        writeFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, csgoEnglishFile, 'utf16le');
+        alert('Successfully added custom name and/or description to text file!');
+    }
+    catch(e) {
+        console.log(e)
+        alert('Failed to save custom skin name/description to text file!');
     }
 }
 
@@ -145,7 +178,7 @@ export function saveMapToFolder(mapToSavePath, finishStyle, csgoInstallDir){
         try{
             copyFileSync(mapToSavePath, file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf");
             const pathCopiedTo = file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf"
-            alert("Copied File to " + pathCopiedTo);
+            alert("Successfully copied vtf file to " + pathCopiedTo);
         }
         catch(e) {
             console.log(e)
