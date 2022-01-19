@@ -4,7 +4,7 @@ import {
     FINISH_STYLE_FOLDERS,
     ITEMS_GAME_FILE_PATH,
     MATERIALS_FOLDERS_PATH,
-    WEAPON_LIST
+    PAINTABLE_WEAPON_ARRAY
 } from "./types";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
@@ -75,7 +75,7 @@ class fileManager {
         const completeSkinArray = [];
         skinNamesWithWeaponsArray.forEach(skinWeapon => {
             let combinedSkinItem = paintKitInfoArray.find(paintKit => paintKit.name === skinWeapon.paintKitName)
-            const weaponForPaintKit = WEAPON_LIST[skinWeapon['weapon']];
+            const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY[skinWeapon['weapon']];
             const textureDisplayName = paintKitNamesJsonObject[combinedSkinItem['description_tag'].replace("#", "")]
             combinedSkinItem = {
                 ...combinedSkinItem,
@@ -91,9 +91,9 @@ class fileManager {
         return completeSkinArray;
     }
 
-    function
 
-    createGloveArray(paintKitInfoArray, paintKitNamesJsonObject) {
+
+    public createGloveArray(paintKitInfoArray, paintKitNamesJsonObject) {
         let glovesArray = [];
         paintKitInfoArray.forEach(paintKitInfo => {
                 if (paintKitInfo.hasOwnProperty("vmt_path")) {
@@ -111,18 +111,14 @@ class fileManager {
 
     }
 
-    function
-
-    buildPaintKitsArray(paintKitJsonObject) {
+    public buildPaintKitsArray(paintKitJsonObject) {
         const itemsArray = []
         Object.entries(paintKitJsonObject).map(([key, value]) => itemsArray.push({...value, textFileKey: key}))
         return itemsArray;
     }
 
-//Returns Array of Json Object: [{ paintKitName: "PaintKitName", weapon: "Weapon" }, { paintKitName: "PaintKitName", weapon: "Weapon" }]
-    function
-
-    buildSkinWeaponArray(clientLootListsJsonObject) {
+    //Returns Array of Json Object: [{ paintKitName: "PaintKitName", weapon: "Weapon" }, { paintKitName: "PaintKitName", weapon: "Weapon" }]
+    public buildSkinWeaponArray(clientLootListsJsonObject) {
         const skinWeaponStringArray = Object.entries(clientLootListsJsonObject).map(([, value]) => {
             return Object.entries(value).map(([key]) => {
                 return key
@@ -140,10 +136,8 @@ class fileManager {
         return skinWeaponJsonObjectArray;
     }
 
-//If Input is a weapon, returns { paintKitName: "PaintKitName", weapon: "Weapon" }, else returns undefined
-    function
-
-    createJsonObjectFromSkinWeapon(skinWeapon) {
+    //If Input is a weapon, returns { paintKitName: "PaintKitName", weapon: "Weapon" }, else returns undefined
+    public createJsonObjectFromSkinWeapon(skinWeapon) {
         if (skinWeapon.includes('weapon_')) {
             skinWeapon = skinWeapon.replace('\[', '');
             skinWeapon = skinWeapon.replace('weapon_', '');
@@ -157,17 +151,12 @@ class fileManager {
         }
     }
 
-    function
-
-    getFileNameFromPath(texturePath) {
+    public getFileNameFromPath(texturePath) {
         let fileName = texturePath.split(['/', '\\']).pop();
         return path.parse(fileName).name;
     }
 
-    export
-    function
-
-    replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSkinString) {
+    public replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSkinString) {
         let itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
 
         customSkinString["workshop preview"]["pattern"] = getFileNameFromPath(customSkinString["workshop preview"]["pattern"])
@@ -195,10 +184,7 @@ class fileManager {
         }
     }
 
-    export
-    function
-
-    addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, skinToReplace) {
+    public addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, skinToReplace) {
         let csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
 
         csgoEnglishFile = csgoEnglishFile.replace(skinToReplace["skinDisplayName"], customSkinName);
