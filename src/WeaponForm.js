@@ -1,6 +1,6 @@
-import {CSGO_EXECUTABLE_NAME} from "./constants";
+import {CSGO_EXECUTABLE_NAME} from "./types";
 import {Component} from "react";
-import {addCustomNameAndDescription, getObjectsFromText, replaceSkinWithCustom, saveMapToFolder} from "./fileUtils";
+import {addCustomNameAndDescription, getObjectsFromText, replaceSkinWithCustom, saveMapToFolder} from "./FileManager";
 import * as util from "util";
 import * as VDF from '@node-steam/vdf';
 
