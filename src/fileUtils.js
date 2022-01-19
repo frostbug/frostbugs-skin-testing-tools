@@ -9,6 +9,17 @@ import {
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
 
+class fileUtils{
+
+}
+const csgoInstalldir = ""
+
+function fileUtils(csgoInstallDir){
+    this.csgoInstallDir = csgoInstallDir
+    const itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
+    const csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
+}
+
 function getPaintKitInfoArray(itemsTextFile) {
     const itemsTextObject = VDF.parse(itemsTextFile);
     let paintKitsJsonObject = itemsTextObject["items_game"]["paint_kits"];
@@ -26,6 +37,11 @@ function getPaintKitNamesObject(csgoEnglishFile){
     return csgoEnglishObject["lang"]["Tokens"]; //contains references for and display names and descriptions
 }
 
+function getGloveObjects(itemsTextFile){
+    const itemsTextObject = VDF.parse(itemsTextFile);
+    let paintKitsJsonObject = itemsTextObject["items_game"]["items"];
+}
+
 export function getObjectsFromText(csgoInstallDir) {
     const itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
     const csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
@@ -33,6 +49,7 @@ export function getObjectsFromText(csgoInstallDir) {
     const paintKitInfoArray = getPaintKitInfoArray(itemsTextFile)
     const skinNamesWithWeaponsArray = getSkinNamesWeaponArray(itemsTextFile);
     const paintKitNamesJsonObject = getPaintKitNamesObject(csgoEnglishFile); //contains references for and display names and descriptions
+    const baseGloveObjects = getGloveObjects(itemsTextFile)
 
     let itemLists = {
         weaponSkinArray: createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject),
