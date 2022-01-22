@@ -113,14 +113,61 @@ export const FINISH_STYLE_FOLDERS: Array<finishStyle> = Array(
     {finishStyleId: "9", finishStyleName: "gunsmith"}
 );
 
-interface finishStyle {
-    finishStyleId: string,
-    finishStyleName: string
+export interface finishStyle {
+    finishStyleId: string;
+    finishStyleName: string;
 }
 
-interface paintableWeapon {
-    weaponShortName: string
-    weaponId: string,
-    weaponDisplayName: string
+export interface paintableWeapon {
+    weaponShortName: string;
+    weaponId: string;
+    weaponDisplayName: string;
 }
+
+export interface paintKitWeaponPairing {
+    weaponShortName: string;
+    paintKitName: string;
+}
+
+export interface referencedLanguageString {
+    referenceString: string;
+    displayedString: string;
+}
+
+export interface paintKit {
+    name?: string;
+    description_string?: string;
+    description_tag?: string;
+    style?: string;
+    pattern?: string;
+    normal?: string;
+    use_normal?: string;
+    color0?: string;
+    color1?: string;
+    color2?: string;
+    color3?: string;
+    pattern_scale?: string;
+    phongexponent?: string;
+    phongintensity?: string;
+    phongalbedoboost?: string;
+    view_model_exponent_override_size?: string;
+    ignore_weapon_size_scale?: string;
+    only_first_material?: string;
+    pattern_offset_x_start?: string;
+    pattern_offset_x_end?: string;
+    pattern_offset_y_start?: string;
+    pattern_offset_y_end?: string;
+    pattern_rotate_start?: string;
+    pattern_rotate_end?: string;
+    wear_remap_min?: string;
+    wear_remap_max?: string;
+    weaponShortName?: string;
+    weaponDisplayName?: string;
+    weaponId?: string;
+    skinDescription?: string;
+    skinDisplayName?: string;
+    fullItemDisplayName?: string;
+    paintKitId?: string;
+}
+
 

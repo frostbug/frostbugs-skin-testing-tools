@@ -4,7 +4,9 @@ import {
     FINISH_STYLE_FOLDERS,
     ITEMS_GAME_FILE_PATH,
     MATERIALS_FOLDERS_PATH,
-    PAINTABLE_WEAPON_ARRAY
+    PAINTABLE_WEAPON_ARRAY,
+    paintKit,
+    paintKitWeaponPairing, referencedLanguageString
 } from "./types";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
@@ -35,16 +37,27 @@ class fileManager {
         }
     }
 
-    public getPaintKitInfoArray(itemsTextFile: string) {
-        const itemsTextObject: string = VDF.parse(itemsTextFile);
-        let paintKitsJsonObject = itemsTextObject["items_game"]["paint_kits"];
-        return buildPaintKitsArray(paintKitsJsonObject)
+    public getItemsTextPaintKits(itemsTextFile: string): Array<paintKit> {
+        const itemsTextObject: any = VDF.parse(itemsTextFile);
+        let paintKitsJsonObject: any = itemsTextObject["items_game"]["paint_kits"];
+        return this.convertPaintKitsObjectToArray(paintKitsJsonObject)
     }
 
-    public getSkinNamesWeaponArray(itemsTextFile: string) {
+    public convertPaintKitsObjectToArray(paintKitJsonObject: any): Array<paintKit> {
+        const itemsArray: Array<paintKit> = [];
+        Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => itemsArray.push(this.addPaintKitIdToPaintKitObject(<paintKit>paintKitValue, paintKitId)));
+        return itemsArray;
+    }
+
+    public addPaintKitIdToPaintKitObject(paintKitObject: paintKit, paintKitId: string): paintKit {
+        paintKitObject.paintKitId = paintKitId;
+        return paintKitObject;
+    }
+
+    public getPaintKitWeaponPairingArray(itemsTextFile: string): Array<paintKitWeaponPairing> {
         const itemsTextObject = VDF.parse(itemsTextFile);
-        let clientLootListsJsonObject = itemsTextObject["items_game"]["client_loot_lists"];
-        return buildSkinWeaponArray(clientLootListsJsonObject);
+        let clientLootListsJsonObject: any = itemsTextObject["items_game"]["client_loot_lists"];
+        return this.buildSkinWeaponArray(clientLootListsJsonObject);
     }
 
     public getPaintKitNamesObject(csgoEnglishFile: string) {
@@ -52,73 +65,42 @@ class fileManager {
         return csgoEnglishObject["lang"]["Tokens"]; //contains references for and display names and descriptions
     }
 
-    public getGloveObjects(itemsTextFile: string) {
-        const itemsTextObject = VDF.parse(itemsTextFile);
-        let paintKitsJsonObject = itemsTextObject["items_game"]["items"];
+    public getObjectsFromText(): Array<paintKit> {
+
+        const paintKitArray = this.getItemsTextPaintKits(this.itemsTextFile)
+        const skinNamesWithWeaponsArray = this.getPaintKitWeaponPairingArray(this.itemsTextFile);
+        const paintKitReferencesArray = this.getPaintKitNamesObject(this.csgoEnglishFile); //contains references for and display names and descriptions
+        //const baseGloveObjects = this.getGloveObjects(this.itemsTextFile)
+        // let itemLists = {
+        //     weaponSkinArray: this.createCompleteSkinArray(paintKitArray, skinNamesWithWeaponsArray, paintKitReferencesArray),
+        //     gloveSkinArray: this.createGloveArray(paintKitArray, paintKitReferencesArray)
+        // }
+        return this.createCompleteSkinArray(paintKitArray, skinNamesWithWeaponsArray, paintKitReferencesArray)
     }
 
-    public getObjectsFromText() {
-
-        const paintKitInfoArray = getPaintKitInfoArray(this.itemsTextFile)
-        const skinNamesWithWeaponsArray = getSkinNamesWeaponArray(this.itemsTextFile);
-        const paintKitNamesJsonObject = getPaintKitNamesObject(this.csgoEnglishFile); //contains references for and display names and descriptions
-        const baseGloveObjects = getGloveObjects(this.itemsTextFile)
-
-        let itemLists = {
-            weaponSkinArray: createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject),
-            gloveSkinArray: createGloveArray(paintKitInfoArray, paintKitNamesJsonObject)
-        }
-        return createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject)
-    }
-
-    public createCompleteSkinArray(paintKitInfoArray, skinNamesWithWeaponsArray, paintKitNamesJsonObject) {
-        const completeSkinArray = [];
-        skinNamesWithWeaponsArray.forEach(skinWeapon => {
-            let combinedSkinItem = paintKitInfoArray.find(paintKit => paintKit.name === skinWeapon.paintKitName)
-            const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY[skinWeapon['weapon']];
-            const textureDisplayName = paintKitNamesJsonObject[combinedSkinItem['description_tag'].replace("#", "")]
-            combinedSkinItem = {
-                ...combinedSkinItem,
-                weaponShortName: skinWeapon['weapon'],
+    public createCompleteSkinArray(paintKitArray: Array<paintKit>, paintKitWeaponPairingArray: Array<paintKitWeaponPairing>, paintKitReferencesArray: Array<referencedLanguageString>): Array<paintKit> {
+        const completeSkinArray: Array<paintKit> = [];
+        paintKitWeaponPairingArray.forEach(skinWeaponPairing => {
+            let combinedPaintKit = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
+            const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.weaponShortName)
+            const paintKitDisplayName = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit.description_tag?.replace("#",""))
+            // const paintKitDisplayName = paintKitReferencesArray[combinedPaintKit['description_tag'].replace("#", "")]
+            combinedPaintKit = {
+                ...combinedPaintKit,
+                weaponShortName: skinWeaponPairing['weapon'],
                 weaponDisplayName: weaponForPaintKit.displayName,
                 weaponId: weaponForPaintKit.weaponId,
-                skinDescription: paintKitNamesJsonObject[combinedSkinItem['description_string'].replace("#", "")],
-                skinDisplayName: textureDisplayName,
-                fullItemDisplayName: weaponForPaintKit.displayName + ' | ' + textureDisplayName
+                skinDescription: paintKitReferencesArray[combinedPaintKit['description_string'].replace("#", "")],
+                skinDisplayName: paintKitDisplayName,
+                fullItemDisplayName: weaponForPaintKit.displayName + ' | ' + paintKitDisplayName
             }
-            completeSkinArray.push(combinedSkinItem)
+            completeSkinArray.push(combinedPaintKit)
         })
         return completeSkinArray;
     }
 
-
-
-    public createGloveArray(paintKitInfoArray, paintKitNamesJsonObject) {
-        let glovesArray = [];
-        paintKitInfoArray.forEach(paintKitInfo => {
-                if (paintKitInfo.hasOwnProperty("vmt_path")) {
-                    if (paintKitInfo["vmt_path"].includes("materials/models/weapons/customization/paints_gloves/")) {
-                        paintKitInfo = {
-                            ...paintKitInfo,
-
-
-                        }
-                        glovesArray.push(paintKitInfo)
-                    }
-                }
-            }
-        )
-
-    }
-
-    public buildPaintKitsArray(paintKitJsonObject) {
-        const itemsArray = []
-        Object.entries(paintKitJsonObject).map(([key, value]) => itemsArray.push({...value, textFileKey: key}))
-        return itemsArray;
-    }
-
     //Returns Array of Json Object: [{ paintKitName: "PaintKitName", weapon: "Weapon" }, { paintKitName: "PaintKitName", weapon: "Weapon" }]
-    public buildSkinWeaponArray(clientLootListsJsonObject) {
+    public buildSkinWeaponArray(clientLootListsJsonObject: any) {
         const skinWeaponStringArray = Object.entries(clientLootListsJsonObject).map(([, value]) => {
             return Object.entries(value).map(([key]) => {
                 return key
@@ -127,7 +109,7 @@ class fileManager {
 
         const skinWeaponJsonObjectArray = [];
         skinWeaponStringArray.forEach(skinWeapon => {
-                const processedSkinWeaponJsonObject = createJsonObjectFromSkinWeapon(skinWeapon)
+                const processedSkinWeaponJsonObject = this.createJsonObjectFromSkinWeapon(skinWeapon)
                 if (processedSkinWeaponJsonObject) {
                     skinWeaponJsonObjectArray.push(processedSkinWeaponJsonObject)
                 }
@@ -156,33 +138,7 @@ class fileManager {
         return path.parse(fileName).name;
     }
 
-    public replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSkinString) {
-        let itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
 
-        customSkinString["workshop preview"]["pattern"] = getFileNameFromPath(customSkinString["workshop preview"]["pattern"])
-        if (customSkinString["workshop preview"]["normal"]) {
-            customSkinString["workshop preview"]["normal"] = getFileNameFromPath(customSkinString["workshop preview"]["normal"])
-        }
-        delete customSkinString["workshop preview"]["dialog_config"]
-
-        let stringToReplace = itemsTextFile.split(objectToReplace["description_tag"])[1]
-        stringToReplace = stringToReplace.split("}")[0]
-        itemsTextFile = itemsTextFile.replace(stringToReplace, "\"\n" + VDF.stringify(customSkinString["workshop preview"]))
-
-        try {
-            mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, {recursive: true});
-        } catch (e) {
-            console.log(e)
-        }
-
-        try {
-            writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
-            alert('Successfully added custom skin to text file!');
-        } catch (e) {
-            console.log(e)
-            alert('Failed to add custom skin to text file!');
-        }
-    }
 
     public addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, skinToReplace) {
         let csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
@@ -217,5 +173,58 @@ class fileManager {
             }
         }
     }
+
+    public replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSkinString) {
+        let itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
+
+        customSkinString["workshop preview"]["pattern"] = getFileNameFromPath(customSkinString["workshop preview"]["pattern"])
+        if (customSkinString["workshop preview"]["normal"]) {
+            customSkinString["workshop preview"]["normal"] = getFileNameFromPath(customSkinString["workshop preview"]["normal"])
+        }
+        delete customSkinString["workshop preview"]["dialog_config"]
+
+        let stringToReplace = itemsTextFile.split(objectToReplace["description_tag"])[1]
+        stringToReplace = stringToReplace.split("}")[0]
+        itemsTextFile = itemsTextFile.replace(stringToReplace, "\"\n" + VDF.stringify(customSkinString["workshop preview"]))
+
+        try {
+            mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, {recursive: true});
+        } catch (e) {
+            console.log(e)
+        }
+
+        try {
+            writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
+            alert('Successfully added custom skin to text file!');
+        } catch (e) {
+            console.log(e)
+            alert('Failed to add custom skin to text file!');
+        }
+    }
+
+    // public createGloveArray(paintKitInfoArray, paintKitNamesJsonObject) {
+    //     let glovesArray = [];
+    //     paintKitInfoArray.forEach(paintKitInfo => {
+    //             if (paintKitInfo.hasOwnProperty("vmt_path")) {
+    //                 if (paintKitInfo["vmt_path"].includes("materials/models/weapons/customization/paints_gloves/")) {
+    //                     paintKitInfo = {
+    //                         ...paintKitInfo,
+    //
+    //
+    //                     }
+    //                     glovesArray.push(paintKitInfo)
+    //                 }
+    //             }
+    //         }
+    //     )
+    //
+    // }
+
+    public getGloveObjects(itemsTextFile: string) {
+        const itemsTextObject = VDF.parse(itemsTextFile);
+        let paintKitsJsonObject = itemsTextObject["items_game"]["items"];
+    }
+
+
 }
 
