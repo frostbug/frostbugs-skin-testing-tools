@@ -4,7 +4,7 @@ import {
     FINISH_STYLE_FOLDERS,
     ITEMS_GAME_FILE_PATH,
     MATERIALS_FOLDERS_PATH,
-    PAINTABLE_WEAPON_ARRAY,
+    PAINTABLE_WEAPON_ARRAY, paintableWeapon,
     paintKit,
     paintKitWeaponPairing, referencedLanguageString
 } from "./types";
@@ -81,20 +81,26 @@ class fileManager {
     public createCompleteSkinArray(paintKitArray: Array<paintKit>, paintKitWeaponPairingArray: Array<paintKitWeaponPairing>, paintKitReferencesArray: Array<referencedLanguageString>): Array<paintKit> {
         const completeSkinArray: Array<paintKit> = [];
         paintKitWeaponPairingArray.forEach(skinWeaponPairing => {
-            let combinedPaintKit = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
-            const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.weaponShortName)
-            const paintKitDisplayName = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit.description_tag?.replace("#",""))
-            // const paintKitDisplayName = paintKitReferencesArray[combinedPaintKit['description_tag'].replace("#", "")]
-            combinedPaintKit = {
-                ...combinedPaintKit,
-                weaponShortName: skinWeaponPairing['weapon'],
-                weaponDisplayName: weaponForPaintKit.displayName,
-                weaponId: weaponForPaintKit.weaponId,
-                skinDescription: paintKitReferencesArray[combinedPaintKit['description_string'].replace("#", "")],
-                skinDisplayName: paintKitDisplayName,
-                fullItemDisplayName: weaponForPaintKit.displayName + ' | ' + paintKitDisplayName
+
+            if(paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)){}
+            let combinedPaintKit: paintKit | undefined = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
+
+            if(combinedPaintKit !== undefined){
+                const weaponForPaintKit : paintableWeapon = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.weaponShortName)
+                const paintKitDisplayName: referencedLanguageString = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit.description_tag?.replace("#",""))
+                // const paintKitDisplayName = paintKitReferencesArray[combinedPaintKit['description_tag'].replace("#", "")]
+                combinedPaintKit = {
+                    ...combinedPaintKit,
+                    weaponShortName: skinWeaponPairing['weapon'],
+                    weaponDisplayName: weaponForPaintKit.displayName,
+                    weaponId: weaponForPaintKit.weaponId,
+                    skinDescription: paintKitReferencesArray[combinedPaintKit['description_string'].replace("#", "")],
+                    skinDisplayName: paintKitDisplayName,
+                    fullItemDisplayName: weaponForPaintKit.displayName + ' | ' + paintKitDisplayName
+                }
+                completeSkinArray.push(combinedPaintKit)
             }
-            completeSkinArray.push(combinedPaintKit)
+
         })
         return completeSkinArray;
     }
