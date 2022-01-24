@@ -4,8 +4,7 @@ import {
     FINISH_STYLE_FOLDERS,
     ITEMS_GAME_FILE_PATH,
     MATERIALS_FOLDERS_PATH,
-    PAINTABLE_WEAPON_ARRAY, paintableWeapon,
-    paintKit,
+    PAINTABLE_WEAPON_ARRAY, paintKit,
     paintKitWeaponPairing, referencedLanguageString
 } from "./types";
 import * as VDF from '@node-steam/vdf';
@@ -69,7 +68,7 @@ export class FileManager {
 
         const paintKitArray = this.getItemsTextPaintKits(this.itemsTextFile)
         const skinNamesWithWeaponsArray = this.getPaintKitWeaponPairingArray(this.itemsTextFile);
-        const paintKitReferencesArray = this.getPaintKitNamesObject(this.csgoEnglishFile); //contains references for and display names and descriptions
+        const paintKitReferencesArray = this.getPaintKitNamesObject(this.csgoEnglishFile); //contains references for and display of names and descriptions
         //const baseGloveObjects = this.getGloveObjects(this.itemsTextFile)
         // let itemLists = {
         //     weaponSkinArray: this.createCompleteSkinArray(paintKitArray, skinNamesWithWeaponsArray, paintKitReferencesArray),
@@ -97,7 +96,6 @@ export class FileManager {
                 }
                 completeSkinArray.push(combinedPaintKit)
             }
-
         })
         return completeSkinArray;
     }
@@ -206,4 +204,3 @@ export class FileManager {
         let paintKitsJsonObject = itemsTextObject["items_game"]["items"];
     }
 }
-
