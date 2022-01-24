@@ -1,6 +1,6 @@
 import {CSGO_EXECUTABLE_NAME} from "./types";
 import {Component} from "react";
-import {addCustomNameAndDescription, getObjectsFromText, replaceSkinWithCustom, saveMapToFolder} from "./FileManager";
+import {FileManager} from "./FileManager";
 import * as util from "util";
 import * as VDF from '@node-steam/vdf';
 
@@ -8,17 +8,18 @@ const fs = require('fs');
 
 class WeaponForm extends Component {
     render() {
-        let csgoInstallDir = "";
+        let csgoInstallDir = []
         let completeSkinArray = [];
         let jsonFromTextFile = "";
+        let fileManager;
 
         const setCsgoDir = () => {
             const csgoExeFilePath = document.getElementById('csgoInstallFileInput').files[0].path;
             csgoInstallDir = csgoExeFilePath.replace(CSGO_EXECUTABLE_NAME, '');
             console.log('CSGO Installed at: ' + csgoInstallDir);
-
-            let unsortedWeaponArray =  getObjectsFromText(csgoInstallDir)
-            unsortedWeaponArray.sort((a, b) => a['fullItemDisplayName'] > b['fullItemDisplayName'] ? 1 : -1);
+            fileManager = new FileManager(csgoInstallDir);
+            let unsortedWeaponArray =  fileManager.getObjectsFromText()
+            unsortedWeaponArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
             return unsortedWeaponArray;
         }
 
@@ -127,7 +128,7 @@ class WeaponForm extends Component {
 
             findAlternateMapsIfSelected()
             saveAllVtfMapsToFolders()
-            replaceSkinWithCustom(csgoInstallDir, selectedWeaponToReplace, jsonFromTextFile);
+            replaceSkinWithCustom(csgoInstallDir, selectedWeaponToReplace, jsonFromTextFile["workshop preview"]);
 
             if(document.getElementById('newSkinNameInput').value !== "" || document.getElementById('newSkinDescription').value !== ""){
                 addCustomNameAndDescription(csgoInstallDir, document.getElementById('newSkinNameInput').value, document.getElementById('newSkinDescription').value, selectedWeaponToReplace)

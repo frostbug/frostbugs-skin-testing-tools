@@ -11,7 +11,7 @@ import {
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
 
-class fileManager {
+export class FileManager {
 
     csgoInstallDir: string = ""
     itemsTextFile: string = ""
@@ -38,8 +38,8 @@ class fileManager {
     }
 
     public getItemsTextPaintKits(itemsTextFile: string): Array<paintKit> {
-        const itemsTextObject: any = VDF.parse(itemsTextFile);
-        let paintKitsJsonObject: any = itemsTextObject["items_game"]["paint_kits"];
+        const itemsTextObject = VDF.parse(itemsTextFile);
+        let paintKitsJsonObject = itemsTextObject["items_game"]["paint_kits"];
         return this.convertPaintKitsObjectToArray(paintKitsJsonObject)
     }
 
@@ -56,7 +56,7 @@ class fileManager {
 
     public getPaintKitWeaponPairingArray(itemsTextFile: string): Array<paintKitWeaponPairing> {
         const itemsTextObject = VDF.parse(itemsTextFile);
-        let clientLootListsJsonObject: any = itemsTextObject["items_game"]["client_loot_lists"];
+        let clientLootListsJsonObject = itemsTextObject["items_game"]["client_loot_lists"];
         return this.buildSkinWeaponArray(clientLootListsJsonObject);
     }
 
@@ -81,22 +81,19 @@ class fileManager {
     public createCompleteSkinArray(paintKitArray: Array<paintKit>, paintKitWeaponPairingArray: Array<paintKitWeaponPairing>, paintKitReferencesArray: Array<referencedLanguageString>): Array<paintKit> {
         const completeSkinArray: Array<paintKit> = [];
         paintKitWeaponPairingArray.forEach(skinWeaponPairing => {
-
-            if(paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)){}
             let combinedPaintKit: paintKit | undefined = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
-
             if(combinedPaintKit !== undefined){
-                const weaponForPaintKit : paintableWeapon = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.weaponShortName)
-                const paintKitDisplayName: referencedLanguageString = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit.description_tag?.replace("#",""))
-                // const paintKitDisplayName = paintKitReferencesArray[combinedPaintKit['description_tag'].replace("#", "")]
+                const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.weaponShortName)
+                const paintKitDisplayNameReferenceObject = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit?.description_tag?.replace("#",""))
+                const paintKitDescriptionReferenceObject = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit?.description_string?.replace("#",""))
                 combinedPaintKit = {
                     ...combinedPaintKit,
-                    weaponShortName: skinWeaponPairing['weapon'],
-                    weaponDisplayName: weaponForPaintKit.displayName,
-                    weaponId: weaponForPaintKit.weaponId,
-                    skinDescription: paintKitReferencesArray[combinedPaintKit['description_string'].replace("#", "")],
-                    skinDisplayName: paintKitDisplayName,
-                    fullItemDisplayName: weaponForPaintKit.displayName + ' | ' + paintKitDisplayName
+                    weaponShortName: skinWeaponPairing.weaponShortName,
+                    weaponDisplayName: weaponForPaintKit?.weaponDisplayName,
+                    weaponId: weaponForPaintKit?.weaponId,
+                    skinDescription: paintKitDisplayNameReferenceObject?.displayedString,
+                    skinDisplayName: paintKitDescriptionReferenceObject?.displayedString,
+                    fullItemDisplayName: weaponForPaintKit?.weaponDisplayName + ' | ' + paintKitDescriptionReferenceObject?.displayedString
                 }
                 completeSkinArray.push(combinedPaintKit)
             }
@@ -105,53 +102,44 @@ class fileManager {
         return completeSkinArray;
     }
 
-    //Returns Array of Json Object: [{ paintKitName: "PaintKitName", weapon: "Weapon" }, { paintKitName: "PaintKitName", weapon: "Weapon" }]
-    public buildSkinWeaponArray(clientLootListsJsonObject: any) {
-        const skinWeaponStringArray = Object.entries(clientLootListsJsonObject).map(([, value]) => {
-            return Object.entries(value).map(([key]) => {
-                return key
-            })
-        }).reduce((accumulator, arrayToAdd) => accumulator.concat(arrayToAdd), [])
+    public buildSkinWeaponArray(clientLootListsJsonObject: any): Array<paintKitWeaponPairing> {
+        const paintKitWeaponPairingArray = []
 
-        const skinWeaponJsonObjectArray = [];
-        skinWeaponStringArray.forEach(skinWeapon => {
-                const processedSkinWeaponJsonObject = this.createJsonObjectFromSkinWeapon(skinWeapon)
-                if (processedSkinWeaponJsonObject) {
-                    skinWeaponJsonObjectArray.push(processedSkinWeaponJsonObject)
+        for (const value of Object.values(clientLootListsJsonObject)){
+            // @ts-ignore - clientLootListObject is raw VDF and it or it's contents cannot be typed yet
+            for (const key of Object.keys(value)){
+                const processedSkinWeaponJsonObject = this.createJsonObjectFromSkinWeapon(key);
+
+                if (processedSkinWeaponJsonObject){
+                    paintKitWeaponPairingArray.push(processedSkinWeaponJsonObject)
                 }
             }
-        )
-        return skinWeaponJsonObjectArray;
+        }
+        return paintKitWeaponPairingArray;
     }
 
-    //If Input is a weapon, returns { paintKitName: "PaintKitName", weapon: "Weapon" }, else returns undefined
-    public createJsonObjectFromSkinWeapon(skinWeapon) {
-        if (skinWeapon.includes('weapon_')) {
-            skinWeapon = skinWeapon.replace('\[', '');
-            skinWeapon = skinWeapon.replace('weapon_', '');
-            const skinWeaponArray = skinWeapon.split("]");
+    public createJsonObjectFromSkinWeapon(skinWeaponPairingString: string): paintKitWeaponPairing | undefined {
+        if (skinWeaponPairingString.includes('weapon_')) {
+            skinWeaponPairingString = skinWeaponPairingString.replace('\[', '');
+            skinWeaponPairingString = skinWeaponPairingString.replace('weapon_', '');
+            const skinWeaponArray = skinWeaponPairingString.split("]");
             return {
                 paintKitName: skinWeaponArray[0],
-                weapon: skinWeaponArray[1]
+                weaponShortName: skinWeaponArray[1]
             };
         } else {
             return undefined;
         }
     }
 
-    public getFileNameFromPath(texturePath) {
-        let fileName = texturePath.split(['/', '\\']).pop();
-        return path.parse(fileName).name;
-    }
-
-
-
-    public addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, skinToReplace) {
+    public addCustomNameAndDescription(csgoInstallDir: string, customSkinName: string, customSkinDescription: string, skinToReplace: paintKit) {
         let csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
-
-        csgoEnglishFile = csgoEnglishFile.replace(skinToReplace["skinDisplayName"], customSkinName);
-        csgoEnglishFile = csgoEnglishFile.replace(skinToReplace["skinDescription"], customSkinDescription);
-
+        if (skinToReplace.skinDisplayName) {
+            csgoEnglishFile = csgoEnglishFile.replace(skinToReplace.skinDisplayName, customSkinName);
+        }
+        if (skinToReplace.skinDescription) {
+            csgoEnglishFile = csgoEnglishFile.replace(skinToReplace.skinDescription, customSkinDescription);
+        }
         try {
             writeFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, csgoEnglishFile, 'utf16le');
             alert('Successfully added custom name and/or description to text file!');
@@ -161,18 +149,19 @@ class fileManager {
         }
     }
 
-    public saveMapToFolder(mapToSavePath: string, finishStyle: number) {
-        if (FINISH_STYLE_FOLDERS.hasOwnProperty(finishStyle)) {
-            const file_path = this.csgoInstallDir + MATERIALS_FOLDERS_PATH + FINISH_STYLE_FOLDERS[finishStyle].finishStyle;
+    public saveMapToFolder(mapToSavePath: string, paintKitFinishStyleId: string) {
+        const finishStyleName = FINISH_STYLE_FOLDERS.find(finishStyle => finishStyle.finishStyleId === paintKitFinishStyleId)?.finishStyleName
+        if (finishStyleName !== undefined) {
+            const file_path = this.csgoInstallDir + MATERIALS_FOLDERS_PATH + finishStyleName;
             try {
                 mkdirSync(file_path, {recursive: true});
             } catch (e) {
                 console.log(e)
             }
             try {
-                copyFileSync(mapToSavePath, file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf");
-                const pathCopiedTo = file_path + "\\" + getFileNameFromPath(mapToSavePath) + ".vtf"
-                alert("Successfully copied vtf file to " + pathCopiedTo);
+                const pathToCopyTo = file_path + "\\" + path.basename(mapToSavePath);
+                copyFileSync(mapToSavePath, pathToCopyTo);
+                alert("Successfully copied vtf file to " + pathToCopyTo);
             } catch (e) {
                 console.log(e)
                 alert('Failed to copy map to csgo folder!');
@@ -180,18 +169,22 @@ class fileManager {
         }
     }
 
-    public replaceSkinWithCustom(csgoInstallDir, objectToReplace, customSkinString) {
+    public replaceSkinWithCustom(csgoInstallDir: string, objectToReplace: paintKit, customSkinString: paintKit) {
         let itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
 
-        customSkinString["workshop preview"]["pattern"] = getFileNameFromPath(customSkinString["workshop preview"]["pattern"])
-        if (customSkinString["workshop preview"]["normal"]) {
-            customSkinString["workshop preview"]["normal"] = getFileNameFromPath(customSkinString["workshop preview"]["normal"])
+        if (customSkinString.pattern) {
+            customSkinString.pattern = path.parse(customSkinString.pattern).name
         }
-        delete customSkinString["workshop preview"]["dialog_config"]
+        if (customSkinString.normal) {
+            customSkinString.normal = path.parse(customSkinString.normal).name
+        }
+        delete customSkinString.dialog_config;
 
-        let stringToReplace = itemsTextFile.split(objectToReplace["description_tag"])[1]
-        stringToReplace = stringToReplace.split("}")[0]
-        itemsTextFile = itemsTextFile.replace(stringToReplace, "\"\n" + VDF.stringify(customSkinString["workshop preview"]))
+        if(objectToReplace.description_tag !== undefined){
+            let stringToReplace = itemsTextFile.split(objectToReplace.description_tag)[1]
+            stringToReplace = stringToReplace.split("}")[0]
+            itemsTextFile = itemsTextFile.replace(stringToReplace, "\"\n" + VDF.stringify(JSON.stringify(customSkinString)))
+        }
 
         try {
             mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, {recursive: true});
@@ -208,29 +201,9 @@ class fileManager {
         }
     }
 
-    // public createGloveArray(paintKitInfoArray, paintKitNamesJsonObject) {
-    //     let glovesArray = [];
-    //     paintKitInfoArray.forEach(paintKitInfo => {
-    //             if (paintKitInfo.hasOwnProperty("vmt_path")) {
-    //                 if (paintKitInfo["vmt_path"].includes("materials/models/weapons/customization/paints_gloves/")) {
-    //                     paintKitInfo = {
-    //                         ...paintKitInfo,
-    //
-    //
-    //                     }
-    //                     glovesArray.push(paintKitInfo)
-    //                 }
-    //             }
-    //         }
-    //     )
-    //
-    // }
-
     public getGloveObjects(itemsTextFile: string) {
         const itemsTextObject = VDF.parse(itemsTextFile);
         let paintKitsJsonObject = itemsTextObject["items_game"]["items"];
     }
-
-
 }
 
