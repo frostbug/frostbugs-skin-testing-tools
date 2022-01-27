@@ -167,8 +167,8 @@ export class FileManager {
         }
     }
 
-    public replaceSkinWithCustom(csgoInstallDir: string, objectToReplace: paintKit, customSkinString: paintKit) {
-        let itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
+    public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit) {
+        let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
 
         if (customSkinString.pattern) {
             customSkinString.pattern = path.parse(customSkinString.pattern).name
@@ -185,13 +185,13 @@ export class FileManager {
         }
 
         try {
-            mkdirSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, {recursive: true});
+            mkdirSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, {recursive: true});
         } catch (e) {
             console.log(e)
         }
 
         try {
-            writeFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
+            writeFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
             alert('Successfully added custom skin to text file!');
         } catch (e) {
             console.log(e)
