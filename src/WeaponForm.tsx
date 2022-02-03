@@ -1,10 +1,8 @@
-import {CSGO_EXECUTABLE_NAME} from "./types";
+import {CSGO_EXECUTABLE_NAME, paintKit} from "./types";
 import {ChangeEvent, FormEvent, useState} from "react";
 import {FileManager} from "./FileManager";
-import * as util from "util";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
-import {paintKit} from "./types";
 
 const fs = require('fs');
 
@@ -12,34 +10,43 @@ const WeaponForm = () => {
     const [csgoInstallDir, setCsgoInstallDir] = useState<string>('')
     const [completeWeaponSkinArray, setCompleteWeaponSkinArray] = useState<Array<paintKit>>([])
     const [completeGloveSkinArray, setCompleteGloveSkinArray] = useState<Array<paintKit>>([])
-    const [arrayForDropdown, setArrayForDropdown] = useState<Array<string>>(["--Please choose an option--"])
+    const [weaponArrayForDropdown, setWeaponArrayForDropdown] = useState<Array<string>>(["--Waiting for csgo.exe location--"])
+    const [gloveArrayForDropdown, setGloveArrayForDropdown] = useState<Array<string>>(["--Waiting for csgo.exe location--"])
     const [jsonFromTextFile, setJsonFromTextFile] = useState<paintKit>()
-    const [currentlySelectedSkin, setCurrentlySelectedSkin] = useState<paintKit>()
+    const [currentlySelectedWeaponSkin, setCurrentlySelectedWeaponSkin] = useState<paintKit>()
+    const [currentlySelectedGloveToReplace, setCurrentlySelectedGloveToReplace] = useState<paintKit>()
+    const [currentlySelectedGloveToReplaceWith, setCurrentlySelectedGloveToReplaceWith] = useState<paintKit>()
     const [customSkinName, setCustomSkinName] = useState<string>('')
     const [customSkinDescription, setCustomSkinDescription] = useState<string>('')
     const [inputDiffuseFile, setInputDiffuseFile] = useState<File>()
     const [inputNormalFile, setInputNormalFile] = useState<File>()
     const [fileManager, setFileManager] = useState<FileManager>()
 
-    function setCsgoDirAndSkinArray (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): Array<paintKit> {
-        if (!csgoExeUpdateEvent.target.files) return [];
+    function setCsgoDirAndSkinArray (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): FileManager | undefined {
+        if (!csgoExeUpdateEvent.target.files) return undefined;
         if (csgoExeUpdateEvent.target.files[0]) {
-
             const csgoExeFilePath = csgoExeUpdateEvent.target.files[0].path.replace(CSGO_EXECUTABLE_NAME, '');
             const newFileManager = new FileManager(csgoExeFilePath);
-            const weaponPaintKitArray = newFileManager.getCompletePaintKitWeaponArray()
-            const glovePaintKitArray = newFileManager.getCompletePaintKitGloveArray()
-            // @ts-ignore
-            weaponPaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
-            // @ts-ignore
-            glovePaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
             setCsgoInstallDir(csgoExeFilePath);
-            setCompleteGloveSkinArray(glovePaintKitArray)
-            setCompleteWeaponSkinArray(weaponPaintKitArray)
-            setFileManager(newFileManager)
-            return weaponPaintKitArray
+            return newFileManager
         }
-        return [];
+        return undefined;
+    }
+
+    function sortAndSetWeaponPaintKitArray(newFileManager: FileManager): Array<paintKit> {
+        const weaponPaintKitArray = newFileManager.getCompletePaintKitWeaponArray()
+        // @ts-ignore
+        weaponPaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
+        setCompleteWeaponSkinArray(weaponPaintKitArray)
+        return weaponPaintKitArray;
+    }
+
+    function sortAndSetGlovePaintKitArray(newFileManager: FileManager): Array<paintKit> {
+        const glovePaintKitArray = newFileManager.getCompletePaintKitGloveArray()
+        // @ts-ignore
+        glovePaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
+        setCompleteGloveSkinArray(glovePaintKitArray)
+        return glovePaintKitArray;
     }
 
     function onDiffuseFileUpload(diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void {
@@ -52,20 +59,34 @@ const WeaponForm = () => {
         setInputNormalFile(normalFileUploadEvent.target.files[0]);
     }
 
-    const populateSkinDropdown = (generatedPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void => {
-        if (generatedPaintKitArray.length !== 0) {
-            let curatedDropDownArray = generatedPaintKitArray;
+    function populateWeaponSkinDropdown (generatedWeapomPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void {
+        if (generatedWeapomPaintKitArray.length !== 0) {
+            let curatedWeaponDropDownArray = generatedWeapomPaintKitArray;
             if(inputTextFile){
-                curatedDropDownArray = curatedDropDownArray.filter((skinWeapon: paintKit) => skinWeapon.weaponId === inputTextFile?.dialog_config?.split(",")[0])
+                curatedWeaponDropDownArray = curatedWeaponDropDownArray.filter((skinWeapon: paintKit) => skinWeapon.weaponId === inputTextFile?.dialog_config?.split(",")[0])
             }
-            const arrayForDropdown: Array<string> = curatedDropDownArray.map(paintKit => paintKit.fullItemDisplayName as string)
-            arrayForDropdown.unshift('--Please choose an option--');
-            setArrayForDropdown(arrayForDropdown);
+            const arrayForWeaponDropdown: Array<string> = curatedWeaponDropDownArray.map(paintKit => paintKit.fullItemDisplayName as string)
+            setWeaponArrayForDropdown(arrayForWeaponDropdown);
         }
     }
 
-    function fetchAndSetCurrentSelectedDropdownSkin(selectSkinEvent: ChangeEvent<HTMLSelectElement>): void {
-        setCurrentlySelectedSkin(completeWeaponSkinArray.find((skinWeapon: paintKit) => skinWeapon.fullItemDisplayName === selectSkinEvent.target.value))
+    function populateGloveSkinDropdown (generatedGlovePaintKitArray: Array<paintKit>): void {
+        if (generatedGlovePaintKitArray.length !== 0) {
+            const arrayForGloveDropdown: Array<string> = generatedGlovePaintKitArray.map(paintKit => paintKit.fullItemDisplayName as string)
+            setGloveArrayForDropdown(arrayForGloveDropdown);
+        }
+    }
+
+    function fetchAndSetCurrentSelectedDropdownWeaponSkin(selectSkinEvent: ChangeEvent<HTMLSelectElement>): void {
+        setCurrentlySelectedWeaponSkin(completeWeaponSkinArray.find((skinWeapon: paintKit) => skinWeapon.fullItemDisplayName === selectSkinEvent.target.value))
+    }
+
+    function fetchAndSetCurrentSelectedDropdownGloveSkinToReplace(selectSkinEvent: ChangeEvent<HTMLSelectElement>): void {
+        setCurrentlySelectedGloveToReplace(completeGloveSkinArray.find((gloveSkin: paintKit) => gloveSkin.fullItemDisplayName === selectSkinEvent.target.value))
+    }
+
+    function fetchAndSetCurrentSelectedDropdownGloveSkinToReplaceWith(selectSkinEvent: ChangeEvent<HTMLSelectElement>): void {
+        setCurrentlySelectedGloveToReplaceWith(completeGloveSkinArray.find((gloveSkin: paintKit) => gloveSkin.fullItemDisplayName === selectSkinEvent.target.value))
     }
 
     function readTextFileOnInput(textFileUpdatedEvent: ChangeEvent<HTMLInputElement>): void {
@@ -76,7 +97,7 @@ const WeaponForm = () => {
             if (textFileReader.result) {
                 const inputTextFile: paintKit = VDF.parse(textFileReader.result.toString())["workshop preview"]
                 if (inputTextFile && inputTextFile.dialog_config) {
-                    populateSkinDropdown(completeWeaponSkinArray, inputTextFile);
+                    populateWeaponSkinDropdown(completeWeaponSkinArray, inputTextFile);
                     checkIfVtfsExist(inputTextFile);
                     setJsonFromTextFile(inputTextFile);
                 } else {
@@ -90,6 +111,7 @@ const WeaponForm = () => {
     function checkIfVtfsExist(inputTextFile: paintKit): void {
         if (!inputTextFile) return;
         if (fs.existsSync(inputTextFile?.pattern)) {
+            setInputDiffuseFile
             // @ts-ignore
             document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + path.parse(inputTextFile?.pattern as string).base);
             // @ts-ignore
@@ -124,8 +146,17 @@ const WeaponForm = () => {
     }
 
     function onCsgoDirUpdate(csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): void {
-        const brandNewPaintKitArray = setCsgoDirAndSkinArray(csgoExeUpdateEvent);
-        populateSkinDropdown(brandNewPaintKitArray,undefined )
+        if (!csgoExeUpdateEvent.target.files) return;
+        if (csgoExeUpdateEvent.target.files[0]){
+            const newFileManager = setCsgoDirAndSkinArray(csgoExeUpdateEvent);
+            if(newFileManager){
+                setFileManager(newFileManager);
+                const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
+                const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
+                populateWeaponSkinDropdown(weaponPaintKitArray,undefined );
+                populateGloveSkinDropdown(glovePaintKitArray);
+            }
+        }
     }
 
     function findAlternateMapsIfSelected(): void {
@@ -150,7 +181,7 @@ const WeaponForm = () => {
     function submitWeaponForm(submitFormEvent: FormEvent<HTMLFormElement>): void {
         submitFormEvent.preventDefault();
         if (!fileManager) return;
-        const selectedWeaponToReplace = currentlySelectedSkin;
+        const selectedWeaponToReplace = currentlySelectedWeaponSkin;
         findAlternateMapsIfSelected()
         saveAllVtfMapsToFolders()
         if (jsonFromTextFile) {
@@ -217,8 +248,8 @@ const WeaponForm = () => {
                                 Replace</label>
                             <div className="dropdown" id="weaponDropDownDiv">
                                 <select name="weaponSkinDropDown" id="weaponSkinDropDown" className="form-select"
-                                        onChange={fetchAndSetCurrentSelectedDropdownSkin}>
-                                    {arrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
+                                        onChange={fetchAndSetCurrentSelectedDropdownWeaponSkin}>
+                                    {weaponArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
@@ -226,14 +257,14 @@ const WeaponForm = () => {
                             <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinNameInput">New Skin
                                 Name</label>
                             <input className="form-control" placeholder="Custom Skin Name" id="newSkinNameInput"
-                                   onChange={event => setCustomSkinDescription(event.target.value)}/>
+                                   onChange={event => setCustomSkinName(event.target.value)}/>
                         </div>
                         <div id="inputDiv">
                             <label id="weaponLabel" className="col-form-label mt-4" htmlFor="newSkinDescription">New
                                 Skin Description</label>
                             <textarea className="form-control" placeholder="Custom Skin Description"
                                       id="newSkinDescription" rows={3}
-                                      onChange={event => setCustomSkinName(event.target.value)}/>
+                                      onChange={event => setCustomSkinDescription(event.target.value)}/>
                         </div>
                         <div id="buttonDiv">
                             <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace
@@ -249,11 +280,9 @@ const WeaponForm = () => {
                             <label id="weaponLabel" htmlFor="currentGlovesDropdown" className="form-label mt-4">Current
                                 Gloves</label>
                             <div className="dropdown" id="currentGlovesDropdown">
-                                <select name="currentGloves" id="currentGloves" className="form-select">
-                                    <option value="">--Please choose an option--</option>
-                                    <option value="gluvvy">gluvvy</option>
-                                    <option value="wuvvy">wuvvy</option>
-                                    <option value="fisto">fisto</option>
+                                <select name="currentGloves" id="currentGloves" className="form-select"
+                                    onChange={fetchAndSetCurrentSelectedDropdownGloveSkinToReplace}>
+                                    {gloveArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
@@ -261,11 +290,9 @@ const WeaponForm = () => {
                             <label id="weaponLabel" htmlFor="newGlovesDropdown" className="form-label mt-4">New
                                 Gloves</label>
                             <div className="dropdown" id="newGlovesDropdown">
-                                <select name="newGloves" id="newGloves" className="form-select">
-                                    <option value="">--Please choose an option--</option>
-                                    <option value="gluvvy">gluvvy</option>
-                                    <option value="wuvvy">wuvvy</option>
-                                    <option value="fisto">fisto</option>
+                                <select name="newGloves" id="newGloves" className="form-select"
+                                    onChange={fetchAndSetCurrentSelectedDropdownGloveSkinToReplaceWith}>
+                                    {gloveArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
