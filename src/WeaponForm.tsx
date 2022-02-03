@@ -10,7 +10,8 @@ const fs = require('fs');
 
 const WeaponForm = () => {
     const [csgoInstallDir, setCsgoInstallDir] = useState<string>('')
-    const [completeSkinArray, setCompleteSkinArray] = useState<Array<paintKit>>([])
+    const [completeWeaponSkinArray, setCompleteWeaponSkinArray] = useState<Array<paintKit>>([])
+    const [completeGloveSkinArray, setCompleteGloveSkinArray] = useState<Array<paintKit>>([])
     const [arrayForDropdown, setArrayForDropdown] = useState<Array<string>>(["--Please choose an option--"])
     const [jsonFromTextFile, setJsonFromTextFile] = useState<paintKit>()
     const [currentlySelectedSkin, setCurrentlySelectedSkin] = useState<paintKit>()
@@ -18,20 +19,27 @@ const WeaponForm = () => {
     const [customSkinDescription, setCustomSkinDescription] = useState<string>('')
     const [inputDiffuseFile, setInputDiffuseFile] = useState<File>()
     const [inputNormalFile, setInputNormalFile] = useState<File>()
-    let fileManager: FileManager;
+    const [fileManager, setFileManager] = useState<FileManager>()
 
-    function setCsgoDirAndSkinArray (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): void{
-        if (!csgoExeUpdateEvent.target.files) return;
+    function setCsgoDirAndSkinArray (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): Array<paintKit> {
+        if (!csgoExeUpdateEvent.target.files) return [];
         if (csgoExeUpdateEvent.target.files[0]) {
-            const csgoExeFilePath = csgoExeUpdateEvent.target.files[0].path;
-            setCsgoInstallDir(csgoExeFilePath.replace(CSGO_EXECUTABLE_NAME, ''));
-            fileManager = new FileManager(csgoInstallDir);
-            let paintKitArray = fileManager.getObjectsFromText()
-            // @ts-ignore
-            paintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
 
-            setCompleteSkinArray(paintKitArray)
+            const csgoExeFilePath = csgoExeUpdateEvent.target.files[0].path.replace(CSGO_EXECUTABLE_NAME, '');
+            const newFileManager = new FileManager(csgoExeFilePath);
+            const weaponPaintKitArray = newFileManager.getCompletePaintKitWeaponArray()
+            const glovePaintKitArray = newFileManager.getCompletePaintKitGloveArray()
+            // @ts-ignore
+            weaponPaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
+            // @ts-ignore
+            glovePaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
+            setCsgoInstallDir(csgoExeFilePath);
+            setCompleteGloveSkinArray(glovePaintKitArray)
+            setCompleteWeaponSkinArray(weaponPaintKitArray)
+            setFileManager(newFileManager)
+            return weaponPaintKitArray
         }
+        return [];
     }
 
     function onDiffuseFileUpload(diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void {
@@ -44,10 +52,12 @@ const WeaponForm = () => {
         setInputNormalFile(normalFileUploadEvent.target.files[0]);
     }
 
-    const populateSkinDropdown = (): void => {
-        if (completeSkinArray.length !== 0 && csgoInstallDir !== '') {
-            let curatedDropDownArray = completeSkinArray;
-            curatedDropDownArray = curatedDropDownArray.filter((skinWeapon: paintKit) => skinWeapon.weaponId === jsonFromTextFile?.dialog_config?.split(",")[0])
+    const populateSkinDropdown = (generatedPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void => {
+        if (generatedPaintKitArray.length !== 0) {
+            let curatedDropDownArray = generatedPaintKitArray;
+            if(inputTextFile){
+                curatedDropDownArray = curatedDropDownArray.filter((skinWeapon: paintKit) => skinWeapon.weaponId === inputTextFile?.dialog_config?.split(",")[0])
+            }
             const arrayForDropdown: Array<string> = curatedDropDownArray.map(paintKit => paintKit.fullItemDisplayName as string)
             arrayForDropdown.unshift('--Please choose an option--');
             setArrayForDropdown(arrayForDropdown);
@@ -55,8 +65,7 @@ const WeaponForm = () => {
     }
 
     function fetchAndSetCurrentSelectedDropdownSkin(selectSkinEvent: ChangeEvent<HTMLSelectElement>): void {
-        setCurrentlySelectedSkin(completeSkinArray.find((skinWeapon: paintKit) => skinWeapon.fullItemDisplayName === selectSkinEvent.target.value))
-        console.log('Selected paintKit object is: ' + util.inspect(currentlySelectedSkin));
+        setCurrentlySelectedSkin(completeWeaponSkinArray.find((skinWeapon: paintKit) => skinWeapon.fullItemDisplayName === selectSkinEvent.target.value))
     }
 
     function readTextFileOnInput(textFileUpdatedEvent: ChangeEvent<HTMLInputElement>): void {
@@ -65,10 +74,11 @@ const WeaponForm = () => {
         const textFileReader = new FileReader();
         textFileReader.onload = function () {
             if (textFileReader.result) {
-                setJsonFromTextFile(VDF.parse(textFileReader.result.toString())["workshop preview"]);
-                if (jsonFromTextFile && jsonFromTextFile.dialog_config) {
-                    populateSkinDropdown();
-                    checkIfVtfsExist();
+                const inputTextFile: paintKit = VDF.parse(textFileReader.result.toString())["workshop preview"]
+                if (inputTextFile && inputTextFile.dialog_config) {
+                    populateSkinDropdown(completeWeaponSkinArray, inputTextFile);
+                    checkIfVtfsExist(inputTextFile);
+                    setJsonFromTextFile(inputTextFile);
                 } else {
                     alert('Cannot find skin parameters in text file, please make sure it is in the correct format or generate a new one from the workbench.');
                 }
@@ -77,11 +87,11 @@ const WeaponForm = () => {
         textFileReader.readAsText(textFileInput)
     }
 
-    function checkIfVtfsExist(): void {
-        if (!jsonFromTextFile) return;
-        if (fs.existsSync(jsonFromTextFile?.pattern)) {
+    function checkIfVtfsExist(inputTextFile: paintKit): void {
+        if (!inputTextFile) return;
+        if (fs.existsSync(inputTextFile?.pattern)) {
             // @ts-ignore
-            document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + path.parse(jsonFromTextFile?.normal as string).base);
+            document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + path.parse(inputTextFile?.pattern as string).base);
             // @ts-ignore
             document.getElementById('diffuseWeaponLabel').style.color = "#009900";
         } else {
@@ -91,13 +101,13 @@ const WeaponForm = () => {
             document.getElementById('diffuseWeaponLabel').style.color = "rgb(136,136,136)";
         }
 
-        if (jsonFromTextFile.normal === '1') {
+        if (inputTextFile.use_normal == '1') {
             // @ts-ignore
             document.getElementById('normalCheckBox').checked = true;
 
-            if (fs.existsSync(jsonFromTextFile.normal)) {
+            if (fs.existsSync(inputTextFile.normal)) {
                 // @ts-ignore
-                document.getElementById('normalWeaponLabel').textContent = ('Normal Map - using ' + path.parse(jsonFromTextFile?.normal as string).base);
+                document.getElementById('normalWeaponLabel').textContent = ('Normal Map - using ' + path.parse(inputTextFile?.normal as string).base);
                 // @ts-ignore
                 document.getElementById('normalWeaponLabel').style.color = "#009900";
             } else {
@@ -114,8 +124,8 @@ const WeaponForm = () => {
     }
 
     function onCsgoDirUpdate(csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): void {
-        setCsgoDirAndSkinArray(csgoExeUpdateEvent);
-        populateSkinDropdown()
+        const brandNewPaintKitArray = setCsgoDirAndSkinArray(csgoExeUpdateEvent);
+        populateSkinDropdown(brandNewPaintKitArray,undefined )
     }
 
     function findAlternateMapsIfSelected(): void {
@@ -129,18 +139,18 @@ const WeaponForm = () => {
     }
 
     function saveAllVtfMapsToFolders(): void {
-        if (jsonFromTextFile?.pattern && jsonFromTextFile.style)
+        if (!fileManager) return;
+        if (jsonFromTextFile && jsonFromTextFile.pattern && jsonFromTextFile.style)
             fileManager.saveMapToFolder(jsonFromTextFile.pattern, jsonFromTextFile.style)
-        if (jsonFromTextFile?.normal && jsonFromTextFile.style) {
+        if (jsonFromTextFile && jsonFromTextFile.normal && jsonFromTextFile.style) {
             fileManager.saveMapToFolder(jsonFromTextFile.normal, jsonFromTextFile.style)
         }
     }
 
     function submitWeaponForm(submitFormEvent: FormEvent<HTMLFormElement>): void {
         submitFormEvent.preventDefault();
-        const selectedWeaponToReplaceName = currentlySelectedSkin;
-        const selectedWeaponToReplace = completeSkinArray.find((targetPaintKit: paintKit) => targetPaintKit.fullItemDisplayName === selectedWeaponToReplaceName);
-
+        if (!fileManager) return;
+        const selectedWeaponToReplace = currentlySelectedSkin;
         findAlternateMapsIfSelected()
         saveAllVtfMapsToFolders()
         if (jsonFromTextFile) {
@@ -208,7 +218,7 @@ const WeaponForm = () => {
                             <div className="dropdown" id="weaponDropDownDiv">
                                 <select name="weaponSkinDropDown" id="weaponSkinDropDown" className="form-select"
                                         onChange={fetchAndSetCurrentSelectedDropdownSkin}>
-                                    {arrayForDropdown.map(skinName => (<option key={skinName} value={skinName}/>))}
+                                    {arrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
@@ -270,6 +280,5 @@ const WeaponForm = () => {
         </div>
     );
 }
-
 
 export default WeaponForm

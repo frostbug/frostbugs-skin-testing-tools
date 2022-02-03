@@ -62,14 +62,18 @@ export interface paintableWeapon {
     weaponDisplayName: string;
 }
 
-export interface paintKitWeaponPairing {
-    weaponShortName: string;
+export interface paintKitItemPairing {
+    itemShortName: string;
     paintKitName: string;
 }
 
 export interface referencedLanguageString {
     referenceString: string;
     displayedString: string;
+}
+
+export interface icon {
+    icon_path: string;
 }
 
 export interface paintKit {
@@ -99,14 +103,23 @@ export interface paintKit {
     pattern_rotate_end?: string;
     wear_remap_min?: string;
     wear_remap_max?: string;
-    weaponShortName?: string;
-    weaponDisplayName?: string;
+    itemShortName?: string;
+    itemDisplayName?: string;
     weaponId?: string;
     skinDescription?: string;
     skinDisplayName?: string;
     fullItemDisplayName?: string;
     paintKitId?: string;
     dialog_config?: string;
+    vmt_path?: string;
 }
-
-
+//Gloves - possibility to be reused in generation of paintable weapons to replace hardcoded array
+export interface textFileItem {
+    name?: string;
+    prefab?: string;
+    model_player?: string;
+    item_name?: string;
+    item_description?: string;
+    itemId?: string;
+    itemDisplayName?: string;
+}
