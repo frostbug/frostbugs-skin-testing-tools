@@ -22,7 +22,7 @@ const WeaponForm = () => {
     const [inputNormalFile, setInputNormalFile] = useState<string>()
     const [fileManager, setFileManager] = useState<FileManager>()
 
-    function setCsgoDirAndSkinArray (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): FileManager | undefined {
+    function setCsgoDirAndSkinArray(csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): FileManager | undefined {
         if (!csgoExeUpdateEvent.target.files) return undefined;
         if (csgoExeUpdateEvent.target.files[0]) {
             const csgoExeFilePath = csgoExeUpdateEvent.target.files[0].path.replace(CSGO_EXECUTABLE_NAME, '');
@@ -59,20 +59,30 @@ const WeaponForm = () => {
         setInputNormalFile(normalFileUploadEvent.target.files[0].path);
     }
 
-    function populateWeaponSkinDropdown (generatedWeaponPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void {
+    function populateWeaponSkinDropdown(generatedWeaponPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void {
         if (generatedWeaponPaintKitArray.length !== 0) {
             let curatedWeaponDropDownArray = generatedWeaponPaintKitArray;
-            if(inputTextFile){
+            if (inputTextFile) {
                 curatedWeaponDropDownArray = curatedWeaponDropDownArray.filter((skinWeapon: paintKit) => skinWeapon.weaponId === inputTextFile?.dialog_config?.split(",")[0])
             }
-            const arrayForWeaponDropdown: Array<string> = curatedWeaponDropDownArray.map(paintKit => paintKit.fullItemDisplayName as string)
+            const arrayForWeaponDropdown: Array<string> = curatedWeaponDropDownArray.reduce<Array<string>>((prev, paintKit) => {
+                if (paintKit.fullItemDisplayName) {
+                    return [...prev, paintKit.fullItemDisplayName]
+                }
+                return prev
+            }, [])
             setWeaponArrayForDropdown(arrayForWeaponDropdown);
         }
     }
 
-    function populateGloveSkinDropdown (generatedGlovePaintKitArray: Array<paintKit>): void {
+    function populateGloveSkinDropdown(generatedGlovePaintKitArray: Array<paintKit>): void {
         if (generatedGlovePaintKitArray.length !== 0) {
-            const arrayForGloveDropdown: Array<string> = generatedGlovePaintKitArray.map(paintKit => paintKit.fullItemDisplayName as string)
+            const arrayForGloveDropdown: Array<string> = generatedGlovePaintKitArray.reduce<Array<string>>((prev, paintKit) => {
+                if (paintKit.fullItemDisplayName) {
+                    return [...prev, paintKit.fullItemDisplayName]
+                }
+                return prev
+            }, [])
             setGloveArrayForDropdown(arrayForGloveDropdown);
         }
     }
@@ -141,18 +151,17 @@ const WeaponForm = () => {
             // @ts-ignore
             document.getElementById('normalCheckBox').checked = false;
         }
-
     }
 
     function onCsgoDirUpdate(csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): void {
         if (!csgoExeUpdateEvent.target.files) return;
-        if (csgoExeUpdateEvent.target.files[0]){
+        if (csgoExeUpdateEvent.target.files[0]) {
             const newFileManager = setCsgoDirAndSkinArray(csgoExeUpdateEvent);
-            if(newFileManager){
+            if (newFileManager) {
                 setFileManager(newFileManager);
                 const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
                 const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
-                populateWeaponSkinDropdown(weaponPaintKitArray,undefined );
+                populateWeaponSkinDropdown(weaponPaintKitArray, undefined);
                 populateGloveSkinDropdown(glovePaintKitArray);
             }
         }
@@ -243,7 +252,8 @@ const WeaponForm = () => {
                                 <label id="normalWeaponLabel" className="form-check-label" htmlFor="normalCheckBox">Normal
                                     Map</label>
                             </div>
-                            <input className="form-control" type="file" id="normalFileInput" onChange={onNormalFileUpload}/>
+                            <input className="form-control" type="file" id="normalFileInput"
+                                   onChange={onNormalFileUpload}/>
                         </div>
                         <div id="inputDiv">
                             <label id="weaponLabel" htmlFor="weaponDropDownDiv" className="form-label mt-4">Skin To
@@ -251,7 +261,8 @@ const WeaponForm = () => {
                             <div className="dropdown" id="weaponDropDownDiv">
                                 <select name="weaponSkinDropDown" id="weaponSkinDropDown" className="form-select"
                                         onChange={fetchAndSetCurrentSelectedDropdownWeaponSkin}>
-                                    {weaponArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
+                                    {weaponArrayForDropdown.map(skinName => (
+                                        <option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
@@ -283,8 +294,9 @@ const WeaponForm = () => {
                                 Gloves</label>
                             <div className="dropdown" id="currentGlovesDropdown">
                                 <select name="currentGloves" id="currentGloves" className="form-select"
-                                    onChange={fetchAndSetCurrentSelectedDropdownGloveSkinToReplace}>
-                                    {gloveArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
+                                        onChange={fetchAndSetCurrentSelectedDropdownGloveSkinToReplace}>
+                                    {gloveArrayForDropdown.map(skinName => (
+                                        <option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
@@ -293,8 +305,9 @@ const WeaponForm = () => {
                                 Gloves</label>
                             <div className="dropdown" id="newGlovesDropdown">
                                 <select name="newGloves" id="newGloves" className="form-select"
-                                    onChange={fetchAndSetCurrentSelectedDropdownGloveSkinToReplaceWith}>
-                                    {gloveArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
+                                        onChange={fetchAndSetCurrentSelectedDropdownGloveSkinToReplaceWith}>
+                                    {gloveArrayForDropdown.map(skinName => (
+                                        <option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
