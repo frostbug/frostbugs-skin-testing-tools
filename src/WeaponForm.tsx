@@ -18,8 +18,8 @@ const WeaponForm = () => {
     const [currentlySelectedGloveToReplaceWith, setCurrentlySelectedGloveToReplaceWith] = useState<paintKit>()
     const [customSkinName, setCustomSkinName] = useState<string>('')
     const [customSkinDescription, setCustomSkinDescription] = useState<string>('')
-    const [inputDiffuseFile, setInputDiffuseFile] = useState<File>()
-    const [inputNormalFile, setInputNormalFile] = useState<File>()
+    const [inputDiffuseFile, setInputDiffuseFile] = useState<string>()
+    const [inputNormalFile, setInputNormalFile] = useState<string>()
     const [fileManager, setFileManager] = useState<FileManager>()
 
     function setCsgoDirAndSkinArray (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): FileManager | undefined {
@@ -51,17 +51,17 @@ const WeaponForm = () => {
 
     function onDiffuseFileUpload(diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void {
         if (!diffFileUploadEvent.target.files) return;
-        setInputDiffuseFile(diffFileUploadEvent.target.files[0]);
+        setInputDiffuseFile(diffFileUploadEvent.target.files[0].path);
     }
 
     function onNormalFileUpload(normalFileUploadEvent: ChangeEvent<HTMLInputElement>): void {
         if (!normalFileUploadEvent.target.files) return;
-        setInputNormalFile(normalFileUploadEvent.target.files[0]);
+        setInputNormalFile(normalFileUploadEvent.target.files[0].path);
     }
 
-    function populateWeaponSkinDropdown (generatedWeapomPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void {
-        if (generatedWeapomPaintKitArray.length !== 0) {
-            let curatedWeaponDropDownArray = generatedWeapomPaintKitArray;
+    function populateWeaponSkinDropdown (generatedWeaponPaintKitArray: Array<paintKit>, inputTextFile?: paintKit): void {
+        if (generatedWeaponPaintKitArray.length !== 0) {
+            let curatedWeaponDropDownArray = generatedWeaponPaintKitArray;
             if(inputTextFile){
                 curatedWeaponDropDownArray = curatedWeaponDropDownArray.filter((skinWeapon: paintKit) => skinWeapon.weaponId === inputTextFile?.dialog_config?.split(",")[0])
             }
@@ -111,7 +111,6 @@ const WeaponForm = () => {
     function checkIfVtfsExist(inputTextFile: paintKit): void {
         if (!inputTextFile) return;
         if (fs.existsSync(inputTextFile?.pattern)) {
-            setInputDiffuseFile
             // @ts-ignore
             document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + path.parse(inputTextFile?.pattern as string).base);
             // @ts-ignore
@@ -162,10 +161,10 @@ const WeaponForm = () => {
     function findAlternateMapsIfSelected(): void {
         if (!jsonFromTextFile) return;
         if (inputDiffuseFile) {
-            jsonFromTextFile.pattern = inputDiffuseFile.path;
+            jsonFromTextFile.pattern = inputDiffuseFile;
         }
         if (inputNormalFile) {
-            jsonFromTextFile.normal = inputNormalFile.path;
+            jsonFromTextFile.normal = inputNormalFile;
         }
     }
 
@@ -201,6 +200,9 @@ const WeaponForm = () => {
 
     const submitGloveForm = (submitFormEvent: FormEvent<HTMLFormElement>) => {
         submitFormEvent.preventDefault();
+        if (fileManager && currentlySelectedGloveToReplace && currentlySelectedGloveToReplaceWith) {
+            fileManager.replaceGloves(currentlySelectedGloveToReplace, currentlySelectedGloveToReplaceWith)
+        }
     }
 
     return (

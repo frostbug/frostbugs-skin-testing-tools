@@ -112,6 +112,7 @@ export interface paintKit {
     paintKitId?: string;
     dialog_config?: string;
     vmt_path?: string;
+    vmt_overrides?: any;
 }
 //Gloves - possibility to be reused in generation of paintable weapons to replace hardcoded array
 export interface textFileItem {
@@ -120,6 +121,14 @@ export interface textFileItem {
     model_player?: string;
     item_name?: string;
     item_description?: string;
+    model_world?: string;
+    model_dropped?: string;
+    icon_default_image?: string;
+    used_by_classes?: any;
+    attributes?: any;
+    paint_data?: any;
+    PaintableMaterial1?: any;
+
     itemId?: string;
     itemDisplayName?: string;
 }

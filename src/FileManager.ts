@@ -47,7 +47,7 @@ export class FileManager {
         return this.convertPaintKitsObjectToArray(paintKitsJsonObject)
     }
 
-    public convertPaintKitsObjectToArray(paintKitJsonObject: any): Array<paintKit> {
+    public convertPaintKitsObjectToArray(paintKitJsonObject: ArrayLike<unknown>): Array<paintKit> {
         const itemsArray: Array<paintKit> = [];
         Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => itemsArray.push(this.addPaintKitIdToPaintKitObject(<paintKit>paintKitValue, paintKitId)));
         return itemsArray;
@@ -172,7 +172,7 @@ export class FileManager {
         return completeSkinArray;
     }
 
-    public buildSkinWeaponArray(clientLootListsJsonObject: any): Array<paintKitItemPairing> {
+    public buildSkinWeaponArray(clientLootListsJsonObject: ArrayLike<unknown>): Array<paintKitItemPairing> {
         const paintKitWeaponPairingArray = []
 
         for (const value of Object.values(clientLootListsJsonObject)) {
@@ -202,7 +202,7 @@ export class FileManager {
         }
     }
 
-    public addCustomNameAndDescription(csgoInstallDir: string, customSkinName: string, customSkinDescription: string, skinToReplace: paintKit) {
+    public addCustomNameAndDescription(csgoInstallDir: string, customSkinName: string, customSkinDescription: string, skinToReplace: paintKit): void {
         let csgoEnglishFile = readFileSync(csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
         if (skinToReplace.skinDisplayName) {
             csgoEnglishFile = csgoEnglishFile.replace(skinToReplace.skinDisplayName, customSkinName);
@@ -219,8 +219,8 @@ export class FileManager {
         }
     }
 
-    public saveMapToFolder(mapToSavePath: string, paintKitFinishStyleId: string) {
-        const finishStyleName = FINISH_STYLE_FOLDERS.find(finishStyle => finishStyle.finishStyleId === paintKitFinishStyleId)?.finishStyleName
+    public saveMapToFolder(mapToSavePath: string, paintKitFinishStyleId: string): void {
+        const finishStyleName = FINISH_STYLE_FOLDERS.find(finishStyle => finishStyle.finishStyleId === paintKitFinishStyleId.toString())?.finishStyleName
         if (finishStyleName !== undefined) {
             const file_path = this.csgoInstallDir + MATERIALS_FOLDERS_PATH + finishStyleName;
             try {
@@ -239,7 +239,7 @@ export class FileManager {
         }
     }
 
-    public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit) {
+    public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit): void {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
 
         if (customSkinString.pattern) {
@@ -262,6 +262,56 @@ export class FileManager {
             console.error(e)
             alert('Failed to add custom skin to text file!');
         }
+    }
+
+
+    public replaceGloves(gloveToReplace: paintKit, gloveToReplaceWith: paintKit): void {
+        let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
+        let stringToReplace = this.getGlovePaintKitStringFromTextFile(gloveToReplace, itemsTextFile)
+        let stringToReplaceWith = this.getGlovePaintKitStringFromTextFile(gloveToReplaceWith, itemsTextFile)
+
+        if (stringToReplace && stringToReplaceWith) {
+            itemsTextFile = itemsTextFile.replace(stringToReplace, stringToReplaceWith)
+        }
+
+        if (gloveToReplace.itemShortName && gloveToReplaceWith.itemShortName && gloveToReplace.itemShortName !== gloveToReplaceWith.itemShortName) {
+            let gloveItemStringToReplace = this.getGloveItemFromTextFile(gloveToReplace.itemShortName, itemsTextFile);
+            let gloveItemStringToReplaceWith = this.getGloveItemFromTextFile(gloveToReplaceWith.itemShortName, itemsTextFile);
+            if (gloveItemStringToReplace && gloveItemStringToReplaceWith) {
+                itemsTextFile = itemsTextFile.replace(gloveItemStringToReplace, gloveItemStringToReplaceWith)
+            }
+        }
+
+        try {
+            writeFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
+            alert('Successfully swapped glove textures!');
+        } catch (e) {
+            console.error(e)
+            alert('Failed to swap glove textures!');
+        }
+    }
+
+    private getGlovePaintKitStringFromTextFile(glovePaintKit: paintKit, itemsText: string) {
+        let selectedSubstring = '';
+        if (glovePaintKit.description_tag !== undefined) {
+            selectedSubstring = itemsText.split(glovePaintKit.description_tag)[1];
+            if (glovePaintKit.vmt_overrides) {
+                selectedSubstring = selectedSubstring.split("}\n" + "      }")[0] + "}\n";
+            } else {
+                selectedSubstring = selectedSubstring.split("}")[0];
+            }
+        }
+        return selectedSubstring;
+    }
+
+    private getGloveItemFromTextFile(gloveItemShortName: string, itemsText: string) {
+        let selectedSubstring = '';
+        if (gloveItemShortName !== undefined) {
+            selectedSubstring = itemsText.split("\"name\"\t\t\"" + gloveItemShortName + "\"")[1];
+            selectedSubstring = selectedSubstring.split("\"MirrorPattern\"")[0]
+        }
+        console.log(selectedSubstring)
+        return selectedSubstring;
     }
 
     public getItemsArray(itemsTextFile: string): Array<textFileItem> {
