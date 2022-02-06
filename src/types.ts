@@ -3,7 +3,7 @@ export const ITEMS_GAME_FILE_PATH: string = "\\csgo\\scripts\\items\\items_game.
 export const MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\paints\\";
 export const CSGO_EXECUTABLE_NAME: string = "\\csgo.exe";
 
-export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = Array(
+export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = [
     {weaponShortName: "ak47", weaponId: "0", weaponDisplayName: "AK-47"},
     {weaponShortName: "aug", weaponId: "1", weaponDisplayName: "AUG"},
     {weaponShortName: "awp", weaponId: "2", weaponDisplayName: "AWP"},
@@ -38,7 +38,7 @@ export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = Array(
     {weaponShortName: "cz75a", weaponId: "31", weaponDisplayName: "CZ75-Auto"},
     {weaponShortName: "revolver", weaponId: "32", weaponDisplayName: "R8 Revolver"},
     {weaponShortName: "mp5sd", weaponId: "33", weaponDisplayName: "MP5-SD"}
-);
+];
 
 
 export const FINISH_STYLE_FOLDERS: Array<finishStyle> = Array(

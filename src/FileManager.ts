@@ -9,7 +9,6 @@ import {
 } from "./types";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
-import * as util from "util";
 
 export class FileManager {
 
@@ -21,7 +20,6 @@ export class FileManager {
 
     constructor(csgoInstallDir: string) {
         this.csgoInstallDir = csgoInstallDir;
-        console.log(csgoInstallDir)
         if (csgoInstallDir.includes("Counter-Strike Global Offensive")) {
             try {
                 this.itemsTextFile = readFileSync(csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
@@ -35,41 +33,41 @@ export class FileManager {
                 alert("Failed to read csgo_english.txt file!")
                 console.error(e)
             }
-            this.getObjectsFromText()
+            this.buildCompletePaintKitArrays()
         } else {
             alert("Selected file is not in Counter-Strike Global Offensive folder!")
         }
     }
 
-    public getItemsTextPaintKits(itemsTextFile: string): Array<paintKit> {
+    private getItemsTextPaintKits(itemsTextFile: string): Array<paintKit> {
         const itemsTextObject = VDF.parse(itemsTextFile);
         const paintKitsJsonObject = itemsTextObject["items_game"]["paint_kits"];
         return this.convertPaintKitsObjectToArray(paintKitsJsonObject)
     }
 
-    public convertPaintKitsObjectToArray(paintKitJsonObject: ArrayLike<unknown>): Array<paintKit> {
+    private convertPaintKitsObjectToArray(paintKitJsonObject: ArrayLike<unknown>): Array<paintKit> {
         const itemsArray: Array<paintKit> = [];
-        Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => itemsArray.push(this.addPaintKitIdToPaintKitObject(<paintKit>paintKitValue, paintKitId)));
+        Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => itemsArray.push(FileManager.addPaintKitIdToPaintKitObject(<paintKit>paintKitValue, paintKitId)));
         return itemsArray;
     }
 
-    public addPaintKitIdToPaintKitObject(paintKitObject: paintKit, paintKitId: string): paintKit {
+    private static addPaintKitIdToPaintKitObject(paintKitObject: paintKit, paintKitId: string): paintKit {
         paintKitObject.paintKitId = paintKitId;
         return paintKitObject;
     }
 
-    public addItemIdToItem(textFileObject: textFileItem, textFileId: string): textFileItem {
+    private static addItemIdToItem(textFileObject: textFileItem, textFileId: string): textFileItem {
         textFileObject.itemId = textFileId;
         return textFileObject;
     }
 
-    public getPaintKitWeaponPairingArray(itemsTextFile: string): Array<paintKitItemPairing> {
+    private static getPaintKitWeaponPairingArray(itemsTextFile: string): Array<paintKitItemPairing> {
         const itemsTextObject = VDF.parse(itemsTextFile);
         const clientLootListsJsonObject = itemsTextObject["items_game"]["client_loot_lists"];
-        return this.buildSkinWeaponArray(clientLootListsJsonObject);
+        return FileManager.buildSkinWeaponArray(clientLootListsJsonObject);
     }
 
-    public getPaintKitNamesObject(csgoEnglishFile: string): Array<referencedLanguageString> {
+    private getPaintKitNamesObject(csgoEnglishFile: string): Array<referencedLanguageString> {
         const csgoEnglishObject = VDF.parse(csgoEnglishFile)["lang"]["Tokens"];
         return Object.keys(csgoEnglishObject).map(stringKey => {
             const stringPair: referencedLanguageString = {
@@ -81,7 +79,7 @@ export class FileManager {
     }
 
     private getGlovesFromItemArray(unfilteredItemsArray: Array<textFileItem>, paintKitReferencesArray: Array<referencedLanguageString>): Array<textFileItem> {
-        const filteredGloveArray = unfilteredItemsArray.filter(item => this.checkIfGlove(item))
+        const filteredGloveArray = unfilteredItemsArray.filter(item => FileManager.checkIfGlove(item))
         filteredGloveArray.forEach(gloveItem => {
             const gloveDisplayName = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === gloveItem.item_name?.replace("#", ""))?.displayedString
             if (gloveDisplayName) {
@@ -91,15 +89,15 @@ export class FileManager {
         return filteredGloveArray;
     }
 
-    public getObjectsFromText(): void {
+    private buildCompletePaintKitArrays(): void {
 
         const paintKitArray = this.getItemsTextPaintKits(this.itemsTextFile)
-        const skinNamesWithWeaponsArray = this.getPaintKitWeaponPairingArray(this.itemsTextFile);
+        const skinNamesWithWeaponsArray = FileManager.getPaintKitWeaponPairingArray(this.itemsTextFile);
         const paintKitReferencesArray = this.getPaintKitNamesObject(this.csgoEnglishFile);
 
         const itemsObjectsArray = this.getItemsArray(this.itemsTextFile);
         const glovesItemArray = this.getGlovesFromItemArray(itemsObjectsArray, paintKitReferencesArray)
-        const skinNamesWithGlovesArray = this.getPaintKitGlovesPairingArray(this.itemsTextFile)
+        const skinNamesWithGlovesArray = FileManager.getPaintKitGlovesPairingArray(this.itemsTextFile)
         const glovesPaintKitsOnlyArray = this.getGlovesOnlyPaintKits(paintKitArray)
 
         this.completePaintKitWeaponArray = this.createCompleteSkinArray(paintKitArray, skinNamesWithWeaponsArray, paintKitReferencesArray);
@@ -107,14 +105,14 @@ export class FileManager {
     }
 
     private getGlovesOnlyPaintKits(paintKitArray: Array<paintKit>): Array<paintKit> {
-        return paintKitArray.filter(paintKit => this.isGlovePaintKit(paintKit))
+        return paintKitArray.filter(paintKit => FileManager.isGlovePaintKit(paintKit))
     }
 
-    private isGlovePaintKit(paintKit: paintKit): boolean {
-        return !!(paintKit.vmt_path && paintKit.vmt_path.includes('paints_gloves'));
+    private static isGlovePaintKit(paintKit: paintKit): boolean {
+        return !!(paintKit?.vmt_path && paintKit?.vmt_path.includes('paints_gloves'));
     }
 
-    private getPaintKitGlovesPairingArray(itemsTextFile: string): Array<string> {
+    private static getPaintKitGlovesPairingArray(itemsTextFile: string): Array<string> {
         const paintKitGlovesPairingArray: Array<string> = []
         const itemsTextObject = VDF.parse(itemsTextFile);
         const iconsListObject: Array<icon> = itemsTextObject["items_game"]["alternate_icons2"]["weapon_icons"];
@@ -137,15 +135,15 @@ export class FileManager {
         return this.completePaintKitGloveArray;
     }
 
-    public checkIfGlove(itemsObject: textFileItem): boolean {
+    private static checkIfGlove(itemsObject: textFileItem): boolean {
         return !!(itemsObject.prefab && itemsObject.prefab === "hands_paintable");
 
     }
 
-    public createCompleteSkinArray(paintKitArray: Array<paintKit>, paintKitWeaponPairingArray: Array<paintKitItemPairing>, paintKitReferencesArray: Array<referencedLanguageString>): Array<paintKit> {
+    private createCompleteSkinArray(paintKitArray: Array<paintKit>, paintKitWeaponPairingArray: Array<paintKitItemPairing>, paintKitReferencesArray: Array<referencedLanguageString>): Array<paintKit> {
         const completeSkinArray: Array<paintKit> = [];
         paintKitWeaponPairingArray.forEach(skinWeaponPairing => {
-            let combinedPaintKit: paintKit | undefined = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
+            let combinedPaintKit = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
             if (combinedPaintKit !== undefined) {
                 const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.itemShortName)
                 const paintKitDescriptionReferenceObject = paintKitReferencesArray.find(referenceDisplayStringPairing => referenceDisplayStringPairing.referenceString === combinedPaintKit?.description_string?.replace("#", ""))
@@ -172,13 +170,13 @@ export class FileManager {
         return completeSkinArray;
     }
 
-    public buildSkinWeaponArray(clientLootListsJsonObject: ArrayLike<unknown>): Array<paintKitItemPairing> {
+    private static buildSkinWeaponArray(clientLootListsJsonObject: ArrayLike<unknown>): Array<paintKitItemPairing> {
         const paintKitWeaponPairingArray = []
 
         for (const value of Object.values(clientLootListsJsonObject)) {
             // @ts-ignore - clientLootListObject is raw VDF and it or it's contents cannot be typed yet
             for (const key of Object.keys(value)) {
-                const processedSkinWeaponJsonObject = this.createJsonObjectFromSkinWeapon(key);
+                const processedSkinWeaponJsonObject = FileManager.createJsonObjectFromSkinWeapon(key);
 
                 if (processedSkinWeaponJsonObject) {
                     paintKitWeaponPairingArray.push(processedSkinWeaponJsonObject)
@@ -188,7 +186,7 @@ export class FileManager {
         return paintKitWeaponPairingArray;
     }
 
-    public createJsonObjectFromSkinWeapon(skinWeaponPairingString: string): paintKitItemPairing | undefined {
+    private static createJsonObjectFromSkinWeapon(skinWeaponPairingString: string): paintKitItemPairing | undefined {
         if (skinWeaponPairingString.includes('weapon_')) {
             skinWeaponPairingString = skinWeaponPairingString.replace('\[', '');
             skinWeaponPairingString = skinWeaponPairingString.replace('weapon_', '');
@@ -267,21 +265,20 @@ export class FileManager {
 
     public replaceGloves(gloveToReplace: paintKit, gloveToReplaceWith: paintKit): void {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
-        let stringToReplace = this.getGlovePaintKitStringFromTextFile(gloveToReplace, itemsTextFile)
-        let stringToReplaceWith = this.getGlovePaintKitStringFromTextFile(gloveToReplaceWith, itemsTextFile)
+        let stringToReplace = FileManager.getGlovePaintKitStringFromTextFile(gloveToReplace, itemsTextFile)
+        let stringToReplaceWith = FileManager.getGlovePaintKitStringFromTextFile(gloveToReplaceWith, itemsTextFile)
 
         if (stringToReplace && stringToReplaceWith) {
             itemsTextFile = itemsTextFile.replace(stringToReplace, stringToReplaceWith)
         }
 
         if (gloveToReplace.itemShortName && gloveToReplaceWith.itemShortName && gloveToReplace.itemShortName !== gloveToReplaceWith.itemShortName) {
-            let gloveItemStringToReplace = this.getGloveItemFromTextFile(gloveToReplace.itemShortName, itemsTextFile);
-            let gloveItemStringToReplaceWith = this.getGloveItemFromTextFile(gloveToReplaceWith.itemShortName, itemsTextFile);
+            let gloveItemStringToReplace = FileManager.getGloveItemFromTextFile(gloveToReplace.itemShortName, itemsTextFile);
+            let gloveItemStringToReplaceWith = FileManager.getGloveItemFromTextFile(gloveToReplaceWith.itemShortName, itemsTextFile);
             if (gloveItemStringToReplace && gloveItemStringToReplaceWith) {
                 itemsTextFile = itemsTextFile.replace(gloveItemStringToReplace, gloveItemStringToReplaceWith)
             }
         }
-
         try {
             writeFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
             alert('Successfully swapped glove textures!');
@@ -291,7 +288,7 @@ export class FileManager {
         }
     }
 
-    private getGlovePaintKitStringFromTextFile(glovePaintKit: paintKit, itemsText: string) {
+    private static getGlovePaintKitStringFromTextFile(glovePaintKit: paintKit, itemsText: string): string {
         let selectedSubstring = '';
         if (glovePaintKit.description_tag !== undefined) {
             selectedSubstring = itemsText.split(glovePaintKit.description_tag)[1];
@@ -304,21 +301,20 @@ export class FileManager {
         return selectedSubstring;
     }
 
-    private getGloveItemFromTextFile(gloveItemShortName: string, itemsText: string) {
+    private static getGloveItemFromTextFile(gloveItemShortName: string, itemsText: string): string {
         let selectedSubstring = '';
         if (gloveItemShortName !== undefined) {
             selectedSubstring = itemsText.split("\"name\"\t\t\"" + gloveItemShortName + "\"")[1];
             selectedSubstring = selectedSubstring.split("\"MirrorPattern\"")[0]
         }
-        console.log(selectedSubstring)
         return selectedSubstring;
     }
 
-    public getItemsArray(itemsTextFile: string): Array<textFileItem> {
+    private getItemsArray(itemsTextFile: string): Array<textFileItem> {
         const itemsTextObject = VDF.parse(itemsTextFile);
         const itemsListJsonObject = itemsTextObject["items_game"]["items"];
         const itemsArray: Array<textFileItem> = [];
-        Object.entries(itemsListJsonObject).map(([itemId, ItemAttributes]) => itemsArray.push(this.addItemIdToItem(<paintKit>ItemAttributes, itemId)));
+        Object.entries(itemsListJsonObject).map(([itemId, ItemAttributes]) => itemsArray.push(FileManager.addItemIdToItem(<paintKit>ItemAttributes, itemId)));
         return itemsArray;
     }
 

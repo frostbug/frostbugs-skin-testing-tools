@@ -35,8 +35,7 @@ const WeaponForm = () => {
 
     function sortAndSetWeaponPaintKitArray(newFileManager: FileManager): Array<paintKit> {
         const weaponPaintKitArray = newFileManager.getCompletePaintKitWeaponArray()
-        // @ts-ignore
-        weaponPaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
+        weaponPaintKitArray.filter(paintKit => paintKit.fullItemDisplayName !== undefined).sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
         setCompleteWeaponSkinArray(weaponPaintKitArray)
         return weaponPaintKitArray;
     }
