@@ -8,6 +8,10 @@ const fs = require('fs');
 
 const WeaponForm = () => {
     const [csgoInstallDir, setCsgoInstallDir] = useState<string>('')
+    const [diffuseLabelText, setDiffuseLabelText] = useState<string>('Diffuse Map')
+    const [diffuseLabelStyle, setDiffuseLabelStyle] = useState({color: '#888888'})
+    const [normalLabelStyle, setNormalLabelStyle] = useState({color: '#888888'})
+    const [normalLabelText, setNormalLabelText] = useState<string>('Normal Map')
     const [completeWeaponSkinArray, setCompleteWeaponSkinArray] = useState<Array<paintKit>>([])
     const [completeGloveSkinArray, setCompleteGloveSkinArray] = useState<Array<paintKit>>([])
     const [weaponArrayForDropdown, setWeaponArrayForDropdown] = useState<Array<string>>(["--Waiting for csgo.exe location--"])
@@ -35,15 +39,12 @@ const WeaponForm = () => {
 
     function sortAndSetWeaponPaintKitArray(newFileManager: FileManager): Array<paintKit> {
         const weaponPaintKitArray = newFileManager.getCompletePaintKitWeaponArray()
-        weaponPaintKitArray.filter(paintKit => paintKit.fullItemDisplayName !== undefined).sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
         setCompleteWeaponSkinArray(weaponPaintKitArray)
         return weaponPaintKitArray;
     }
 
     function sortAndSetGlovePaintKitArray(newFileManager: FileManager): Array<paintKit> {
         const glovePaintKitArray = newFileManager.getCompletePaintKitGloveArray()
-        // @ts-ignore
-        glovePaintKitArray.sort((a, b) => a.fullItemDisplayName > b.fullItemDisplayName ? 1 : -1);
         setCompleteGloveSkinArray(glovePaintKitArray)
         return glovePaintKitArray;
     }
@@ -70,6 +71,8 @@ const WeaponForm = () => {
                 }
                 return prev
             }, [])
+            arrayForWeaponDropdown.sort((displayNameA, displayNameB) => displayNameA > displayNameB ? 1 : -1);
+            arrayForWeaponDropdown.unshift('--Please select a skin to replace--')
             setWeaponArrayForDropdown(arrayForWeaponDropdown);
         }
     }
@@ -82,6 +85,8 @@ const WeaponForm = () => {
                 }
                 return prev
             }, [])
+            arrayForGloveDropdown.sort((gloveA, gloveB) => gloveA > gloveB ? 1 : -1);
+            arrayForGloveDropdown.unshift('--Please select a glove skin--')
             setGloveArrayForDropdown(arrayForGloveDropdown);
         }
     }
@@ -117,34 +122,26 @@ const WeaponForm = () => {
         textFileReader.readAsText(textFileInput)
     }
 
+
+    //TODO - Find cleaner solution for letting the user know that files were found from the text file
     function checkIfVtfsExist(inputTextFile: paintKit): void {
         if (!inputTextFile) return;
         if (fs.existsSync(inputTextFile?.pattern)) {
-            // @ts-ignore
-            document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map - using ' + path.parse(inputTextFile?.pattern as string).base);
-            // @ts-ignore
-            document.getElementById('diffuseWeaponLabel').style.color = "#009900";
+            setDiffuseLabelText('Diffuse Map - using ' + path.parse(inputTextFile?.pattern as string).base);
+            setDiffuseLabelStyle({color: '#009900'});
         } else {
-            // @ts-ignore
-            document.getElementById('diffuseWeaponLabel').textContent = ('Diffuse Map')
-            // @ts-ignore
-            document.getElementById('diffuseWeaponLabel').style.color = "rgb(136,136,136)";
+            setDiffuseLabelText('Diffuse Map');
+            setDiffuseLabelStyle({color: '#888888'});
         }
-
         if (inputTextFile.use_normal == '1') {
             // @ts-ignore
             document.getElementById('normalCheckBox').checked = true;
-
             if (fs.existsSync(inputTextFile.normal)) {
-                // @ts-ignore
-                document.getElementById('normalWeaponLabel').textContent = ('Normal Map - using ' + path.parse(inputTextFile?.normal as string).base);
-                // @ts-ignore
-                document.getElementById('normalWeaponLabel').style.color = "#009900";
+                setNormalLabelText('Normal Map - using ' + path.parse(inputTextFile?.normal as string).base);
+                setNormalLabelStyle({color: '#009900'});
             } else {
-                // @ts-ignore
-                document.getElementById('normalWeaponLabel').textContent = ('Normal Map')
-                // @ts-ignore
-                document.getElementById('normalWeaponLabel').style.color = "rgb(136,136,136)";
+                setNormalLabelText('Normal Map');
+                setNormalLabelStyle({color: '#888888'}) ;
             }
         } else {
             // @ts-ignore
@@ -179,9 +176,17 @@ const WeaponForm = () => {
     function saveAllVtfMapsToFolders(): void {
         if (!fileManager) return;
         if (jsonFromTextFile && jsonFromTextFile.pattern && jsonFromTextFile.style)
-            fileManager.saveMapToFolder(jsonFromTextFile.pattern, jsonFromTextFile.style)
+            if(fileManager.saveMapToFolder(jsonFromTextFile.pattern, jsonFromTextFile.style)){
+                alert("Successfully copied pattern vtf file to paints folder!");
+            } else {
+                alert('Failed to copy pattern vtf to csgo folder!');
+            }
         if (jsonFromTextFile && jsonFromTextFile.normal && jsonFromTextFile.style) {
-            fileManager.saveMapToFolder(jsonFromTextFile.normal, jsonFromTextFile.style)
+            if(fileManager.saveMapToFolder(jsonFromTextFile.normal, jsonFromTextFile.style)){
+                alert("Successfully copied normal vtf file to paints folder!");
+            } else {
+                alert('Failed to copy normal vtf to csgo folder!');
+            }
         }
     }
 
@@ -193,9 +198,17 @@ const WeaponForm = () => {
         saveAllVtfMapsToFolders()
         if (jsonFromTextFile) {
             if (selectedWeaponToReplace) {
-                fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile);
+                if(fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile)){
+                    alert('Successfully added custom skin to text file!');
+                } else {
+                    alert('Failed to add custom skin to text file!');
+                }
                 if (customSkinName !== '' || customSkinDescription !== "") {
-                    fileManager.addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, selectedWeaponToReplace)
+                    if(fileManager.addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, selectedWeaponToReplace)){
+                        alert('Successfully added custom name and/or description to text file!');
+                    } else {
+                        alert('Failed to save custom skin name/description to text file!');
+                    }
                 }
             } else {
                 alert('Please select a skin to replace with your custom skin!')
@@ -209,10 +222,15 @@ const WeaponForm = () => {
     const submitGloveForm = (submitFormEvent: FormEvent<HTMLFormElement>) => {
         submitFormEvent.preventDefault();
         if (fileManager && currentlySelectedGloveToReplace && currentlySelectedGloveToReplaceWith) {
-            fileManager.replaceGloves(currentlySelectedGloveToReplace, currentlySelectedGloveToReplaceWith)
+            if(fileManager.replaceGloves(currentlySelectedGloveToReplace, currentlySelectedGloveToReplaceWith)) {
+                alert('Successfully swapped glove textures!');
+            } else {
+                alert('Failed to swap glove textures!');
+            }
         }
     }
 
+    //TODO - Break the UI code into multiple components
     return (
         <div>
             <div id="inputDiv">
@@ -234,22 +252,17 @@ const WeaponForm = () => {
                 <div className="tab-pane active" id="weapon">
                     <form onSubmit={submitWeaponForm}>
                         <div id="inputDiv">
-                            <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text
-                                File</label>
-                            <input className="form-control" type="file" id="textFileInput" accept=".txt"
-                                   onChange={readTextFileOnInput}/>
+                            <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text File</label>
+                            <input className="form-control" type="file" id="textFileInput" accept=".txt" onChange={readTextFileOnInput}/>
                         </div>
                         <div id="inputDiv">
-                            <label id="diffuseWeaponLabel" htmlFor="diffuseFileInput" className="form-label mt-4">Diffuse
-                                Map</label>
-                            <input className="form-control" type="file" id="diffuseFileInput"
-                                   onChange={onDiffuseFileUpload}/>
+                            <label id="diffuseWeaponLabel" htmlFor="diffuseFileInput" className="form-label mt-4" style={diffuseLabelStyle}>{diffuseLabelText}</label>
+                            <input className="form-control" type="file" id="diffuseFileInput" onChange={onDiffuseFileUpload}/>
                         </div>
                         <div id="inputDiv">
                             <div className="form-check form-switch">
                                 <input className="form-check-input" type="checkbox" id="normalCheckBox"/>
-                                <label id="normalWeaponLabel" className="form-check-label" htmlFor="normalCheckBox">Normal
-                                    Map</label>
+                                <label id="normalWeaponLabel" className="form-check-label" htmlFor="normalCheckBox" style={normalLabelStyle}>{normalLabelText}</label>
                             </div>
                             <input className="form-control" type="file" id="normalFileInput"
                                    onChange={onNormalFileUpload}/>
