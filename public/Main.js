@@ -19,7 +19,7 @@ function createWindow () {
     // mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
 
     // uncomment for developing, comment out when exporting
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
     mainWindow.loadURL('http://localhost:3000/')
 }
     app.on('ready', createWindow)

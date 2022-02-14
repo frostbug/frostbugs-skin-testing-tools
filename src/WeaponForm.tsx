@@ -154,13 +154,17 @@ const WeaponForm = () => {
         if (csgoExeUpdateEvent.target.files[0]) {
             const newFileManager = setCsgoDirAndSkinArray(csgoExeUpdateEvent);
             if (newFileManager) {
-                setFileManager(newFileManager);
-                const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
-                const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
-                populateWeaponSkinDropdown(weaponPaintKitArray, undefined);
-                populateGloveSkinDropdown(glovePaintKitArray);
+                initializeDropDownArrays(newFileManager)
             }
         }
+    }
+
+    const initializeDropDownArrays = (newFileManager:FileManager): void => {
+        setFileManager(newFileManager);
+        const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
+        const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
+        populateWeaponSkinDropdown(weaponPaintKitArray, undefined);
+        populateGloveSkinDropdown(glovePaintKitArray);
     }
 
     const findAlternateMapsIfSelected = (): void => {
@@ -200,6 +204,7 @@ const WeaponForm = () => {
             if (selectedWeaponToReplace) {
                 if(fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile)){
                     alert('Successfully added custom skin to text file!');
+                    initializeDropDownArrays(new FileManager(csgoInstallDir))
                 } else {
                     alert('Failed to add custom skin to text file!');
                 }
@@ -216,7 +221,8 @@ const WeaponForm = () => {
         } else {
             alert("Please upload text file for your custom skin!")
         }
-
+        fileManager.initializeFileManager()
+        initializeDropDownArrays(fileManager);
     }
 
     const submitGloveForm = (submitFormEvent: FormEvent<HTMLFormElement>) => {
