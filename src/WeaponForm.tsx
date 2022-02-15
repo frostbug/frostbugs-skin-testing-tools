@@ -3,6 +3,7 @@ import {ChangeEvent, FormEvent, useState} from "react";
 import {FileManager} from "./FileManager";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
+import * as util from "util";
 
 const fs = require('fs');
 
@@ -24,7 +25,10 @@ const WeaponForm = () => {
     const [customSkinDescription, setCustomSkinDescription] = useState<string>('')
     const [inputDiffuseFile, setInputDiffuseFile] = useState<string>()
     const [inputNormalFile, setInputNormalFile] = useState<string>()
+    const [inputTextFile, setInputTextFile] = useState<paintKit>()
     const [fileManager, setFileManager] = useState<FileManager>()
+
+    const [consoleLogText, setConsoleLogText] = useState<string>('')
 
     const setCsgoDirAndSkinArray = (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): FileManager | undefined => {
         if (!csgoExeUpdateEvent.target.files) return undefined;
@@ -50,16 +54,21 @@ const WeaponForm = () => {
     }
 
     const onDiffuseFileUpload = (diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void => {
-        if (!diffFileUploadEvent.target.files) return;
-        setInputDiffuseFile(diffFileUploadEvent.target.files[0].path);
+        if (!diffFileUploadEvent.target.files || !diffFileUploadEvent.target.files.length) {
+            setInputDiffuseFile(undefined);
+        } else {
+            setInputDiffuseFile(diffFileUploadEvent.target.files[0].path);
+        }
     }
 
     const onNormalFileUpload = (normalFileUploadEvent: ChangeEvent<HTMLInputElement>): void => {
-        if (!normalFileUploadEvent.target.files) return;
+        if (!normalFileUploadEvent.target.files || !normalFileUploadEvent.target.files.length) return;
         setInputNormalFile(normalFileUploadEvent.target.files[0].path);
     }
 
     const populateWeaponSkinDropdown = (generatedWeaponPaintKitArray: paintKit[], inputTextFile?: paintKit): void => {
+        console.log('PaintKitArray length = ' + generatedWeaponPaintKitArray.length)
+        console.log('Input text file = ' + util.inspect(inputTextFile))
         if (generatedWeaponPaintKitArray.length !== 0) {
             let curatedWeaponDropDownArray = generatedWeaponPaintKitArray;
             if (inputTextFile) {
@@ -74,6 +83,8 @@ const WeaponForm = () => {
             arrayForWeaponDropdown.sort((displayNameA, displayNameB) => displayNameA > displayNameB ? 1 : -1);
             arrayForWeaponDropdown.unshift('--Please select a skin to replace--')
             setWeaponArrayForDropdown(arrayForWeaponDropdown);
+            console.log('Weapon array for dropdown length = ' + weaponArrayForDropdown.length)
+            console.log(util.inspect(weaponArrayForDropdown))
         }
     }
 
@@ -104,24 +115,25 @@ const WeaponForm = () => {
     }
 
     const readTextFileOnInput = (textFileUpdatedEvent: ChangeEvent<HTMLInputElement>): void => {
-        if (!textFileUpdatedEvent.target.files) return;
+        if (!textFileUpdatedEvent.target.files || !textFileUpdatedEvent.target.files.length) return;
         const textFileInput = textFileUpdatedEvent.target.files[0];
         const textFileReader = new FileReader();
         textFileReader.onload = function () {
             if (textFileReader.result) {
-                const inputTextFile: paintKit = VDF.parse(textFileReader.result.toString())["workshop preview"]
-                if (inputTextFile && inputTextFile.dialog_config) {
-                    populateWeaponSkinDropdown(completeWeaponSkinArray, inputTextFile);
-                    checkIfVtfsExist(inputTextFile);
-                    setJsonFromTextFile(inputTextFile);
+                const newTextFile: paintKit = VDF.parse(textFileReader.result.toString())["workshop preview"]
+                if (newTextFile && newTextFile.dialog_config) {
+                    populateWeaponSkinDropdown(completeWeaponSkinArray, newTextFile);
+                    checkIfVtfsExist(newTextFile);
+                    setInputTextFile(newTextFile)
+                    setJsonFromTextFile(newTextFile);
+                    setConsoleLogText('Text file read successfully!');
                 } else {
-                    alert('Cannot find skin parameters in text file, please make sure it is in the correct format or generate a new one from the workbench.');
+                    setConsoleLogText( 'Cannot find skin parameters in text file, please make sure it is in the correct format or generate a new one from the workbench.');
                 }
             }
         }
         textFileReader.readAsText(textFileInput)
     }
-
 
     //TODO - Find cleaner solution for letting the user know that files were found from the text file
     const checkIfVtfsExist = (inputTextFile: paintKit): void => {
@@ -150,7 +162,7 @@ const WeaponForm = () => {
     }
 
     const onCsgoDirUpdate = (csgoExeUpdateEvent: ChangeEvent<HTMLInputElement>): void => {
-        if (!csgoExeUpdateEvent.target.files) return;
+        if (!csgoExeUpdateEvent.target.files || !csgoExeUpdateEvent.target.files.length) return;
         if (csgoExeUpdateEvent.target.files[0]) {
             const newFileManager = setCsgoDirAndSkinArray(csgoExeUpdateEvent);
             if (newFileManager) {
@@ -163,7 +175,8 @@ const WeaponForm = () => {
         setFileManager(newFileManager);
         const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
         const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
-        populateWeaponSkinDropdown(weaponPaintKitArray, undefined);
+        const temp = inputTextFile;
+        populateWeaponSkinDropdown(weaponPaintKitArray, temp);
         populateGloveSkinDropdown(glovePaintKitArray);
     }
 
@@ -177,21 +190,23 @@ const WeaponForm = () => {
         }
     }
 
-    const saveAllVtfMapsToFolders = (): void => {
-        if (!fileManager) return;
+    const saveAllVtfMapsToFolders = (): string => {
+        if (!fileManager) return 'File Manager not initialized';
+        let consoleMessage = ''
         if (jsonFromTextFile && jsonFromTextFile.pattern && jsonFromTextFile.style)
             if(fileManager.saveMapToFolder(jsonFromTextFile.pattern, jsonFromTextFile.style)){
-                alert("Successfully copied pattern vtf file to paints folder!");
+                consoleMessage = "Successfully copied pattern vtf file to paints folder!";
             } else {
-                alert('Failed to copy pattern vtf to csgo folder!');
+                consoleMessage = 'Failed to copy pattern vtf to csgo folder!';
             }
         if (jsonFromTextFile && jsonFromTextFile.normal && jsonFromTextFile.style) {
             if(fileManager.saveMapToFolder(jsonFromTextFile.normal, jsonFromTextFile.style)){
-                alert("Successfully copied normal vtf file to paints folder!");
+                consoleMessage = consoleMessage + "\nSuccessfully copied normal vtf file to paints folder!";
             } else {
-                alert('Failed to copy normal vtf to csgo folder!');
+                consoleMessage = consoleMessage + '\nFailed to copy normal vtf to csgo folder!';
             }
         }
+        return consoleMessage
     }
 
     const submitWeaponForm = (submitFormEvent: FormEvent<HTMLFormElement>): void => {
@@ -199,28 +214,29 @@ const WeaponForm = () => {
         if (!fileManager) return;
         const selectedWeaponToReplace = currentlySelectedWeaponSkin;
         findAlternateMapsIfSelected()
-        saveAllVtfMapsToFolders()
+        let consoleMessage = saveAllVtfMapsToFolders()
         if (jsonFromTextFile) {
             if (selectedWeaponToReplace) {
                 if(fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile)){
-                    alert('Successfully added custom skin to text file!');
+                    consoleMessage = consoleMessage + '\nSuccessfully added custom skin to text file!';
                     initializeDropDownArrays(new FileManager(csgoInstallDir))
                 } else {
-                    alert('Failed to add custom skin to text file!');
+                    consoleMessage = consoleMessage + '\nFailed to add custom skin to text file!';
                 }
                 if (customSkinName !== '' || customSkinDescription !== "") {
                     if(fileManager.addCustomNameAndDescription(csgoInstallDir, customSkinName, customSkinDescription, selectedWeaponToReplace)){
-                        alert('Successfully added custom name and/or description to text file!');
+                        consoleMessage = consoleMessage + '\nSuccessfully added custom name and/or description to text file!';
                     } else {
-                        alert('Failed to save custom skin name/description to text file!');
+                        consoleMessage = consoleMessage + '\nFailed to save custom skin name/description to text file!';
                     }
                 }
             } else {
-                alert('Please select a skin to replace with your custom skin!')
+                consoleMessage = consoleMessage + '\nPlease select a skin to replace with your custom skin!';
             }
         } else {
-            alert("Please upload text file for your custom skin!")
+            consoleMessage = consoleMessage + '\nPlease upload text file for your custom skin!';
         }
+        setConsoleLogText(consoleMessage);
         fileManager.initializeFileManager()
         initializeDropDownArrays(fileManager);
     }
@@ -229,9 +245,9 @@ const WeaponForm = () => {
         submitFormEvent.preventDefault();
         if (fileManager && currentlySelectedGloveToReplace && currentlySelectedGloveToReplaceWith) {
             if(fileManager.replaceGloves(currentlySelectedGloveToReplace, currentlySelectedGloveToReplaceWith)) {
-                alert('Successfully swapped glove textures!');
+                setConsoleLogText('Successfully swapped glove textures!');
             } else {
-                alert('Failed to swap glove textures!');
+                setConsoleLogText('Failed to swap glove textures!');
             }
         }
     }
@@ -277,10 +293,8 @@ const WeaponForm = () => {
                             <label id="weaponLabel" htmlFor="weaponDropDownDiv" className="form-label mt-4">Skin To
                                 Replace</label>
                             <div className="dropdown" id="weaponDropDownDiv">
-                                <select name="weaponSkinDropDown" id="weaponSkinDropDown" className="form-select"
-                                        onChange={setCurrentSelectedDropdownWeaponSkin}>
-                                    {weaponArrayForDropdown.map(skinName => (
-                                        <option key={skinName} value={skinName}>{skinName}</option>))}
+                                <select name="weaponSkinDropDown" id="weaponSkinDropDown" className="form-select" onChange={setCurrentSelectedDropdownWeaponSkin}>
+                                    {weaponArrayForDropdown.map(skinName => (<option key={skinName} value={skinName}>{skinName}</option>))}
                                 </select>
                             </div>
                         </div>
@@ -297,9 +311,12 @@ const WeaponForm = () => {
                                       id="newSkinDescription" rows={3}
                                       onChange={event => setCustomSkinDescription(event.target.value)}/>
                         </div>
+                        <div id="inputDiv">
+                            <label id="weaponLabel" className="col-form-label mt-4" htmlFor="outPutLogTextAreaWeapons">Output Log</label>
+                            <textarea readOnly className="form-control" id="outPutLogTextAreaWeapons" value={consoleLogText} rows={4}/>
+                        </div>
                         <div id="buttonDiv">
-                            <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace
-                                Textures
+                            <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace Textures
                             </button>
                         </div>
                     </form>
@@ -329,10 +346,12 @@ const WeaponForm = () => {
                                 </select>
                             </div>
                         </div>
+                        <div id="inputDiv">
+                            <label id="weaponLabel" className="col-form-label mt-4" htmlFor="outPutLogTextAreaGloves">Output Log</label>
+                            <textarea readOnly className="form-control" id="outPutLogTextAreaGloves" value={consoleLogText} rows={4}/>
+                        </div>
                         <div id="buttonDiv">
-                            <button id="replaceGloveTexturesBtn" type="submit" className="btn btn-primary">Replace
-                                Textures
-                            </button>
+                            <button id="replaceGloveTexturesBtn" type="submit" className="btn btn-primary">Replace Textures</button>
                         </div>
                     </form>
                 </div>
@@ -340,5 +359,4 @@ const WeaponForm = () => {
         </div>
     );
 }
-
 export default WeaponForm
