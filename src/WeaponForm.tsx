@@ -121,7 +121,7 @@ const WeaponForm = () => {
                     setJsonFromTextFile(newTextFile);
                     setConsoleLogText('Text file read successfully!');
                 } else {
-                    setConsoleLogText( 'Cannot find skin parameters in text file, please make sure it is in the correct format or generate a new one from the workbench.');
+                    setConsoleLogText('Cannot find skin parameters in text file, please make sure it is in the correct format or generate a new one from the workbench.');
                 }
             }
         }
@@ -182,8 +182,8 @@ const WeaponForm = () => {
     const submitWeaponForm = (): void => {
         if (!fileManager) return;
         const selectedWeaponToReplace = currentlySelectedWeaponSkin;
-        findAlternateMapsIfSelected()
-        let consoleMessage = saveAllVtfMapsToFolders()
+        findAlternateMapsIfSelected();
+        let consoleMessage = saveAllVtfMapsToFolders();
         if (jsonFromTextFile) {
             if (selectedWeaponToReplace) {
                 if(fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile)){
