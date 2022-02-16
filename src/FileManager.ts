@@ -245,18 +245,19 @@ export class FileManager {
     }
 
     public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit): boolean {
+        let skinToAdd = JSON.parse(JSON.stringify(customSkinString))
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
-        if (customSkinString.pattern) {
-            customSkinString.pattern = path.parse(customSkinString.pattern).name
+        if (skinToAdd.pattern) {
+            skinToAdd.pattern = path.parse(skinToAdd.pattern).name
         }
-        if (customSkinString.normal) {
-            customSkinString.normal = path.parse(customSkinString.normal).name
+        if (skinToAdd.normal) {
+            skinToAdd.normal = path.parse(skinToAdd.normal).name
         }
-        delete customSkinString.dialog_config;
+        delete skinToAdd.dialog_config;
         if (objectToReplace.description_tag !== undefined) {
             let stringToReplace = itemsTextFile.split(objectToReplace.description_tag)[1]
             stringToReplace = stringToReplace.split("}")[0]
-            itemsTextFile = itemsTextFile.replace(stringToReplace, "\"\n" + VDF.stringify((customSkinString)))
+            itemsTextFile = itemsTextFile.replace(stringToReplace, "\"\n" + VDF.stringify((skinToAdd)))
         }
         try {
             writeFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
