@@ -32,18 +32,18 @@ export class FileManager {
             try {
                 this.itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
             } catch (e) {
-                alert("Failed to read items.txt file!")
+                // alert("Failed to read items.txt file!")
                 console.error(e)
             }
             try {
                 this.csgoEnglishFile = readFileSync(this.csgoInstallDir + CSGO_ENGLISH_FILE_PATH, 'utf16le');
             } catch (e) {
-                alert("Failed to read csgo_english.txt file!")
+                // alert("Failed to read csgo_english.txt file!")
                 console.error(e)
             }
             this.buildCompletePaintKitArrays()
         } else {
-            alert("Selected file is not in Counter-Strike Global Offensive folder!")
+            // alert("Selected file is not in Counter-Strike Global Offensive folder!")
         }
     }
 
@@ -94,16 +94,13 @@ export class FileManager {
     }
 
     private buildCompletePaintKitArrays(): void {
-
         const paintKitArray = this.getItemsTextPaintKits(this.itemsTextFile)
         const skinNamesWithWeaponsArray = FileManager.getPaintKitWeaponPairingArray(this.itemsTextFile);
         const paintKitReferencesObject = FileManager.getPaintKitNamesObject(this.csgoEnglishFile);
-
         const itemsObjectsArray = this.getItemsArray(this.itemsTextFile);
         this.setGloveItemsArrayFromItemArray(itemsObjectsArray, paintKitReferencesObject)
         const skinNamesWithGlovesArray = FileManager.getPaintKitGlovesPairingArray(this.itemsTextFile)
         const glovesPaintKitsOnlyArray = this.getGlovesOnlyPaintKits(paintKitArray)
-
         this.completePaintKitWeaponArray = this.createCompleteSkinArray(paintKitArray, skinNamesWithWeaponsArray, paintKitReferencesObject);
         this.completePaintKitGloveArray = this.createGloveArray(glovesPaintKitsOnlyArray, skinNamesWithGlovesArray, paintKitReferencesObject)
     }
@@ -161,12 +158,10 @@ export class FileManager {
                 if(paintKitNameReference && paintKitNameReference in paintKitReferencesObject){
                     skinDisplayName = paintKitReferencesObject[paintKitNameReference]
                 }
-
                 const paintKitName = skinWeaponPairing.paintKitName;
                 if (paintKitName.includes('phase')) {
                     skinDisplayName = skinDisplayName + (' Phase ' + paintKitName.split('phase')[1].charAt(0))
                 }
-
                 combinedPaintKit = {
                     ...combinedPaintKit,    
                     itemShortName: skinWeaponPairing.itemShortName,
@@ -184,12 +179,10 @@ export class FileManager {
 
     private static buildSkinWeaponArray(clientLootListsJsonObject: ArrayLike<unknown>): paintKitItemPairing[] {
         const paintKitWeaponPairingArray = []
-
         for (const value of Object.values(clientLootListsJsonObject)) {
             // @ts-ignore - clientLootListObject is raw VDF and it or it's contents cannot be typed yet
             for (const key of Object.keys(value)) {
                 const processedSkinWeaponJsonObject = FileManager.createJsonObjectFromSkinWeapon(key);
-
                 if (processedSkinWeaponJsonObject) {
                     paintKitWeaponPairingArray.push(processedSkinWeaponJsonObject)
                 }
@@ -253,7 +246,6 @@ export class FileManager {
 
     public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit): boolean {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
-
         if (customSkinString.pattern) {
             customSkinString.pattern = path.parse(customSkinString.pattern).name
         }
@@ -261,7 +253,6 @@ export class FileManager {
             customSkinString.normal = path.parse(customSkinString.normal).name
         }
         delete customSkinString.dialog_config;
-
         if (objectToReplace.description_tag !== undefined) {
             let stringToReplace = itemsTextFile.split(objectToReplace.description_tag)[1]
             stringToReplace = stringToReplace.split("}")[0]
@@ -280,14 +271,9 @@ export class FileManager {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
         let stringToReplace = FileManager.getGlovePaintKitStringFromTextFile(gloveToReplace, itemsTextFile)
         let stringToReplaceWith = FileManager.getGlovePaintKitStringFromTextFile(gloveToReplaceWith, itemsTextFile)
-
-        console.log('string to replace ' + stringToReplace)
-        console.log('string to replace with ' + stringToReplaceWith)
-
         if (stringToReplace && stringToReplaceWith) {
             itemsTextFile = itemsTextFile.replace(stringToReplace, stringToReplaceWith)
         }
-
         if (gloveToReplace.itemShortName && gloveToReplaceWith.itemShortName && gloveToReplace.itemShortName !== gloveToReplaceWith.itemShortName) {
             let gloveItemStringToReplace = FileManager.getGloveItemFromTextFile(gloveToReplace.itemShortName, itemsTextFile);
             let gloveItemStringToReplaceWith = FileManager.getGloveItemFromTextFile(gloveToReplaceWith.itemShortName, itemsTextFile);
@@ -345,19 +331,16 @@ export class FileManager {
             skinNamesWithGlovesArray.forEach(gloveSkinName => {
                 if (gloveSkinName.includes(<string>glovePaintKit.name) && !gloveSkinName.split(<string>glovePaintKit.name)[1]) {
                     const gloveModelForPaintKit = this.glovesItemArray.find(gloveItem => gloveItem.name === gloveSkinName.replace("_" + glovePaintKit.name, ""))
-
                     const gloveModelReferenceName = gloveModelForPaintKit?.item_name?.replace("#", "");
                     let gloveModelDisplayName = '';
                     if (gloveModelReferenceName && gloveModelReferenceName in paintKitReferencesObject){
                         gloveModelDisplayName = paintKitReferencesObject[gloveModelReferenceName]
                     }
-
                     const glovePaintKitReferenceName = glovePaintKit?.description_tag?.replace("#", "");
                     let paintKitDisplayName = '';
                     if (glovePaintKitReferenceName && glovePaintKitReferenceName in paintKitReferencesObject){
                         paintKitDisplayName = paintKitReferencesObject[glovePaintKitReferenceName]
                     }
-
                     const updatedGlovePaintKit = {
                         ...glovePaintKit,
                         itemShortName: gloveModelForPaintKit?.name,

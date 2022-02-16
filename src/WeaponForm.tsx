@@ -175,8 +175,7 @@ const WeaponForm = () => {
         setFileManager(newFileManager);
         const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
         const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
-        const temp = inputTextFile;
-        populateWeaponSkinDropdown(weaponPaintKitArray, temp);
+        populateWeaponSkinDropdown(weaponPaintKitArray, inputTextFile);
         populateGloveSkinDropdown(glovePaintKitArray);
     }
 
@@ -209,8 +208,7 @@ const WeaponForm = () => {
         return consoleMessage
     }
 
-    const submitWeaponForm = (submitFormEvent: FormEvent<HTMLFormElement>): void => {
-        submitFormEvent.preventDefault();
+    const submitWeaponForm = (): void => {
         if (!fileManager) return;
         const selectedWeaponToReplace = currentlySelectedWeaponSkin;
         findAlternateMapsIfSelected()
@@ -272,7 +270,7 @@ const WeaponForm = () => {
             <div id="windowTabs" className="tab-content">
                 {/*<----------------------------------------------------Weapon Tab---------------------------------------------------->*/}
                 <div className="tab-pane active" id="weapon">
-                    <form onSubmit={submitWeaponForm}>
+                    <form>
                         <div id="inputDiv">
                             <label id="weaponLabel" htmlFor="textFileInput" className="form-label mt-4">Text File</label>
                             <input className="form-control" type="file" id="textFileInput" accept=".txt" onChange={readTextFileOnInput}/>
@@ -316,7 +314,7 @@ const WeaponForm = () => {
                             <textarea readOnly className="form-control" id="outPutLogTextAreaWeapons" value={consoleLogText} rows={4}/>
                         </div>
                         <div id="buttonDiv">
-                            <button id="replaceWeaponTexturesBtn" type="submit" className="btn btn-primary">Replace Textures
+                            <button id="replaceWeaponTexturesBtn" type='button' onClick={submitWeaponForm} className="btn btn-primary">Replace Textures
                             </button>
                         </div>
                     </form>
