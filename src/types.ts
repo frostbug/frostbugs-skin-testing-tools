@@ -132,3 +132,5 @@ export interface textFileItem {
     itemId?: string;
     itemDisplayName?: string;
 }
+
+export const screenshotScript = "sv_cheats 1; bot_kick; mp_warmup_end; mp_freezetime 0; mp_roundtime 60; mp_roundtime_defuse 999; mp_roundtime_hostage 999; mp_buy_anywhere 1; mp_buytime 999; sv_infinite_ammo 2; mp_startmoney 16000; mp_restartgame 1; mp_ignore_round_win_conditions 1; cl_drawhud 0"

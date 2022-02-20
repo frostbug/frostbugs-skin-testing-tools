@@ -1,4 +1,4 @@
-import {CSGO_EXECUTABLE_NAME, paintKit} from "./types";
+import {CSGO_EXECUTABLE_NAME, paintKit, screenshotScript} from "./types";
 import {ChangeEvent, FormEvent, useState} from "react";
 import {FileManager} from "./FileManager";
 import * as VDF from '@node-steam/vdf';
@@ -12,8 +12,9 @@ const WeaponForm = () => {
 
     const [diffuseLabelText, setDiffuseLabelText] = useState<string>('Diffuse Map')
     const [diffuseLabelStyle, setDiffuseLabelStyle] = useState({color: '#888888'})
-    const [normalLabelStyle, setNormalLabelStyle] = useState({color: '#888888'})
     const [normalLabelText, setNormalLabelText] = useState<string>('Normal Map')
+    const [normalLabelStyle, setNormalLabelStyle] = useState({color: '#888888'})
+
 
     const [completeWeaponSkinArray, setCompleteWeaponSkinArray] = useState<paintKit[]>([])
     const [weaponArrayForDropdown, setWeaponArrayForDropdown] = useState<string[]>(["--Waiting for csgo.exe location--"])
@@ -26,6 +27,7 @@ const WeaponForm = () => {
 
     const [jsonFromTextFile, setJsonFromTextFile] = useState<paintKit>()
     const [inputDiffuseFile, setInputDiffuseFile] = useState<string>()
+    const [normalMapToggle, setNormalMapToggle] = useState<boolean>(false)
     const [inputNormalFile, setInputNormalFile] = useState<string>()
 
     const [customSkinName, setCustomSkinName] = useState<string>('')
@@ -140,7 +142,7 @@ const WeaponForm = () => {
         }
         if (inputTextFile.use_normal == '1') {
             // @ts-ignore
-            document.getElementById('normalCheckBox').checked = true;
+            setNormalMapToggle(true)
             if (fs.existsSync(inputTextFile.normal)) {
                 setNormalLabelText('Normal Map - using ' + path.parse(inputTextFile?.normal as string).base);
                 setNormalLabelStyle({color: '#009900'});
@@ -150,7 +152,7 @@ const WeaponForm = () => {
             }
         } else {
             // @ts-ignore
-            document.getElementById('normalCheckBox').checked = false;
+            setNormalMapToggle(false)
         }
     }
 
@@ -161,6 +163,8 @@ const WeaponForm = () => {
             setInputDiffuseFile(diffFileUploadEvent.target.files[0].path);
         }
     }
+
+    const toggleNormalMap = () => setNormalMapToggle(!normalMapToggle)
 
     const onNormalFileUpload = (normalFileUploadEvent: ChangeEvent<HTMLInputElement>): void => {
         if (!normalFileUploadEvent.target.files || !normalFileUploadEvent.target.files.length) return;
@@ -186,7 +190,7 @@ const WeaponForm = () => {
         let consoleMessage = saveAllVtfMapsToFolders();
         if (jsonFromTextFile) {
             if (selectedWeaponToReplace) {
-                if(fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile)){
+                if(fileManager.replaceSkinWithCustom(selectedWeaponToReplace, jsonFromTextFile, normalMapToggle)){
                     consoleMessage = consoleMessage + '\nSuccessfully added custom skin to text file!';
                 } else {
                     consoleMessage = consoleMessage + '\nFailed to add custom skin to text file!';
@@ -214,7 +218,7 @@ const WeaponForm = () => {
         if (inputDiffuseFile) {
             jsonFromTextFile.pattern = inputDiffuseFile;
         }
-        if (inputNormalFile) {
+        if (inputNormalFile && normalMapToggle) {
             jsonFromTextFile.normal = inputNormalFile;
         }
     }
@@ -253,6 +257,22 @@ const WeaponForm = () => {
         }
     }
 
+    const openDiscordLink = (): void => {
+        window.open('https://discordapp.com/users/194230435671179266')
+    }
+
+    const openTwitterLink = (): void => {
+        window.open('https://twitter.com/frostbug')
+    }
+
+    const openGithubLink = (): void => {
+        window.open('https://github.com/frostbug/frostbugs-skin-testing-tools')
+    }
+
+    const openSteamLink = (): void => {
+        window.open('https://steamcommunity.com/id/frostbug//')
+    }
+
     //TODO - Break the UI code into multiple components
     return (
         <div>
@@ -269,6 +289,9 @@ const WeaponForm = () => {
                 <li className="nav-item">
                     <a className="nav-link" data-bs-toggle="tab" href="#gloves">Gloves</a>
                 </li>
+                <li className="nav-item">
+                    <a className="nav-link" data-bs-toggle="tab" href="#more">More</a>
+                </li>
             </ul>
             <div id="windowTabs" className="tab-content">
                 {/*<----------------------------------------------------Weapon Tab---------------------------------------------------->*/}
@@ -284,7 +307,7 @@ const WeaponForm = () => {
                         </div>
                         <div id="inputDiv">
                             <div className="form-check form-switch">
-                                <input className="form-check-input" type="checkbox" id="normalCheckBox"/>
+                                <input className="form-check-input" type="checkbox" id="normalCheckBox" checked={normalMapToggle} onChange={toggleNormalMap}/>
                                 <label id="normalWeaponLabel" className="form-check-label" htmlFor="normalCheckBox" style={normalLabelStyle}>{normalLabelText}</label>
                             </div>
                             <input className="form-control" type="file" id="normalFileInput"
@@ -355,6 +378,23 @@ const WeaponForm = () => {
                             <button id="replaceGloveTexturesBtn" type="submit" className="btn btn-primary">Replace Textures</button>
                         </div>
                     </form>
+                </div>
+                {/*<----------------------------------------------------More Tab---------------------------------------------------->*/}
+                <div className="tab-pane" id="more">
+                    <div id="moreTabDiv">
+                        <h4>Support Links</h4>
+                        <p>If you need support or have any bugs to report, feel free to reach out to me with the following links.</p>
+                        <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm" onClick={openDiscordLink} >Discord</button>
+                        <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm" onClick={openTwitterLink}>Twitter</button>
+                        <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm" onClick={openSteamLink}>Steam</button>
+                        <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm" onClick={openGithubLink}>Github</button>
+                        <hr/>
+                        <h4>Screenshot Script</h4>
+                        <p>Script for kicking bots and clearing UI. Provided by Conne, to be used in offline maps only.</p>
+                        <textarea readOnly className="form-control" id="scriptTextBox" value={screenshotScript} rows={4}/>
+                        <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm">Copy To Clipboard</button>
+                        <hr/>
+                    </div>
                 </div>
             </div>
         </div>

@@ -33,6 +33,24 @@
     margin-right: 10px;
 }
 
+#hyperlinkButton {
+    margin-right: 5px;
+}
+
+p {
+    margin-bottom: 0 !important;
+}
+
+#scriptTextBox {
+    margin-top: 8px;
+}
+
+#moreTabDiv {
+    margin-top: 13px;
+    margin-left: 13px;
+    margin-right: 13px;
+}
+
 #buttonDiv {
     margin-left: 10px;
     margin-right: 10px;

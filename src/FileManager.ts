@@ -12,6 +12,7 @@ import {
 } from "./types";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
+import * as util from "util";
 
 export class FileManager {
 
@@ -74,7 +75,14 @@ export class FileManager {
     }
 
     private static getPaintKitNamesObject(csgoEnglishFile: string): unknown {
-        return VDF.parse(csgoEnglishFile)["lang"]["Tokens"];
+        const stringObject =  VDF.parse(csgoEnglishFile)["lang"]["Tokens"];
+        for (const key in stringObject) {
+            if (stringObject.hasOwnProperty(key)) {
+                stringObject[key.toUpperCase()] = stringObject[key];
+                delete stringObject[key];
+            }
+        }
+        return stringObject
     }
 
     private setGloveItemsArrayFromItemArray(unfilteredItemsArray: textFileItem[], paintKitReferencesObject: any): void {
@@ -119,7 +127,7 @@ export class FileManager {
         const iconsListObject: icon[] = itemsTextObject["items_game"]["alternate_icons2"]["weapon_icons"];
         for (const iconNameObject of Object.values(iconsListObject)) {
             if (iconNameObject.icon_path.endsWith('_light')) {
-                const glovesName = iconNameObject.icon_path.replace('_light', '').split('/').pop();
+                const glovesName = iconNameObject.icon_path.slice(0, -6).split('/').pop();
                 if (glovesName) {
                     paintKitGlovesPairingArray.push(glovesName)
                 }
@@ -139,7 +147,6 @@ export class FileManager {
 
     private static checkIfGlove(itemsObject: textFileItem): boolean {
         return !!(itemsObject.prefab && itemsObject.prefab === "hands_paintable");
-
     }
 
     private createCompleteSkinArray(paintKitArray: paintKit[], paintKitWeaponPairingArray: paintKitItemPairing[], paintKitReferencesObject: any): paintKit[] {
@@ -148,8 +155,8 @@ export class FileManager {
             let combinedPaintKit = paintKitArray.find(paintKit => paintKit.name === skinWeaponPairing.paintKitName)
             if (combinedPaintKit !== undefined) {
                 const weaponForPaintKit = PAINTABLE_WEAPON_ARRAY.find(paintableWeapon => paintableWeapon.weaponShortName === skinWeaponPairing.itemShortName)
-                const paintKitDescriptionReference = combinedPaintKit?.description_string?.replace("#", "")
-                const paintKitNameReference = combinedPaintKit?.description_tag?.replace("#", "")
+                const paintKitDescriptionReference = combinedPaintKit?.description_string?.replace("#", "").toUpperCase()
+                const paintKitNameReference = combinedPaintKit?.description_tag?.replace("#", "").toUpperCase()
                 let skinDescription = '';
                 let skinDisplayName = '';
                 if(paintKitDescriptionReference && paintKitDescriptionReference in paintKitReferencesObject){
@@ -244,8 +251,8 @@ export class FileManager {
         return false
     }
 
-    public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit): boolean {
-        let skinToAdd = JSON.parse(JSON.stringify(customSkinString))
+    public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit, normalMapToggle: boolean): boolean {
+        let skinToAdd: paintKit = JSON.parse(JSON.stringify(customSkinString))
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
         if (skinToAdd.pattern) {
             skinToAdd.pattern = path.parse(skinToAdd.pattern).name
@@ -254,6 +261,10 @@ export class FileManager {
             skinToAdd.normal = path.parse(skinToAdd.normal).name
         }
         delete skinToAdd.dialog_config;
+        if(!normalMapToggle){
+            delete skinToAdd.normal;
+            delete skinToAdd.use_normal;
+        }
         if (objectToReplace.description_tag !== undefined) {
             let stringToReplace = itemsTextFile.split(objectToReplace.description_tag)[1]
             stringToReplace = stringToReplace.split("}")[0]
@@ -332,12 +343,12 @@ export class FileManager {
             skinNamesWithGlovesArray.forEach(gloveSkinName => {
                 if (gloveSkinName.includes(<string>glovePaintKit.name) && !gloveSkinName.split(<string>glovePaintKit.name)[1]) {
                     const gloveModelForPaintKit = this.glovesItemArray.find(gloveItem => gloveItem.name === gloveSkinName.replace("_" + glovePaintKit.name, ""))
-                    const gloveModelReferenceName = gloveModelForPaintKit?.item_name?.replace("#", "");
+                    const gloveModelReferenceName = gloveModelForPaintKit?.item_name?.replace("#", "").toUpperCase();
                     let gloveModelDisplayName = '';
                     if (gloveModelReferenceName && gloveModelReferenceName in paintKitReferencesObject){
                         gloveModelDisplayName = paintKitReferencesObject[gloveModelReferenceName]
                     }
-                    const glovePaintKitReferenceName = glovePaintKit?.description_tag?.replace("#", "");
+                    const glovePaintKitReferenceName = glovePaintKit?.description_tag?.replace("#", "").toUpperCase();
                     let paintKitDisplayName = '';
                     if (glovePaintKitReferenceName && glovePaintKitReferenceName in paintKitReferencesObject){
                         paintKitDisplayName = paintKitReferencesObject[glovePaintKitReferenceName]

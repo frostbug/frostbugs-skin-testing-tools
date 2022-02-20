@@ -5,7 +5,7 @@ function createWindow () {
     require('@electron/remote/main').initialize()
     let mainWindow = new BrowserWindow
     ({
-        width: 600,
+        width: 620,
         height: 860,
         autoHideMenuBar: true,
         webPreferences: {
@@ -15,6 +15,11 @@ function createWindow () {
         },
         icon: path.join(__dirname, 'frostbug.ico'),
     })
+
+    mainWindow.webContents.on('new-window', function(e, url) {
+        e.preventDefault();
+        require('electron').shell.openExternal(url);
+    });
 
     //--------------------uncomment for exporting, comment out when developing--------------------
 
