@@ -51,13 +51,6 @@ You can use, for example "map de_dust2" to join an offline Dust 2 game with bots
 
 The script included in the 'More' tab on the tool is very useful here as it will kick bots and give you unlimited time to play around with your custom texture.
 
-### Is this a virus/Bitcoin miner?
-No, and to make it clear that this tool performs no malicious actions I have made it completely open source with the source code available to the public. 
-
-The tool is coded in React with Typescript and is built in an Electron browser, which gives it the ability to read and write local files. 
-
-Unfortunately as Electron is effectively a modified web browser, the program size is quite large at around 200MB.
-
 ### I want to run/compile this locally, what are the steps?
 To run the tool locally you first need to go into Main.js and swap out the commented out lines of code so that the tool is looking at your locally run React code. These should be labelled with comments.
 
