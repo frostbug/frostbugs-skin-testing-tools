@@ -140,7 +140,7 @@ const WeaponForm = () => {
             setDiffuseLabelText('Diffuse Map');
             setDiffuseLabelStyle({color: '#888888'});
         }
-        if (inputTextFile.use_normal == '1') {
+        if (inputTextFile.use_normal === '1') {
             // @ts-ignore
             setNormalMapToggle(true)
             if (fs.existsSync(inputTextFile.normal)) {
