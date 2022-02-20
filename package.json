@@ -74,6 +74,9 @@
     ],
     "directories": {
       "buildResources": "assets"
+    },
+    "nsis": {
+      "artifactName": "Frostbugs-skin-testing-tools.setup.${ext}"
     }
   }
 }

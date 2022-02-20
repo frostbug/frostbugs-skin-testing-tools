@@ -3,7 +3,6 @@ import {ChangeEvent, FormEvent, useState} from "react";
 import {FileManager} from "./FileManager";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
-import * as util from "util";
 // Needed for `files[0].path.`
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as electron from 'electron'
@@ -122,7 +121,6 @@ const WeaponForm = () => {
                 if (newTextFile && newTextFile.dialog_config) {
                     populateWeaponSkinDropdown(completeWeaponSkinArray, newTextFile);
                     checkIfVtfsExist(newTextFile);
-                    console.log('1 ' + util.inspect(newTextFile))
                     setJsonFromTextFile(newTextFile);
                     setConsoleLogText('Text file read successfully!');
                 } else {
@@ -143,7 +141,7 @@ const WeaponForm = () => {
             setDiffuseLabelText('Diffuse Map');
             setDiffuseLabelStyle({color: '#888888'});
         }
-        if (inputTextFile.use_normal === '1') {
+        if (inputTextFile?.use_normal?.toString() === "1") {
             // @ts-ignore
             setNormalMapToggle(true)
             if (fs.existsSync(inputTextFile.normal)) {
@@ -276,6 +274,10 @@ const WeaponForm = () => {
         window.open('https://steamcommunity.com/id/frostbug//')
     }
 
+    const copyScriptToClipboard = (): void => {
+        navigator.clipboard.writeText(screenshotScript)
+    }
+
     //TODO - Break the UI code into multiple components
     return (
         <div>
@@ -393,9 +395,9 @@ const WeaponForm = () => {
                         <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm" onClick={openGithubLink}>Github</button>
                         <hr/>
                         <h4>Screenshot Script</h4>
-                        <p>Script for kicking bots and clearing UI. Provided by Conne, to be used in offline maps only.</p>
+                        <p>Script for kicking bots and clearing UI. To be used in offline maps only.</p>
                         <textarea readOnly className="form-control" id="scriptTextBox" value={screenshotScript} rows={4}/>
-                        <button type="button" id="hyperlinkButton" className="btn btn-primary btn-sm">Copy To Clipboard</button>
+                        <button type="button" id="hyperlinkButton" onClick={copyScriptToClipboard} className="btn btn-primary btn-sm">Copy To Clipboard</button>
                         <hr/>
                     </div>
                 </div>
