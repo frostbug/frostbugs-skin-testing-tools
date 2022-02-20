@@ -2,7 +2,7 @@
   "name": "frostbugs-skin-testing-tools",
   "description": "Tools for testing CSGO skins for development and presentation purposes.",
   "version": "0.1.0",
-  "homepage": "https://github.com/frostbug/frostbugs-skin-testing-tools#readme",
+  "homepage": "./",
   "author": "Frostbug",
   "license": "GPL-2.0-only",
   "bugs": {
