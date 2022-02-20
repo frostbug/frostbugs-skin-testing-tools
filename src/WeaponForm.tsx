@@ -3,6 +3,9 @@ import {ChangeEvent, FormEvent, useState} from "react";
 import {FileManager} from "./FileManager";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
+// Needed for `files[0].path.`
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as electron from 'electron'
 
 const fs = require('fs');
 

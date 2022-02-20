@@ -12,7 +12,6 @@ import {
 } from "./types";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
-import * as util from "util";
 
 export class FileManager {
 
@@ -334,7 +333,7 @@ export class FileManager {
     private getItemsArray(itemsTextFile: string): textFileItem[] {
         const itemsTextObject = VDF.parse(itemsTextFile);
         const itemsListJsonObject = itemsTextObject["items_game"]["items"];
-        return Object.entries(itemsListJsonObject).map(([itemId, ItemAttributes]) => FileManager.addItemIdToItem(<paintKit>ItemAttributes, itemId));
+        return Object.entries(itemsListJsonObject).map(([itemId, ItemAttributes]) => FileManager.addItemIdToItem(ItemAttributes as paintKit, itemId));
     }
 
     private createGloveArray(glovesPaintKitsOnlyArray: paintKit[], skinNamesWithGlovesArray: string[], paintKitReferencesObject: any): paintKit[] {
