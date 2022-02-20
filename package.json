@@ -8,14 +8,14 @@
   "bugs": {
     "url": "https://github.com/frostbug/frostbugs-skin-testing-tools/issues"
   },
-  "main": "./build/Main.js",
+  "main": "public/Main.js",
   "keywords": [],
   "scripts": {
     "start": "craco start",
     "build": "craco build",
     "electron-start": "electron .",
     "preelectron-pack": "npm run build",
-    "electron-pack": "electron-builder"
+    "electron-pack": "electron-builder -c.extraMetadata.main=build/Main.js"
   },
   "repository": {
     "type": "git",
@@ -64,13 +64,16 @@
     ]
   },
   "build": {
-    "appId": "com.electron.frostbugs.skin.testing.tools",
+    "nsis": {
+      "artifactName": "Frostbugs-skin-testing-tools.setup.${ext}"
+    },
+    "appId": "nonExistentID",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
     "directories": {
       "buildResources": "assets"
-    },
-    "extends": null,
-    "extraMetadata": {
-      "main": "build/main.js"
     }
   }
 }
