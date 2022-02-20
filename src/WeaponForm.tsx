@@ -4,6 +4,9 @@ import {FileManager} from "./FileManager";
 import * as VDF from '@node-steam/vdf';
 import * as path from "path";
 import * as util from "util";
+// Needed for `files[0].path.`
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as electron from 'electron'
 
 const fs = require('fs');
 
