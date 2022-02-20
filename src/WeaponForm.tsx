@@ -119,7 +119,6 @@ const WeaponForm = () => {
                 if (newTextFile && newTextFile.dialog_config) {
                     populateWeaponSkinDropdown(completeWeaponSkinArray, newTextFile);
                     checkIfVtfsExist(newTextFile);
-                    console.log('1 ' + util.inspect(newTextFile))
                     setJsonFromTextFile(newTextFile);
                     setConsoleLogText('Text file read successfully!');
                 } else {
@@ -140,7 +139,7 @@ const WeaponForm = () => {
             setDiffuseLabelText('Diffuse Map');
             setDiffuseLabelStyle({color: '#888888'});
         }
-        if (inputTextFile.use_normal === '1') {
+        if (inputTextFile?.use_normal?.toString() === "1") {
             // @ts-ignore
             setNormalMapToggle(true)
             if (fs.existsSync(inputTextFile.normal)) {
