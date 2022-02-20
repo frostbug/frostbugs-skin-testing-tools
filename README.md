@@ -1,4 +1,6 @@
 # Frostbugs Skin Testing Tools
+![fstt-screens](https://user-images.githubusercontent.com/9090669/154861055-f0eb8cbc-af2c-41a5-ac2f-19583466065c.jpg)
+
 Tools for testing CSGO skins for development and presentation purposes. 
 
 Please DO NOT attempt to play on multiplayer servers after using the glove or skin replacement features, and ALWAYS verify integrity of game cache before playing online after using the tool.
@@ -67,9 +69,6 @@ To get the tool running you need to run the 'start' script in the package.json, 
 Online I use the name Frostbug and have been [making skins for CSGO since 2013](https://steamcommunity.com/id/frostbug/myworkshopfiles/), I have [1 accepted skin](https://steamcommunity.com/sharedfiles/filedetails/?id=1864500450) in the CS20 case and have a few accepted skins in Rust. 
 
 This tool is a product of the frustrations that I personally have experienced when making skins and I hope to lower the barrier to entry and make the process a little less frustrating for new and old creators alike.
-
-I would also like to thank some other workshoppers who helped with input/advice during the creation process of this tool:
-[Conne](https://steamcommunity.com/id/NGREEN/) | [SIR](https://steamcommunity.com/id/_Sir/) | [Dabes](https://steamcommunity.com/id/blusod/)
 
 ### I have found a bug, need help, or have an idea for a feature!
 Please feel free to reach out and contact my on my socials linked below for any support, cool ideas, or bugs you would like to report.
