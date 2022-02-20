@@ -14,6 +14,13 @@ Please note that this tool does NOT touch or edit your csgo exe file, the file i
 
 Gloves can also be swapped out for screenshot purposes.
 
+### How do I open/install the tool?
+To install the tool, once downloaded, you can run frostbugs-skin-testing-tools Setup 0.1.0.exe, which will install the tool in a default location on your pc. 
+
+To uninstall the tool you can find it in the 'uninstall a program' section of your control panel.
+
+You can also simply run the tool from the downloaded folder if you open the 'win-unpacked' folder and run 'frostbugs-skin-testing-tools.exe'.
+
 ### Can I play on multiplayer servers with custom/swapped skins?
 NO, after using the skin testing tools you should only play on offline maps until you have verified integrity of game files for CSGO. 
 
@@ -48,3 +55,23 @@ No, and to make it clear that this tool performs no malicious actions I have mad
 The tool is coded in React with Typescript and is built in an Electron browser, which gives it the ability to read and write local files. 
 
 Unfortunately as Electron is effectively a modified web browser, the program size is quite large at around 200MB.
+
+### I want to run/compile this locally, what are the steps?
+To run the tool locally you first need to go into Main.js and swap out the commented out lines of code so that the tool is looking at your locally run React code. These should be labelled with comments.
+
+You will need to run an NPM install to pull in the dependencies. 
+
+To get the tool running you need to run the 'start' script in the package.json, followed by the 'electron-start' script once a blank page loads in your web browser.
+
+### I have found a bug, need help, or have an idea for a feature!
+Please feel free to reach out and contact my on my socials linked below for any support, cool ideas, or bugs you would like to report.
+
+[Discord](https://discordapp.com/users/194230435671179266) | [Twitter](https://twitter.com/frostbug) | [Steam](https://steamcommunity.com/id/frostbug//)
+
+### Who made this tool?
+Online I use the name Frostbug and have been [making skins for CSGO since 2013](https://steamcommunity.com/id/frostbug/myworkshopfiles/), I have [1 accepted skin](https://steamcommunity.com/sharedfiles/filedetails/?id=1864500450) in the CS20 case and have a few accepted skins in Rust. 
+
+This tool is a product of the frustrations that I personally have experienced when making skins and I hope to lower the barrier to entry and make the process a little less frustrating for new and old creators alike.
+
+I would also like to thank some other workshoppers who helped with input/advice during the creation process of this tool:
+[Conne](https://steamcommunity.com/id/NGREEN/) | [SIR](https://steamcommunity.com/id/_Sir/) | [Dabes](https://steamcommunity.com/id/blusod/)
