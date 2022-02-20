@@ -41,7 +41,7 @@ export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = [
 ];
 
 
-export const FINISH_STYLE_FOLDERS: finishStyle[] = Array(
+export const FINISH_STYLE_FOLDERS: finishStyle[] = [
     {finishStyleId: "2", finishStyleName: "hydrographic"},
     {finishStyleId: "3", finishStyleName: "spray"},
     {finishStyleId: "5", finishStyleName: "anodized_multi"},
@@ -49,7 +49,7 @@ export const FINISH_STYLE_FOLDERS: finishStyle[] = Array(
     {finishStyleId: "7", finishStyleName: "custom"},
     {finishStyleId: "8", finishStyleName: "antiqued"},
     {finishStyleId: "9", finishStyleName: "gunsmith"}
-);
+]
 
 export interface finishStyle {
     finishStyleId: string;
