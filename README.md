@@ -7,6 +7,11 @@ Please DO NOT attempt to play on multiplayer servers after using the glove or sk
 
 This tool is for OFFLINE testing ONLY.
 
+If you want to support me or this tool I only ask that you check out my skin workshop:
+[Frostbug's Workshop](https://steamcommunity.com/id/frostbug/)
+
+Also special thanks to these workshoppers who offered support during development: [Conne](https://steamcommunity.com/id/NGREEN/) | [SIR](https://steamcommunity.com/id/_Sir/) | [Dabes](https://steamcommunity.com/id/blusod/)
+
 ### What does this tool do?
 This tool automates the task of adding your custom skin to the CSGO game files for screenshot/testing purposes. 
 
@@ -55,6 +60,8 @@ The script included in the 'More' tab on the tool is very useful here as it will
 To run the tool locally you first need to go into Main.js and swap out the commented out lines of code so that the tool is looking at your locally run React code. These should be labelled with comments.
 
 You will need to run an NPM install to pull in the dependencies. 
+
+You will then need to run the "preelectron-pack" script from the package.json.
 
 To get the tool running you need to run the 'start' script in the package.json, followed by the 'electron-start' script once a blank page loads in your web browser.
 
