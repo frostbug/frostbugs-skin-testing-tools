@@ -1,8 +1,15 @@
 {
   "name": "frostbugs-skin-testing-tools",
+  "description": "Tools for testing CSGO skins for development and presentation purposes.",
   "version": "0.1.0",
-  "description": "",
+  "homepage": "https://github.com/frostbug/frostbugs-skin-testing-tools#readme",
+  "author": "Frostbug",
+  "license": "GPL-2.0-only",
+  "bugs": {
+    "url": "https://github.com/frostbug/frostbugs-skin-testing-tools/issues"
+  },
   "main": "public/Main.js",
+  "keywords": [],
   "scripts": {
     "start": "craco start",
     "build": "craco build",
@@ -14,13 +21,6 @@
     "type": "git",
     "url": "git+https://github.com/frostbug/frostbugs-skin-testing-tools.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/frostbug/frostbugs-skin-testing-tools/issues"
-  },
-  "homepage": "./",
   "dependencies": {
     "@craco/craco": "^6.4.2",
     "@electron/remote": "^2.0.1",
@@ -38,6 +38,12 @@
     "react-scripts": "4.0.3",
     "remote": "^0.2.6",
     "web-vitals": "^1.1.2"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.38",
+    "electron": "^15.3.1",
+    "electron-builder": "^22.13.1",
+    "typescript": "^4.4.4"
   },
   "eslintConfig": {
     "extends": [
@@ -57,20 +63,17 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@types/react": "^17.0.38",
-    "electron": "^15.3.1",
-    "electron-builder": "^22.13.1",
-    "typescript": "^4.4.4"
-  },
   "build": {
-    "appId": "nonExistentID",
+    "appId": "com.electron.frostbugs.skin.testing.tools",
     "files": [
       "build/**/*",
       "node_modules/**/*"
     ],
     "directories": {
       "buildResources": "assets"
+    },
+    "extraMetadata": {
+      "main": "build/main.js"
     }
   }
 }
