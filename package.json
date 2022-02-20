@@ -8,7 +8,7 @@
   "bugs": {
     "url": "https://github.com/frostbug/frostbugs-skin-testing-tools/issues"
   },
-  "main": "public/Main.js",
+  "main": "./build/Main.js",
   "keywords": [],
   "scripts": {
     "start": "craco start",
