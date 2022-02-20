@@ -55,7 +55,7 @@ export class FileManager {
     }
 
     private convertPaintKitsObjectToArray(paintKitJsonObject: ArrayLike<unknown>): paintKit[] {
-        return Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => FileManager.addPaintKitIdToPaintKitObject(<paintKit>paintKitValue, paintKitId));
+        return Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => FileManager.addPaintKitIdToPaintKitObject(paintKitValue as paintKit, paintKitId));
     }
 
     private static addPaintKitIdToPaintKitObject(paintKitObject: paintKit, paintKitId: string): paintKit {
@@ -200,7 +200,7 @@ export class FileManager {
 
     private static createJsonObjectFromSkinWeapon(skinWeaponPairingString: string): paintKitItemPairing | undefined {
         if (skinWeaponPairingString.includes('weapon_')) {
-            skinWeaponPairingString = skinWeaponPairingString.replace('\[', '');
+            skinWeaponPairingString = skinWeaponPairingString.replace('[', '');
             skinWeaponPairingString = skinWeaponPairingString.replace('weapon_', '');
             const skinWeaponArray = skinWeaponPairingString.split("]");
             return {
@@ -316,7 +316,7 @@ export class FileManager {
             selectedSubstring = itemsText.split(glovePaintKit.description_tag)[1];
             selectedSubstring = selectedSubstring.split("}")[0];
             if (glovePaintKit.vmt_overrides) {
-                selectedSubstring = selectedSubstring + "\n" + "}";
+                selectedSubstring = selectedSubstring + "\n}";
             }
         }
         return selectedSubstring;
@@ -341,7 +341,7 @@ export class FileManager {
         const completedGlovesArray: paintKit[] = []
         glovesPaintKitsOnlyArray.forEach(glovePaintKit => {
             skinNamesWithGlovesArray.forEach(gloveSkinName => {
-                if (gloveSkinName.includes(<string>glovePaintKit.name) && !gloveSkinName.split(<string>glovePaintKit.name)[1]) {
+                if (gloveSkinName.includes(glovePaintKit.name as string) && !gloveSkinName.split(glovePaintKit.name as string)[1]) {
                     const gloveModelForPaintKit = this.glovesItemArray.find(gloveItem => gloveItem.name === gloveSkinName.replace("_" + glovePaintKit.name, ""))
                     const gloveModelReferenceName = gloveModelForPaintKit?.item_name?.replace("#", "").toUpperCase();
                     let gloveModelDisplayName = '';
