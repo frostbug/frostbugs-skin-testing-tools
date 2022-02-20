@@ -15,7 +15,7 @@
     "build": "craco build",
     "electron-start": "electron .",
     "preelectron-pack": "npm run build",
-    "electron-pack": "electron-builder -c.extraMetadata.main=build/Main.js"
+    "electron-pack": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -72,6 +72,7 @@
     "directories": {
       "buildResources": "assets"
     },
+    "extends": null,
     "extraMetadata": {
       "main": "build/main.js"
     }
