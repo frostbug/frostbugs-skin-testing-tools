@@ -63,11 +63,6 @@ You will need to run an NPM install to pull in the dependencies.
 
 To get the tool running you need to run the 'start' script in the package.json, followed by the 'electron-start' script once a blank page loads in your web browser.
 
-### I have found a bug, need help, or have an idea for a feature!
-Please feel free to reach out and contact my on my socials linked below for any support, cool ideas, or bugs you would like to report.
-
-[Discord](https://discordapp.com/users/194230435671179266) | [Twitter](https://twitter.com/frostbug) | [Steam](https://steamcommunity.com/id/frostbug//)
-
 ### Who made this tool?
 Online I use the name Frostbug and have been [making skins for CSGO since 2013](https://steamcommunity.com/id/frostbug/myworkshopfiles/), I have [1 accepted skin](https://steamcommunity.com/sharedfiles/filedetails/?id=1864500450) in the CS20 case and have a few accepted skins in Rust. 
 
@@ -75,3 +70,8 @@ This tool is a product of the frustrations that I personally have experienced wh
 
 I would also like to thank some other workshoppers who helped with input/advice during the creation process of this tool:
 [Conne](https://steamcommunity.com/id/NGREEN/) | [SIR](https://steamcommunity.com/id/_Sir/) | [Dabes](https://steamcommunity.com/id/blusod/)
+
+### I have found a bug, need help, or have an idea for a feature!
+Please feel free to reach out and contact my on my socials linked below for any support, cool ideas, or bugs you would like to report.
+
+[Discord](https://discordapp.com/users/194230435671179266) | [Twitter](https://twitter.com/frostbug) | [Steam](https://steamcommunity.com/id/frostbug//)
