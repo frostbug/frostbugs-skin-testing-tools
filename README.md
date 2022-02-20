@@ -1,7 +1,7 @@
 # Frostbugs Skin Testing Tools
-![fstt-screens](https://user-images.githubusercontent.com/9090669/154861055-f0eb8cbc-af2c-41a5-ac2f-19583466065c.jpg)
-
 Tools for testing CSGO skins for development and presentation purposes. 
+
+![fstt-screens](https://user-images.githubusercontent.com/9090669/154861055-f0eb8cbc-af2c-41a5-ac2f-19583466065c.jpg)
 
 Please DO NOT attempt to play on multiplayer servers after using the glove or skin replacement features, and ALWAYS verify integrity of game cache before playing online after using the tool.
 
