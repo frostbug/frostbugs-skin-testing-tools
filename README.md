@@ -25,7 +25,7 @@ Please note that this tool does NOT touch or edit your csgo exe file, the file i
 Gloves can also be swapped out for screenshot purposes.
 
 ### How do I open/install the tool?
-To install the tool, once downloaded, you can run frostbugs-skin-testing-tools Setup 0.1.0.exe, which will install the tool in a default location on your pc, the most likely place is under 'C:\Users\\<username>\AppData\Local\Programs\frostbugs-skin-testing-tools'.
+To install the tool, once downloaded, you can run frostbugs-skin-testing-tools Setup 0.1.0.exe, which will install the tool in a default location on your pc, the most likely place is under 'C:\Users\ <username> \AppData\Local\Programs\frostbugs-skin-testing-tools'.
 
 To uninstall the tool you can find it in the 'uninstall a program' section of your control panel.
 
