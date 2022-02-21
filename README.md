@@ -31,8 +31,6 @@ To install the tool, once downloaded, you can run frostbugs-skin-testing-tools S
 
 To uninstall the tool you can find it in the 'uninstall a program' section of your control panel.
 
-You can also simply run the tool from the downloaded folder if you open the 'win-unpacked' folder and run 'frostbugs-skin-testing-tools.exe'.
-
 ### Can I play on multiplayer servers with custom/swapped skins?
 NO, after using the skin testing tools you should only play on offline maps until you have verified integrity of game files for CSGO. 
 
