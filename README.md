@@ -18,7 +18,9 @@ Also special thanks to these workshoppers who offered support during development
 ### What does this tool do?
 This tool automates the task of adding your custom skin to the CSGO game files for screenshot/testing purposes. 
 
-After selecting your csgo exe file at the top of the tool, a list of skins is generated that you can swap out for your own custom designs. 
+After selecting your csgo exe file at the top of the tool, a list of skins is generated from your items.txt that you can swap out for your own custom designs. 
+
+This tool edits your items.txt files and copies your vtf files into your CSGO install folder, just the same as you would do manually if you wanted to test your skins.
 
 Please note that this tool does NOT touch or edit your csgo exe file, the file is only used for reference to find where the text and texture files that need to be edited/swapped.
 
@@ -58,6 +60,11 @@ If you are inspecting your skin in your inventory from the main menu, it will in
 You can use, for example "map de_dust2" to join an offline Dust 2 game with bots, then equip and buy your skin to have the texture load in.
 
 The script included in the 'More' tab on the tool is very useful here as it will kick bots and give you unlimited time to play around with your custom texture.
+
+### My skins/gloves don't load in/look correctly after using your tool
+If you are experiencing issues with your texture/gloves not loading in correctly, try to verify integrity of game cache through steam and load the textures in again. If the problem persists please reach out to me and I'll do my best to remedy the situation.
+
+If you can reproduce the bug or provide steps to reproduce it, it will be much easier for me to identify and resolve the problem.
 
 ### I want to run/compile this locally, what are the steps?
 To run the tool locally you first need to go into Main.js and swap out the commented out lines of code so that the tool is looking at your locally run React code. These should be labelled with comments.
