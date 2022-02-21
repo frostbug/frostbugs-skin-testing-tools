@@ -1,6 +1,5 @@
 # Frostbugs Skin Testing Tools
-[
-Download Latest Version](https://github.com/frostbug/frostbugs-skin-testing-tools/releases/download/0.1.0/Frostbugs-skin-testing-tools.setup.exe)
+:point_right: [Download Latest Version](https://github.com/frostbug/frostbugs-skin-testing-tools/releases/download/0.1.0/Frostbugs-skin-testing-tools.setup.exe) :point_left:
 
 Tools for testing CSGO skins for development and presentation purposes. 
 
