@@ -25,7 +25,7 @@ Please note that this tool does NOT touch or edit your csgo exe file, the file i
 Gloves can also be swapped out for screenshot purposes.
 
 ### How do I open/install the tool?
-To install the tool, once downloaded, you can run frostbugs-skin-testing-tools Setup 0.1.0.exe, which will install the tool in a default location on your pc. 
+To install the tool, once downloaded, you can run frostbugs-skin-testing-tools Setup 0.1.0.exe, which will install the tool in a default location on your pc, the most likely place is under 'C:\Users\<username>\AppData\Local\Programs\frostbugs-skin-testing-tools'.
 
 To uninstall the tool you can find it in the 'uninstall a program' section of your control panel.
 
@@ -67,6 +67,9 @@ You will need to run an NPM install to pull in the dependencies.
 You will then need to run the "preelectron-pack" script from the package.json.
 
 To get the tool running you need to run the 'start' script in the package.json, followed by the 'electron-start' script once a blank page loads in your web browser.
+
+### Can I run this on MAC/Linux?
+Currently only Windows is supported, however Electron was designed to allow for the development of cross OS apps. So while Linux and MAC are currently not supported there is potential they will be in the future.
 
 ### I have found a bug, need help, or have an idea for a feature!
 Please feel free to reach out and contact me on my socials linked below for any support, cool ideas, or bugs you would like to report.
