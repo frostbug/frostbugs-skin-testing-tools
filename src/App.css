@@ -1,10 +1,20 @@
-#normalCheckBox {
+#normalCheckBox, #stickerSignaturesCheckBox #stickerTeamLogosCheckBox {
     margin-top: 18px !important;
     margin-left: -35px !important;
     margin-right: 5px !important;
 }
 
-#weaponLabel {
+#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio {
+    padding: 0;
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+    display: inline-block;
+}
+
+#weaponLabel, #diffuseWeaponLabel, #normalWeaponLabel,
+#stickerLabel, #rarityStickerLabel, #diffuseStickerLabel, #diffuseStickerExponentLabel, #signaturesStickerLabel, #teamLogosStickerLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
@@ -12,25 +22,31 @@
     display: inline-block;
 }
 
-#diffuseWeaponLabel {
+#diffuseStickerHoloLabel, #diffuseStickerFoilLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
     margin-left: 6px !important;
-    display: inline-block;
+    display: none;
 }
 
-#normalWeaponLabel {
+#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText {
     padding: 0;
-    margin-top: 14px !important;
-    margin-bottom: 6px !important;
-    margin-left: 6px !important;
+    margin-right: 14px !important;
     display: inline-block;
 }
 
-#inputDiv {
+#inputDiv #inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil {
     margin-left: 10px;
     margin-right: 10px;
+}
+
+#diffuseFileInput, #normalFileInput, #diffuseStickerFileInput, #diffuseStickerExponentFileInput {
+    display: inline-block;
+}
+
+#diffuseStickerHoloFileInput, #diffuseStickerFoilFileInput {
+    display: none;
 }
 
 #hyperlinkButton {
@@ -57,15 +73,7 @@ p {
     float: right;
 }
 
-#weaponSkin {
-    font-size: 0.9rem;
-}
-
-#currentGloves {
-    font-size: 0.9rem;
-}
-
-#newGloves {
+#weaponSkin, #currentGloves, #newGloves {
     font-size: 0.9rem;
 }
 
