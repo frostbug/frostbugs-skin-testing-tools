@@ -3,7 +3,7 @@ export const ITEMS_GAME_FILE_PATH: string = "\\csgo\\scripts\\items\\items_game.
 export const WEAPON_SKIN_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\paints\\";
 export const STICKER_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\stickers\\";
 export const STICKER_MATERIALS_IN_VMT_FOLDERS_PATH: string = "models\\weapons\\customization\\stickers\\";
-export const SPRAY_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\sprays\\";
+export const SPRAY_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\decals\\sprays\\";
 export const CSGO_EXECUTABLE_NAME: string = "\\csgo.exe";
 
 export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = [
