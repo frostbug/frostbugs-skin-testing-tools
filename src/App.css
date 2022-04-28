@@ -4,7 +4,7 @@
     margin-right: 5px !important;
 }
 
-#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio,
+#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio, #stickerRarityGoldRadio,
 #sprayRarityCommonRadio, #sprayRarityRareRadio, #sprayRarityMythicalRadio, #sprayRarityLegendaryRadio {
     padding: 0;
     margin-top: 6px !important;
@@ -30,6 +30,10 @@
     accent-color: #d32ee6;
 }
 
+#stickerRarityGoldRadio {
+    accent-color: #eb4b4b;
+}
+
 #weaponLabel, #diffuseWeaponLabel, #normalWeaponLabel,
 #stickerLabel, #rarityStickerLabel, #diffuseStickerLabel, #diffuseStickerExponentLabel, #signaturesStickerLabel, #teamLogosStickerLabel,
 #sprayLabel, #raritySprayLabel, #diffuseSprayLabel {
@@ -40,7 +44,7 @@
     display: inline-block;
 }
 
-#diffuseStickerHoloLabel, #diffuseStickerFoilLabel {
+#diffuseStickerHoloLabel, #diffuseStickerFoilLabel, #diffuseStickerGoldLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
@@ -48,7 +52,7 @@
     display: none;
 }
 
-#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText,
+#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText, #stickerRarityGoldRadioText,
 #sprayRarityCommonRadioText, #sprayRarityRareRadioText, #sprayRarityMythicalRadioText, #sprayRarityLegendaryRadioText {
     padding: 0;
     margin-right: 14px !important;
@@ -71,8 +75,12 @@
     color: #d32ee6;
 }
 
+#stickerRarityGoldRadioText {
+    color: #eb4b4b;
+}
+
 #inputDiv,
-#inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil,
+#inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil, #inputDivStickerDiffuseGold,
 #inputDivSprayDiffuse {
     margin-left: 10px;
     margin-right: 10px;
@@ -84,7 +92,7 @@
     display: inline-block;
 }
 
-#diffuseStickerHoloFileInput, #diffuseStickerFoilFileInput {
+#diffuseStickerHoloFileInput, #diffuseStickerFoilFileInput, #diffuseStickerGoldFileInput {
     display: none;
 }
 

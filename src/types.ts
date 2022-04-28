@@ -55,9 +55,10 @@ export const FINISH_STYLE_FOLDERS: finishStyle[] = [
 ]
 
 export const STICKER_RARITY_FOLDERS: stickerRarity[] = [
-    {stickerRarityId: 0, stickerRarityName: "Standard", stickerRarityDisplayName: "Rare"},
+    {stickerRarityId: 0, stickerRarityName: "Standard", stickerRarityDisplayName: "Rare"}, // does it only use 0 ??
     {stickerRarityId: 3, stickerRarityName: "Holo", stickerRarityDisplayName: "Mythical"},
     {stickerRarityId: 4, stickerRarityName: "Foil", stickerRarityDisplayName: "Legendary"},
+    {stickerRarityId: 5, stickerRarityName: "Gold", stickerRarityDisplayName: "Ancient"}, // it should actually be 4, the same as foil, wtf
 ]
 
 export const SPRAY_RARITY_FOLDERS: sprayRarity[] = [
@@ -209,8 +210,14 @@ export interface weaponDecal {
     $basetexture?: string;
     $holomask?: string; // holo
     $holospectrum?: string; // holo
-    $normalmap?: string; // foil
+    $normalmap?: string; // gold/foil
+    $wearbias?: number;
+	$wearremapmin?: number;
+	$wearremapmid?: number;
+	$wearremapmax?: number;
     $unwearstrength?: number;
+    $desatbasetint?: number; // gold
+    $colortint?: string;
     $envmap?: string;
     $envmaptint?: string;
     $phong?: number;
@@ -219,7 +226,7 @@ export interface weaponDecal {
     $phongalbedotint?: number;
     $phongboost?: number;
     $phongalbedoboost?: number;
-    $phongexponenttexture?: string; // is this correct ??
+    $phongexponenttexture?: string; // is this correct for Exponent VTF ??
 }
 
 export const screenshotScript = "sv_cheats 1; bot_kick; mp_warmup_end; mp_freezetime 0; mp_roundtime 60; mp_roundtime_defuse 999; mp_roundtime_hostage 999; mp_buy_anywhere 1; mp_buytime 999; sv_infinite_ammo 2; mp_startmoney 16000; mp_restartgame 1; mp_ignore_round_win_conditions 1; cl_drawhud 0"

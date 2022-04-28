@@ -395,13 +395,15 @@ export class FileManager {
     private static createJsonObjectFromSticker(stickerCollectionName: string, stickerPairingString: string, stickerSignaturesToggleValue: boolean, stickerTeamLogosToggleValue: boolean, currentStickerRaritySet: string): stickerKitItemPairing | undefined {
         if (stickerPairingString.includes('sticker')) {
             var stickerString = stickerPairingString.replace('[', '').split("]")[0];
-            const stickerRarityId = stickerCollectionName.toLowerCase().includes('foil') || stickerString.toLowerCase().includes('foil') || stickerCollectionName.toLowerCase().includes('legendary') || stickerString.toLowerCase().includes('legendary')
-                ? 4
-                : (stickerCollectionName.toLowerCase().includes('holo') || stickerString.toLowerCase().includes('holo') || stickerCollectionName.toLowerCase().includes('mythical') || stickerString.toLowerCase().includes('mythical')
-                    ? 3
-                    : 0) // standard/rare
-            const stickerRarityName = stickerRarityId === 4 ? 'Legendary' : (stickerRarityId === 3 ? 'Mythical' : 'Rare')
-            const stickerRarityDisplayName = stickerRarityId === 4 ? 'Foil' : (stickerRarityId === 3 ? 'Holo' : 'Standard')
+            const stickerRarityId = stickerCollectionName.toLowerCase().includes('gold') || stickerString.toLowerCase().includes('gold') || stickerCollectionName.toLowerCase().includes('ancient') || stickerString.toLowerCase().includes('ancient')
+                ? 5
+                : (stickerCollectionName.toLowerCase().includes('foil') || stickerString.toLowerCase().includes('foil') || stickerCollectionName.toLowerCase().includes('legendary') || stickerString.toLowerCase().includes('legendary')
+                    ? 4
+                    : (stickerCollectionName.toLowerCase().includes('holo') || stickerString.toLowerCase().includes('holo') || stickerCollectionName.toLowerCase().includes('mythical') || stickerString.toLowerCase().includes('mythical')
+                        ? 3
+                        : 0)) // standard/rare
+            const stickerRarityName = stickerRarityId === 5 ? 'Ancient' : (stickerRarityId === 4 ? 'Legendary' : (stickerRarityId === 3 ? 'Mythical' : 'Rare'))
+            const stickerRarityDisplayName = stickerRarityId === 5 ? 'Gold' : (stickerRarityId === 4 ? 'Foil' : (stickerRarityId === 3 ? 'Holo' : 'Standard'))
 
             if (stickerRarityDisplayName.toLowerCase() !== currentStickerRaritySet.toLowerCase())
                 return undefined
@@ -590,14 +592,14 @@ export class FileManager {
                 const newVmtFileText: weaponDecal = VDF.parse(newVmtFileContents)["WeaponDecal"];
                 if (!newVmtFileText ||
                     !newVmtFileText.$basetexture ||
-                    (stickerKitFinishStyleId === 'Foil' && !newVmtFileText.$normalmap) ||
+                    ((stickerKitFinishStyleId === 'Gold' || stickerKitFinishStyleId === 'Foil') && !newVmtFileText.$normalmap) ||
                     (stickerKitFinishStyleId === 'Holo' && !newVmtFileText.$holomask)) {
                     console.log('Could not change vmt paths to point to vtfs in csgo files.');
                 } else {
                     newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$basetexture, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$basetexture).name);
                     if (newVmtFileText.$phongexponenttexture)
                         newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$phongexponenttexture, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$phongexponenttexture).name);
-                    if (stickerKitFinishStyleId === 'Foil' && newVmtFileText.$normalmap)
+                    if ((stickerKitFinishStyleId === 'Gold' || stickerKitFinishStyleId === 'Foil') && newVmtFileText.$normalmap)
                         newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$normalmap, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$normalmap).name);
                     if (stickerKitFinishStyleId === 'Holo' && newVmtFileText.$holomask)
                         newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$holomask, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$holomask).name);
@@ -696,17 +698,17 @@ export class FileManager {
 
     public replaceStickerWithCustom(objectToReplace: stickerKit, customItemName: string, customItemDescription: string, vmtName: string): boolean {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
-        if (objectToReplace.item_name !== undefined) {
+        if (objectToReplace.item_name !== undefined && customItemName && customItemName !== '') {
             let stringSplit = itemsTextFile.split(objectToReplace.item_name)
             itemsTextFile = stringSplit[0] + customItemName + stringSplit[1]
         }
-        if (objectToReplace.description_string !== undefined) {
+        if (objectToReplace.description_string !== undefined && customItemDescription && customItemDescription !== '') {
             let stringSplit = itemsTextFile.split(objectToReplace.description_string)
             itemsTextFile = stringSplit[0] + customItemDescription + stringSplit[1]
         }
         if (objectToReplace.item_rarity !== undefined && objectToReplace.sticker_material !== undefined) {
             let stringSplit = itemsTextFile.split(objectToReplace.sticker_material)
-            const rarityFolderName = objectToReplace.item_rarity.toLowerCase() === 'legendary' ? 'Foil' : (objectToReplace.item_rarity.toLowerCase() === 'mythical' ? 'Holo' : 'Standard')
+            const rarityFolderName = objectToReplace.item_rarity.toLowerCase() === 'ancient' ? 'Gold' : (objectToReplace.item_rarity.toLowerCase() === 'legendary' ? 'Foil' : (objectToReplace.item_rarity.toLowerCase() === 'mythical' ? 'Holo' : 'Standard'))
             itemsTextFile = stringSplit[0] + rarityFolderName + "/" + vmtName + stringSplit[1]
         }
         try {
@@ -720,11 +722,11 @@ export class FileManager {
 
     public replaceSprayWithCustom(objectToReplace: sprayKit, customItemName: string, customItemDescription: string, vtfName: string): boolean {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
-        if (objectToReplace.item_name !== undefined) {
+        if (objectToReplace.item_name !== undefined && customItemName && customItemName !== '') {
             let stringSplit = itemsTextFile.split(objectToReplace.item_name)
             itemsTextFile = stringSplit[0] + customItemName + stringSplit[1]
         }
-        if (objectToReplace.description_string !== undefined) {
+        if (objectToReplace.description_string !== undefined && customItemDescription && customItemDescription !== '') {
             let stringSplit = itemsTextFile.split(objectToReplace.description_string)
             itemsTextFile = stringSplit[0] + customItemDescription + stringSplit[1]
         }

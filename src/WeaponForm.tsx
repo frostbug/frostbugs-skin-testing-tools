@@ -25,6 +25,8 @@ const WeaponForm = () => {
     const [diffuseStickerHoloLabelStyle, setDiffuseStickerHoloLabelStyle] = useState({color: '#888888'})
     const [diffuseStickerFoilLabelText, setDiffuseStickerFoilLabelText] = useState<string>('Foil Diffuse Map')
     const [diffuseStickerFoilLabelStyle, setDiffuseStickerFoilLabelStyle] = useState({color: '#888888'})
+    const [diffuseStickerGoldLabelText, setDiffuseStickerGoldLabelText] = useState<string>('Gold Diffuse Map')
+    const [diffuseStickerGoldLabelStyle, setDiffuseStickerGoldLabelStyle] = useState({color: '#888888'})
     const [diffuseSprayLabelText, setDiffuseSprayLabelText] = useState<string>('Diffuse Map')
     const [diffuseSprayLabelStyle, setDiffuseSprayLabelStyle] = useState({color: '#888888'})
     const [stickerRarityLabelText, setStickerRarityLabelText] = useState<string>('Select Rarity')
@@ -64,6 +66,7 @@ const WeaponForm = () => {
     const [inputStickerExponentDiffuseFile, setInputStickerExponentDiffuseFile] = useState<string>()
     const [inputStickerHoloDiffuseFile, setInputStickerHoloDiffuseFile] = useState<string>()
     const [inputStickerFoilDiffuseFile, setInputStickerFoilDiffuseFile] = useState<string>()
+    const [inputStickerGoldDiffuseFile, setInputStickerGoldDiffuseFile] = useState<string>()
 
     const [inputSprayDiffuseFile, setInputSprayDiffuseFile] = useState<string>()
 
@@ -313,6 +316,15 @@ const WeaponForm = () => {
                     setDiffuseStickerFoilLabelStyle({color: '#888888'});
                 }
                 break;
+            case "Gold":
+                if (fs.existsSync(inputVmtFile?.$normalmap)) {
+                    setDiffuseStickerGoldLabelText('Gold Diffuse Map - using ' + path.parse(inputVmtFile?.$normalmap as string).base);
+                    setDiffuseStickerGoldLabelStyle({color: '#009900'});
+                } else {
+                    setDiffuseStickerGoldLabelText('Gold Diffuse Map');
+                    setDiffuseStickerGoldLabelStyle({color: '#888888'});
+                }
+                break;
         }
 
         if (fs.existsSync(inputVmtFile?.$phongexponenttexture)) {
@@ -369,6 +381,14 @@ const WeaponForm = () => {
         }
     }
 
+    const onStickerGoldDiffuseFileUpload = (diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void => {
+        if (!diffFileUploadEvent.target.files || !diffFileUploadEvent.target.files.length) {
+            setInputStickerGoldDiffuseFile(undefined);
+        } else {
+            setInputStickerGoldDiffuseFile(diffFileUploadEvent.target.files[0].path);
+        }
+    }
+
     const onSprayDiffuseFileUpload = (diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void => {
         if (!diffFileUploadEvent.target.files || !diffFileUploadEvent.target.files.length) {
             setInputSprayDiffuseFile(undefined);
@@ -400,8 +420,10 @@ const WeaponForm = () => {
 
         const diffuseStickerHoloFileInput = document.getElementById('diffuseStickerHoloFileInput')
         const diffuseStickerFoilFileInput = document.getElementById('diffuseStickerFoilFileInput')
+        const diffuseStickerGoldFileInput = document.getElementById('diffuseStickerGoldFileInput')
         const diffuseStickerHoloLabel = document.getElementById('diffuseStickerHoloLabel')
         const diffuseStickerFoilLabel = document.getElementById('diffuseStickerFoilLabel')
+        const diffuseStickerGoldLabel = document.getElementById('diffuseStickerGoldLabel')
         switch (rarity)
         {
             case 'Standard':
@@ -409,30 +431,60 @@ const WeaponForm = () => {
                     diffuseStickerHoloFileInput.style.display = 'none';
                 if (diffuseStickerFoilFileInput !== undefined && diffuseStickerFoilFileInput !== null)
                     diffuseStickerFoilFileInput.style.display = 'none';
+                if (diffuseStickerGoldFileInput !== undefined && diffuseStickerGoldFileInput !== null)
+                    diffuseStickerGoldFileInput.style.display = 'none';
+
                 if (diffuseStickerHoloLabel !== undefined && diffuseStickerHoloLabel !== null)
                     diffuseStickerHoloLabel.style.display = 'none';
                 if (diffuseStickerFoilLabel !== undefined && diffuseStickerFoilLabel !== null)
                     diffuseStickerFoilLabel.style.display = 'none';
+                if (diffuseStickerGoldLabel !== undefined && diffuseStickerGoldLabel !== null)
+                    diffuseStickerGoldLabel.style.display = 'none';
                 break;
             case 'Holo':
                 if (diffuseStickerHoloFileInput !== undefined && diffuseStickerHoloFileInput !== null)
                     diffuseStickerHoloFileInput.style.display = 'inline-block';
                 if (diffuseStickerFoilFileInput !== undefined && diffuseStickerFoilFileInput !== null)
                     diffuseStickerFoilFileInput.style.display = 'none';
+                if (diffuseStickerGoldFileInput !== undefined && diffuseStickerGoldFileInput !== null)
+                    diffuseStickerGoldFileInput.style.display = 'none';
+
                 if (diffuseStickerHoloLabel !== undefined && diffuseStickerHoloLabel !== null)
                     diffuseStickerHoloLabel.style.display = 'inline-block';
                 if (diffuseStickerFoilLabel !== undefined && diffuseStickerFoilLabel !== null)
                     diffuseStickerFoilLabel.style.display = 'none';
+                if (diffuseStickerGoldLabel !== undefined && diffuseStickerGoldLabel !== null)
+                    diffuseStickerGoldLabel.style.display = 'none';
                 break;
             case 'Foil':
                 if (diffuseStickerHoloFileInput !== undefined && diffuseStickerHoloFileInput !== null)
                     diffuseStickerHoloFileInput.style.display = 'none';
                 if (diffuseStickerFoilFileInput !== undefined && diffuseStickerFoilFileInput !== null)
                     diffuseStickerFoilFileInput.style.display = 'inline-block';
+                if (diffuseStickerGoldFileInput !== undefined && diffuseStickerGoldFileInput !== null)
+                    diffuseStickerGoldFileInput.style.display = 'none';
+
                 if (diffuseStickerHoloLabel !== undefined && diffuseStickerHoloLabel !== null)
                     diffuseStickerHoloLabel.style.display = 'none';
                 if (diffuseStickerFoilLabel !== undefined && diffuseStickerFoilLabel !== null)
                     diffuseStickerFoilLabel.style.display = 'inline-block';
+                if (diffuseStickerGoldLabel !== undefined && diffuseStickerGoldLabel !== null)
+                    diffuseStickerGoldLabel.style.display = 'none';
+                break;
+            case 'Gold':
+                if (diffuseStickerHoloFileInput !== undefined && diffuseStickerHoloFileInput !== null)
+                    diffuseStickerHoloFileInput.style.display = 'none';
+                if (diffuseStickerFoilFileInput !== undefined && diffuseStickerFoilFileInput !== null)
+                    diffuseStickerFoilFileInput.style.display = 'none';
+                if (diffuseStickerGoldFileInput !== undefined && diffuseStickerGoldFileInput !== null)
+                    diffuseStickerGoldFileInput.style.display = 'inline-block';
+
+                if (diffuseStickerHoloLabel !== undefined && diffuseStickerHoloLabel !== null)
+                    diffuseStickerHoloLabel.style.display = 'none';
+                if (diffuseStickerFoilLabel !== undefined && diffuseStickerFoilLabel !== null)
+                    diffuseStickerFoilLabel.style.display = 'none';
+                if (diffuseStickerGoldLabel !== undefined && diffuseStickerGoldLabel !== null)
+                    diffuseStickerGoldLabel.style.display = 'inline-block';
                 break;
         }
 
@@ -591,6 +643,9 @@ const WeaponForm = () => {
                 if (inputStickerFoilDiffuseFile) {
                     jsonFromStickerVmtFile.$normalmap = inputStickerFoilDiffuseFile;
                 }
+                if (inputStickerGoldDiffuseFile) {
+                    jsonFromStickerVmtFile.$normalmap = inputStickerGoldDiffuseFile;
+                }
                 break;
             case ItemType.Spray:
                 break;
@@ -627,7 +682,7 @@ const WeaponForm = () => {
                     consoleMessage = 'Failed to copy sticker files to csgo folder, the vmt is missing $basetexture or $decalstyle!'
                     return consoleMessage;
                 }
-                const raritySticker = jsonFromStickerVmtFile.$decalstyle === 4 ? 'Foil' : (jsonFromStickerVmtFile.$decalstyle === 3 ? 'Holo' : 'Standard')
+                const raritySticker = jsonFromStickerVmtFile.$decalstyle === 4 ? (stickerRarityRadio === 'Gold' ? 'Gold' : 'Foil') : (jsonFromStickerVmtFile.$decalstyle === 3 ? 'Holo' : 'Standard')
                 if (fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$basetexture, raritySticker)) {
                     consoleMessage = "Successfully copied sticker base vtf file to stickers folder!";
                 } else {
@@ -650,7 +705,7 @@ const WeaponForm = () => {
                     consoleMessage = 'No sticker exponent vtf provided to copy to csgo folder!';
                 }
 
-                if (jsonFromStickerVmtFile.$decalstyle === 4) {
+                if (jsonFromStickerVmtFile.$decalstyle === 4) { // gold or foil
                     if (jsonFromStickerVmtFile.$normalmap && fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$normalmap, raritySticker)) {
                         consoleMessage = "Successfully copied sticker normalmap vtf file to stickers folder!";
                     } else {
@@ -658,7 +713,7 @@ const WeaponForm = () => {
                     }
                 }
 
-                if (jsonFromStickerVmtFile.$decalstyle === 3) {
+                if (jsonFromStickerVmtFile.$decalstyle === 3) { // holo
                     if (jsonFromStickerVmtFile.$holomask && fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$holomask, raritySticker)) {
                         consoleMessage = "Successfully copied sticker holomask vtf file to stickers folder!";
                     } else {
@@ -836,6 +891,8 @@ const WeaponForm = () => {
                                 <label id="stickerRarityHoloRadioText">Holo</label>
                                 <input type="radio" id="stickerRarityFoilRadio" name="stickerRarity" value="Foil" defaultChecked={stickerRarityRadio === 'Foil'} onClick={() => stickerRarityChanged('Foil')}></input>
                                 <label id="stickerRarityFoilRadioText">Foil</label>
+                                <input type="radio" id="stickerRarityGoldRadio" name="stickerRarity" value="Gold" defaultChecked={stickerRarityRadio === 'Gold'} onClick={() => stickerRarityChanged('Gold')}></input>
+                                <label id="stickerRarityGoldRadioText">Gold</label>
                             </div>
                         </div>
                         <div id="inputDiv">
@@ -857,6 +914,10 @@ const WeaponForm = () => {
                         <div id="inputDivStickerDiffuseFoil">
                             <label id="diffuseStickerFoilLabel" htmlFor="diffuseStickerFoilFileInput" className="form-label mt-4" style={diffuseStickerFoilLabelStyle}>{diffuseStickerFoilLabelText}</label>
                             <input className="form-control" type="file" id="diffuseStickerFoilFileInput" accept=".vtf" onChange={onStickerFoilDiffuseFileUpload}/>
+                        </div>
+                        <div id="inputDivStickerDiffuseGold">
+                            <label id="diffuseStickerGoldLabel" htmlFor="diffuseStickerGoldFileInput" className="form-label mt-4" style={diffuseStickerGoldLabelStyle}>{diffuseStickerGoldLabelText}</label>
+                            <input className="form-control" type="file" id="diffuseStickerGoldFileInput" accept=".vtf" onChange={onStickerGoldDiffuseFileUpload}/>
                         </div>
                         <div id="inputDiv">
                             <label id="stickerLabel" htmlFor="stickerDropDownDiv" className="form-label mt-4">Sticker To
