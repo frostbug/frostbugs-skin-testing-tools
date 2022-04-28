@@ -14,6 +14,22 @@
     display: inline-block;
 }
 
+#sprayRarityCommonRadio {
+    accent-color: #b0c3d9;
+}
+
+#stickerRarityStandardRadio, #sprayRarityRareRadio {
+    accent-color: #4b69ff;
+}
+
+#stickerRarityHoloRadio, #sprayRarityMythicalRadio {
+    accent-color: #8847ff;
+}
+
+#stickerRarityFoilRadio, #sprayRarityLegendaryRadio {
+    accent-color: #d32ee6;
+}
+
 #weaponLabel, #diffuseWeaponLabel, #normalWeaponLabel,
 #stickerLabel, #rarityStickerLabel, #diffuseStickerLabel, #diffuseStickerExponentLabel, #signaturesStickerLabel, #teamLogosStickerLabel,
 #sprayLabel, #raritySprayLabel, #diffuseSprayLabel {
@@ -37,6 +53,22 @@
     padding: 0;
     margin-right: 14px !important;
     display: inline-block;
+}
+
+#sprayRarityCommonRadioText {
+    color: #b0c3d9;
+}
+
+#stickerRarityStandardRadioText, #sprayRarityRareRadioText {
+    color: #4b69ff;
+}
+
+#stickerRarityHoloRadioText, #sprayRarityMythicalRadioText {
+    color: #8847ff;
+}
+
+#stickerRarityFoilRadioText, #sprayRarityLegendaryRadioText {
+    color: #d32ee6;
 }
 
 #inputDiv,
