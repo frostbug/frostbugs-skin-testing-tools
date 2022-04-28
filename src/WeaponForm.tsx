@@ -25,8 +25,12 @@ const WeaponForm = () => {
     const [diffuseStickerHoloLabelStyle, setDiffuseStickerHoloLabelStyle] = useState({color: '#888888'})
     const [diffuseStickerFoilLabelText, setDiffuseStickerFoilLabelText] = useState<string>('Foil Diffuse Map')
     const [diffuseStickerFoilLabelStyle, setDiffuseStickerFoilLabelStyle] = useState({color: '#888888'})
+    const [diffuseSprayLabelText, setDiffuseSprayLabelText] = useState<string>('Diffuse Map')
+    const [diffuseSprayLabelStyle, setDiffuseSprayLabelStyle] = useState({color: '#888888'})
     const [stickerRarityLabelText, setStickerRarityLabelText] = useState<string>('Select Rarity')
     const [stickerRarityLabelStyle, setStickerRarityLabelStyle] = useState({color: '#888888'})
+    const [sprayRarityLabelText, setSprayRarityLabelText] = useState<string>('Select Rarity')
+    const [sprayRarityLabelStyle, setSprayRarityLabelStyle] = useState({color: '#888888'})
     const [stickerSignaturesLabelText, setStickerSignaturesLabelText] = useState<string>('Show Player Signatures')
     const [stickerSignaturesLabelStyle, setStickerSignaturesLabelStyle] = useState({color: '#888888'})
     const [stickerTeamLogosLabelText, setStickerTeamLogosLabelText] = useState<string>('Show Team Logos')
@@ -46,23 +50,33 @@ const WeaponForm = () => {
     const [stickerArrayForDropdown, setStickerArrayForDropdown] = useState<string[]>(["--Waiting for csgo.exe location--"])
     const [currentlySelectedSticker, setCurrentlySelectedSticker] = useState<stickerKit>()
 
+    const [completeSprayArray, setCompleteSprayArray] = useState<sprayKit[]>([])
+    const [sprayArrayForDropdown, setSprayArrayForDropdown] = useState<string[]>(["--Waiting for csgo.exe location--"])
+    const [currentlySelectedSpray, setCurrentlySelectedSpray] = useState<sprayKit>()
+
     const [jsonFromTextFile, setJsonFromTextFile] = useState<paintKit>()
     const [jsonFromStickerVmtFile, setJsonFromStickerVmtFile] = useState<weaponDecal>()
     const [inputDiffuseFile, setInputDiffuseFile] = useState<string>()
     const [normalMapToggle, setNormalMapToggle] = useState<boolean>(false)
     const [inputNormalFile, setInputNormalFile] = useState<string>()
 
-    const [vmtFilepathSticker, setVmtFilepathSticker] = useState<string>()
-
-    const [customItemName, setCustomItemName] = useState<string>('')
-    const [customItemDescription, setCustomItemDescription] = useState<string>('')
-    const [stickerSignaturesToggle, setStickerSignaturesToggle] = useState<boolean>(false)
-    const [stickerTeamLogosToggle, setStickerTeamLogosToggle] = useState<boolean>(false)
-    const [stickerRarityRadio, setStickerRarityRadio] = useState<string>('Standard')
     const [inputStickerDiffuseFile, setInputStickerDiffuseFile] = useState<string>()
     const [inputStickerExponentDiffuseFile, setInputStickerExponentDiffuseFile] = useState<string>()
     const [inputStickerHoloDiffuseFile, setInputStickerHoloDiffuseFile] = useState<string>()
     const [inputStickerFoilDiffuseFile, setInputStickerFoilDiffuseFile] = useState<string>()
+
+    const [inputSprayDiffuseFile, setInputSprayDiffuseFile] = useState<string>()
+
+    const [vmtFilepathSticker, setVmtFilepathSticker] = useState<string>()
+
+    const [customItemName, setCustomItemName] = useState<string>('')
+    const [customItemDescription, setCustomItemDescription] = useState<string>('')
+
+    const [stickerSignaturesToggle, setStickerSignaturesToggle] = useState<boolean>(false)
+    const [stickerTeamLogosToggle, setStickerTeamLogosToggle] = useState<boolean>(false)
+    const [stickerRarityRadio, setStickerRarityRadio] = useState<string>('Standard')
+
+    const [sprayRarityRadio, setSprayRarityRadio] = useState<string>('Common')
 
     const [fileManager, setFileManager] = useState<FileManager>()
     const [consoleLogText, setConsoleLogText] = useState<string>('')
@@ -93,9 +107,11 @@ const WeaponForm = () => {
         const weaponPaintKitArray = sortAndSetWeaponPaintKitArray(newFileManager);
         const glovePaintKitArray = sortAndSetGlovePaintKitArray(newFileManager);
         const stickerKitArray = sortAndSetStickerKitArray(newFileManager);
+        const sprayKitArray = sortAndSetSprayKitArray(newFileManager);
         populateWeaponSkinDropdown(weaponPaintKitArray, jsonFromTextFile);
         populateGloveSkinDropdown(glovePaintKitArray);
         populateStickerDropdown(stickerKitArray);
+        populateSprayDropdown(sprayKitArray);
     }
 
     const populateWeaponSkinDropdown = (generatedWeaponPaintKitArray: paintKit[],  textFilePaintKit?: paintKit): void => {
@@ -145,6 +161,21 @@ const WeaponForm = () => {
         }
     }
 
+    const populateSprayDropdown = (generatedSprayKitArray: sprayKit[]): void => {
+        if (generatedSprayKitArray.length !== 0) {
+            let curatedSprayDropDownArray = generatedSprayKitArray;
+            const arrayForSprayDropdown: string[] = curatedSprayDropDownArray.reduce<string[]>((prev, sprayKit) => {
+                if (sprayKit.fullItemDisplayName) {
+                    return [...prev, sprayKit.fullItemDisplayName]
+                }
+                return prev
+            }, [])
+            arrayForSprayDropdown.sort((displayNameA, displayNameB) => displayNameA > displayNameB ? 1 : -1);
+            arrayForSprayDropdown.unshift('--Please select a spray to replace--')
+            setSprayArrayForDropdown(arrayForSprayDropdown);
+        }
+    }
+
     const sortAndSetWeaponPaintKitArray = (newFileManager: FileManager): paintKit[] => {
         const weaponPaintKitArray = newFileManager.getCompletePaintKitWeaponArray()
         setCompleteWeaponSkinArray(weaponPaintKitArray)
@@ -158,9 +189,15 @@ const WeaponForm = () => {
     }
 
     const sortAndSetStickerKitArray = (newFileManager: FileManager): stickerKit[] => {
-        const stickerPaintKitArray = newFileManager.getcompleteStickerKitArray()
+        const stickerPaintKitArray = newFileManager.getCompleteStickerKitArray()
         setCompleteStickerArray(stickerPaintKitArray)
         return stickerPaintKitArray;
+    }
+
+    const sortAndSetSprayKitArray = (newFileManager: FileManager): sprayKit[] => {
+        const sprayPaintKitArray = newFileManager.getCompleteSprayKitArray()
+        setCompleteSprayArray(sprayPaintKitArray)
+        return sprayPaintKitArray;
     }
 
     const readTextFileOnInputWeaponSkin = (textFileUpdatedEvent: ChangeEvent<HTMLInputElement>): void => {
@@ -332,6 +369,14 @@ const WeaponForm = () => {
         }
     }
 
+    const onSprayDiffuseFileUpload = (diffFileUploadEvent: ChangeEvent<HTMLInputElement>): void => {
+        if (!diffFileUploadEvent.target.files || !diffFileUploadEvent.target.files.length) {
+            setInputSprayDiffuseFile(undefined);
+        } else {
+            setInputSprayDiffuseFile(diffFileUploadEvent.target.files[0].path);
+        }
+    }
+
     const toggleNormalMap = () => setNormalMapToggle(!normalMapToggle)
 
     const toggleStickerSignatures = () => {
@@ -397,6 +442,14 @@ const WeaponForm = () => {
         initializeDropDownArrays(fileManager);
     }
 
+    const sprayRarityChanged = (rarity: string) => {
+        setSprayRarityRadio(rarity)
+        if (!fileManager) return;
+        fileManager.setCurrentSprayRaritySet(rarity)
+        fileManager.buildCompleteSprayKitArrays()
+        initializeDropDownArrays(fileManager);
+    }
+
     const setCurrentSelectedDropdownWeaponSkin = (selectSkinEvent: ChangeEvent<HTMLSelectElement>): void => {
         setCurrentlySelectedWeaponSkin(completeWeaponSkinArray.find((skinWeapon: paintKit) => skinWeapon.fullItemDisplayName === selectSkinEvent.target.value))
     }
@@ -411,6 +464,10 @@ const WeaponForm = () => {
 
     const setCurrentSelectedDropdownSticker = (selectStickerEvent: ChangeEvent<HTMLSelectElement>): void => {
         setCurrentlySelectedSticker(completeStickerArray.find((sticker: stickerKit) => sticker.fullItemDisplayName === selectStickerEvent.target.value))
+    }
+
+    const setCurrentSelectedDropdownSpray = (selectSprayEvent: ChangeEvent<HTMLSelectElement>): void => {
+        setCurrentlySelectedSpray(completeSprayArray.find((spray: sprayKit) => spray.fullItemDisplayName === selectSprayEvent.target.value))
     }
 
     const submitWeaponForm = (): void => {
@@ -452,7 +509,7 @@ const WeaponForm = () => {
         let consoleMessage = saveAllVtfMapsAndVmtsToFolders(ItemType.Sticker);
         if (jsonFromStickerVmtFile) {
             if (selectedStickerToReplace) {
-                if(fileManager.replaceStickerWithCustom(selectedStickerToReplace, jsonFromStickerVmtFile, customItemName, customItemDescription, path.parse(vmtFilepathSticker).name)) {
+                if(fileManager.replaceStickerWithCustom(selectedStickerToReplace, customItemName, customItemDescription, path.parse(vmtFilepathSticker).name)) {
                     consoleMessage = consoleMessage + '\nSuccessfully added custom sticker to txt file!';
                 } else {
                     consoleMessage = consoleMessage + '\nFailed to add custom sticker to txt file!';
@@ -474,6 +531,38 @@ const WeaponForm = () => {
         }
         setConsoleLogText(consoleMessage);
         fileManager.buildCompleteStickerKitArrays()
+        initializeDropDownArrays(fileManager);
+    }
+
+    const submitSprayForm = (): void => {
+        if (!fileManager) return;
+        const selectedSprayToReplace = currentlySelectedSpray;
+        findAlternateMapsIfSelected(ItemType.Spray);
+        let consoleMessage = saveAllVtfMapsAndVmtsToFolders(ItemType.Spray);
+        if (inputSprayDiffuseFile) {
+            if (selectedSprayToReplace) {
+                if(fileManager.replaceSprayWithCustom(selectedSprayToReplace, customItemName, customItemDescription, path.parse(inputSprayDiffuseFile).name)) {
+                    consoleMessage = consoleMessage + '\nSuccessfully added custom spray to txt file!';
+                } else {
+                    consoleMessage = consoleMessage + '\nFailed to add custom spray to txt file!';
+                }
+                if (customItemName !== '' || customItemDescription !== "") {
+                    if(fileManager.addCustomNameAndDescription(csgoInstallDir, customItemName, customItemDescription, selectedSprayToReplace)){
+                        consoleMessage = consoleMessage + '\nSuccessfully added custom name and/or description to txt file!';
+                    } else {
+                        consoleMessage = consoleMessage + '\nFailed to save custom spray name/description to txt file!';
+                    }
+                } else {
+                    consoleMessage = consoleMessage + '\nEither no custom spray name or description provided!';
+                }
+            } else {
+                consoleMessage = consoleMessage + '\nPlease select a spray to replace with your custom spray!';
+            }
+        } else {
+            consoleMessage = consoleMessage + '\nPlease upload vtf file for your custom sticker!';
+        }
+        setConsoleLogText(consoleMessage);
+        fileManager.buildCompleteSprayKitArrays()
         initializeDropDownArrays(fileManager);
     }
 
@@ -502,6 +591,8 @@ const WeaponForm = () => {
                 if (inputStickerFoilDiffuseFile) {
                     jsonFromStickerVmtFile.$normalmap = inputStickerFoilDiffuseFile;
                 }
+                break;
+            case ItemType.Spray:
                 break;
         }
     }
@@ -536,21 +627,21 @@ const WeaponForm = () => {
                     consoleMessage = 'Failed to copy sticker files to csgo folder, the vmt is missing $basetexture or $decalstyle!'
                     return consoleMessage;
                 }
-                const rarity = jsonFromStickerVmtFile.$decalstyle === 4 ? 'Foil' : (jsonFromStickerVmtFile.$decalstyle === 3 ? 'Holo' : 'Standard')
-                if (fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$basetexture, rarity)) {
+                const raritySticker = jsonFromStickerVmtFile.$decalstyle === 4 ? 'Foil' : (jsonFromStickerVmtFile.$decalstyle === 3 ? 'Holo' : 'Standard')
+                if (fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$basetexture, raritySticker)) {
                     consoleMessage = "Successfully copied sticker base vtf file to stickers folder!";
                 } else {
                     consoleMessage = 'Failed to copy sticker base vtf to csgo folder!';
                 }
 
-                if (vmtFilepathSticker && fileManager.saveStickerVmtToFolder(vmtFilepathSticker, rarity)) {
+                if (vmtFilepathSticker && fileManager.saveStickerVmtToFolder(vmtFilepathSticker, raritySticker)) {
                     consoleMessage = "Successfully copied sticker vmt file to stickers folder!";
                 } else {
                     consoleMessage = 'Failed to copy vmt to csgo folder!';
                 }
 
                 if (jsonFromStickerVmtFile.$phongexponenttexture) {
-                    if (fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$phongexponenttexture, rarity)) {
+                    if (fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$phongexponenttexture, raritySticker)) {
                         consoleMessage = "Successfully copied sticker exponent vtf file to stickers folder!";
                     } else {
                         consoleMessage = 'Failed to copy sticker exponent vtf to csgo folder!';
@@ -560,7 +651,7 @@ const WeaponForm = () => {
                 }
 
                 if (jsonFromStickerVmtFile.$decalstyle === 4) {
-                    if (jsonFromStickerVmtFile.$normalmap && fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$normalmap, rarity)) {
+                    if (jsonFromStickerVmtFile.$normalmap && fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$normalmap, raritySticker)) {
                         consoleMessage = "Successfully copied sticker normalmap vtf file to stickers folder!";
                     } else {
                         consoleMessage = 'Failed to copy sticker normalmap vtf to csgo folder!';
@@ -568,11 +659,19 @@ const WeaponForm = () => {
                 }
 
                 if (jsonFromStickerVmtFile.$decalstyle === 3) {
-                    if (jsonFromStickerVmtFile.$holomask && fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$holomask, rarity)) {
+                    if (jsonFromStickerVmtFile.$holomask && fileManager.saveStickerMapToFolder(jsonFromStickerVmtFile.$holomask, raritySticker)) {
                         consoleMessage = "Successfully copied sticker holomask vtf file to stickers folder!";
                     } else {
                         consoleMessage = 'Failed to copy sticker holomask vtf to csgo folder!';
                     }
+                }
+                break;
+            case ItemType.Spray:
+                const raritySpray = sprayRarityRadio;
+                if (inputSprayDiffuseFile && fileManager.saveSprayMapToFolder(inputSprayDiffuseFile, raritySpray)) {
+                    consoleMessage = "Successfully copied spray base vtf file to sprays folder!";
+                } else {
+                    consoleMessage = 'Failed to copy spray base vtf to csgo folder!';
                 }
                 break;
         }
@@ -632,6 +731,9 @@ const WeaponForm = () => {
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" data-bs-toggle="tab" href="#sticker">Sticker</a>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link" data-bs-toggle="tab" href="#spray">Spray</a>
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" data-bs-toggle="tab" href="#more">More</a>
@@ -792,6 +894,58 @@ const WeaponForm = () => {
                         </div>
                         <div id="buttonDiv">
                             <button id="replaceStickerTexturesBtn" type='button' onClick={submitStickerForm} className="btn btn-primary">Replace Textures
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {/*<----------------------------------------------------Spray Tab---------------------------------------------------->*/}
+                <div className="tab-pane" id="spray">
+                    <form>
+                        <div id="inputDiv">
+                            <label id="raritySprayLabel" className="form-label mt-4" style={sprayRarityLabelStyle}>{sprayRarityLabelText}</label>
+                            <div>
+                                <input type="radio" id="sprayRarityCommonRadio" name="sprayRarity" value="Common" defaultChecked={sprayRarityRadio === 'Common'} onClick={() => sprayRarityChanged('Common')}></input>
+                                <label id="sprayRarityCommonRadioText">Common</label>
+                                <input type="radio" id="sprayRarityRareRadio" name="sprayRarity" value="Rare" defaultChecked={sprayRarityRadio === 'Rare'} onClick={() => sprayRarityChanged('Rare')}></input>
+                                <label id="sprayRarityRareRadioText">Rare</label>
+                                <input type="radio" id="sprayRarityMythicalRadio" name="sprayRarity" value="Mythical" defaultChecked={sprayRarityRadio === 'Mythical'} onClick={() => sprayRarityChanged('Mythical')}></input>
+                                <label id="sprayRarityMythicalRadioText">Mythical</label>
+                                <input type="radio" id="sprayRarityLegendaryRadio" name="sprayRarity" value="Legendary" defaultChecked={sprayRarityRadio === 'Legendary'} onClick={() => sprayRarityChanged('Legendary')}></input>
+                                <label id="sprayRarityLegendaryRadioText">Legendary</label>
+                            </div>
+                        </div>
+                        <div id="inputDivSprayDiffuse">
+                            <label id="diffuseSprayLabel" htmlFor="diffuseSprayFileInput" className="form-label mt-4" style={diffuseSprayLabelStyle}>{diffuseSprayLabelText}</label>
+                            <input className="form-control" type="file" id="diffuseSprayFileInput" accept=".vtf" onChange={onSprayDiffuseFileUpload}/>
+                        </div>
+                        <div id="inputDiv">
+                            <label id="sprayLabel" htmlFor="sprayDropDownDiv" className="form-label mt-4">Spray To
+                                Replace</label>
+                            <div className="dropdown" id="sprayDropDownDiv">
+                                <select name="sprayDropDown" id="sprayDropDown" className="form-select" onChange={setCurrentSelectedDropdownSpray}>
+                                    {sprayArrayForDropdown.map(sprayName => (<option key={sprayName} value={sprayName}>{sprayName}</option>))}
+                                </select>
+                            </div>
+                        </div>
+                        <div id="inputDiv">
+                            <label id="sprayLabel" className="col-form-label mt-4" htmlFor="newSprayNameInput">New Spray
+                                Name</label>
+                            <input className="form-control" placeholder="Custom Spray Name" id="newSprayNameInput"
+                                   onChange={event => setCustomItemName(event.target.value)}/>
+                        </div>
+                        <div id="inputDiv">
+                            <label id="sprayLabel" className="col-form-label mt-4" htmlFor="newSprayDescription">New
+                                Spray Description</label>
+                            <textarea className="form-control" placeholder="Custom Spray Description"
+                                      id="newSprayDescription" rows={3}
+                                      onChange={event => setCustomItemDescription(event.target.value)}/>
+                        </div>
+                        <div id="inputDiv">
+                            <label id="sprayLabel" className="col-form-label mt-4" htmlFor="outPutLogTextAreaSprays">Output Log</label>
+                            <textarea readOnly className="form-control" id="outPutLogTextAreaSprays" value={consoleLogText} rows={4}/>
+                        </div>
+                        <div id="buttonDiv">
+                            <button id="replaceSprayTexturesBtn" type='button' onClick={submitSprayForm} className="btn btn-primary">Replace Textures
                             </button>
                         </div>
                     </form>

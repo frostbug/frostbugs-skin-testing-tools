@@ -8,6 +8,8 @@ import {
     paintKit,
     paintKitItemPairing,
     sprayKit,
+    sprayKitItemPairing,
+    SPRAY_MATERIALS_FOLDERS_PATH,
     stickerKit,
     stickerKitItemPairing,
     stickerRarity,
@@ -29,12 +31,14 @@ export class FileManager {
     completePaintKitWeaponArray: paintKit[] = [];
     completePaintKitGloveArray: paintKit[] = [];
     completeStickerKitArray: stickerKit[] = [];
+    completeSprayKitArray: sprayKit[] = [];
     glovesItemArray: textFileItem[] = [];
 
     stickerSignaturesToggleValue: boolean = false;
     stickerTeamLogosToggleValue: boolean = false;
 
     currentStickerRaritySet: string = 'Standard';
+    currentSprayRaritySet: string = 'Common';
 
     constructor(csgoInstallDir: string) {
         this.csgoInstallDir = csgoInstallDir;
@@ -57,6 +61,7 @@ export class FileManager {
             }
             this.buildCompletePaintKitArrays()
             this.buildCompleteStickerKitArrays()
+            this.buildCompleteSprayKitArrays()
         } else {
             // alert("Selected file is not in Counter-Strike Global Offensive folder!")
         }
@@ -74,11 +79,11 @@ export class FileManager {
         return this.convertStickerKitsObjectToArray(stickerKitsJsonObject)
     }
 
-    /*private getItemsTextSprayKits(itemsTextFile: string): sprayKit[] {
+    private getItemsTextSprayKits(itemsTextFile: string): sprayKit[] {
         const itemsTextObject = VDF.parse(itemsTextFile);
-        const sprayKitsJsonObject = itemsTextObject["items_game"]["sticker_kits"]; // sprays are still under stricker_kits
+        const sprayKitsJsonObject = itemsTextObject["items_game"]["sticker_kits"]; // sprays are still under sticker_kits in items_game.txt
         return this.convertSprayKitsObjectToArray(sprayKitsJsonObject)
-    }*/
+    }
 
     private convertPaintKitsObjectToArray(paintKitJsonObject: ArrayLike<unknown>): paintKit[] {
         return Object.entries(paintKitJsonObject).map(([paintKitId, paintKitValue]) => FileManager.addPaintKitIdToPaintKitObject(paintKitValue as paintKit, paintKitId));
@@ -86,6 +91,10 @@ export class FileManager {
 
     private convertStickerKitsObjectToArray(stickerKitJsonObject: ArrayLike<unknown>): stickerKit[] {
         return Object.entries(stickerKitJsonObject).map(([stickerKitId, stickerKitValue]) => FileManager.addStickerKitIdToStickerKitObject(stickerKitValue as stickerKit, stickerKitId));
+    }
+
+    private convertSprayKitsObjectToArray(sprayKitJsonObject: ArrayLike<unknown>): sprayKit[] {
+        return Object.entries(sprayKitJsonObject).map(([sprayKitId, sprayKitValue]) => FileManager.addSprayKitIdToSprayKitObject(sprayKitValue as sprayKit, sprayKitId));
     }
 
     private static addPaintKitIdToPaintKitObject(paintKitObject: paintKit, paintKitId: string): paintKit {
@@ -96,6 +105,11 @@ export class FileManager {
     private static addStickerKitIdToStickerKitObject(stickerKitObject: stickerKit, stickerKitId: string): stickerKit {
         stickerKitObject.stickerKitId = stickerKitId;
         return stickerKitObject;
+    }
+
+    private static addSprayKitIdToSprayKitObject(sprayKitObject: sprayKit, sprayKitId: string): sprayKit {
+        sprayKitObject.sprayKitId = sprayKitId;
+        return sprayKitObject;
     }
 
     private static addItemIdToItem(textFileObject: textFileItem, textFileId: string): textFileItem {
@@ -109,6 +123,18 @@ export class FileManager {
         return FileManager.buildSkinWeaponArray(clientLootListsJsonObject);
     }
 
+    private static getStickerKitCollectionPairingArray(itemsTextFile: string, stickerSignaturesToggleValue: boolean, stickerTeamLogosToggleValue: boolean, currentStickerRaritySet: string): stickerKitItemPairing[] {
+        const itemsTextObject = VDF.parse(itemsTextFile);
+        const clientLootListsJsonObject = itemsTextObject["items_game"]["client_loot_lists"];
+        return FileManager.buildStickerArray(clientLootListsJsonObject, stickerSignaturesToggleValue, stickerTeamLogosToggleValue, currentStickerRaritySet);
+    }
+
+    private static getSprayKitCollectionPairingArray(itemsTextFile: string, currentSprayRaritySet: string): sprayKitItemPairing[] {
+        const itemsTextObject = VDF.parse(itemsTextFile);
+        const clientLootListsJsonObject = itemsTextObject["items_game"]["client_loot_lists"];
+        return FileManager.buildSprayArray(clientLootListsJsonObject, currentSprayRaritySet);
+    }
+
     private static getPaintKitNamesObject(csgoEnglishFile: string): unknown {
         const stringObject =  VDF.parse(csgoEnglishFile)["lang"]["Tokens"];
         for (const key in stringObject) {
@@ -118,12 +144,6 @@ export class FileManager {
             }
         }
         return stringObject
-    }
-
-    private static getStickerKitStickerPairingArray(itemsTextFile: string, stickerSignaturesToggleValue: boolean, stickerTeamLogosToggleValue: boolean, currentStickerRaritySet: string): stickerKitItemPairing[] {
-        const itemsTextObject = VDF.parse(itemsTextFile);
-        const clientLootListsJsonObject = itemsTextObject["items_game"]["client_loot_lists"];
-        return FileManager.buildStickerArray(clientLootListsJsonObject, stickerSignaturesToggleValue, stickerTeamLogosToggleValue, currentStickerRaritySet);
     }
 
     private setGloveItemsArrayFromItemArray(unfilteredItemsArray: textFileItem[], paintKitReferencesObject: any): void {
@@ -157,8 +177,15 @@ export class FileManager {
     public buildCompleteStickerKitArrays(): void {
         const stickerKitArray = this.getItemsTextStickerKits(this.itemsTextFile)
         const paintKitReferencesObject = FileManager.getPaintKitNamesObject(this.csgoEnglishFile);
-        const stickerNamesArray = FileManager.getStickerKitStickerPairingArray(this.itemsTextFile, this.stickerSignaturesToggleValue, this.stickerTeamLogosToggleValue, this.currentStickerRaritySet);
+        const stickerNamesArray = FileManager.getStickerKitCollectionPairingArray(this.itemsTextFile, this.stickerSignaturesToggleValue, this.stickerTeamLogosToggleValue, this.currentStickerRaritySet);
         this.completeStickerKitArray = this.createCompleteStickerArray(stickerKitArray, stickerNamesArray, paintKitReferencesObject);
+    }
+
+    public buildCompleteSprayKitArrays(): void {
+        const sprayKitArray = this.getItemsTextSprayKits(this.itemsTextFile)
+        const paintKitReferencesObject = FileManager.getPaintKitNamesObject(this.csgoEnglishFile);
+        const sprayNamesArray = FileManager.getSprayKitCollectionPairingArray(this.itemsTextFile, this.currentSprayRaritySet);
+        this.completeSprayKitArray = this.createCompleteSprayArray(sprayKitArray, sprayNamesArray, paintKitReferencesObject);
     }
 
     private getGlovesOnlyPaintKits(paintKitArray: paintKit[]): paintKit[] {
@@ -192,8 +219,12 @@ export class FileManager {
         return this.completePaintKitGloveArray;
     }
 
-    public getcompleteStickerKitArray(): stickerKit[] {
+    public getCompleteStickerKitArray(): stickerKit[] {
         return this.completeStickerKitArray;
+    }
+
+    public getCompleteSprayKitArray(): sprayKit[] {
+        return this.completeSprayKitArray;
     }
 
     private static checkIfGlove(itemsObject: textFileItem): boolean {
@@ -235,9 +266,9 @@ export class FileManager {
         return completeSkinArray;
     }
 
-    private createCompleteStickerArray(stickerKitArray: stickerKit[], stickerKitStickerPairingArray: stickerKitItemPairing[], stickerKitReferencesObject: any): stickerKit[] {
+    private createCompleteStickerArray(stickerKitArray: stickerKit[], stickerKitCollectionPairingArray: stickerKitItemPairing[], stickerKitReferencesObject: any): stickerKit[] {
         const completeStickersArray: stickerKit[] = [];
-        stickerKitStickerPairingArray.forEach(stickerPairing => {
+        stickerKitCollectionPairingArray.forEach(stickerPairing => {
             let combinedStickerKit = stickerKitArray.find(stickerKit => stickerKit.name === stickerPairing.stickerKitName && stickerKit.item_rarity?.toLowerCase() === stickerPairing.stickerRarity.stickerRarityName.toLowerCase())
             if (combinedStickerKit !== undefined) {
                 const stickerKitDescriptionReference = combinedStickerKit?.description_string?.replace("#", "").toUpperCase()
@@ -267,6 +298,38 @@ export class FileManager {
         return completeStickersArray;
     }
 
+    private createCompleteSprayArray(sprayKitArray: sprayKit[], sprayKitCollectionPairingArray: sprayKitItemPairing[], sprayKitReferencesObject: any): sprayKit[] {
+        const completeSpraysArray: sprayKit[] = [];
+        sprayKitCollectionPairingArray.forEach(sprayPairing => {
+            let combinedSprayKit = sprayKitArray.find(sprayKit => sprayKit.name === sprayPairing.sprayKitName && sprayKit.item_rarity?.toLowerCase() === sprayPairing.sprayRarity.sprayRarityName.toLowerCase())
+            if (combinedSprayKit !== undefined) {
+                const sprayKitDescriptionReference = combinedSprayKit?.description_string?.replace("#", "").toUpperCase()
+                const sprayKitNameReference = combinedSprayKit?.item_name?.replace("#", "").toUpperCase()
+                let sprayDescription = '';
+                let sprayDisplayName = '';
+                if(sprayKitDescriptionReference && sprayKitDescriptionReference in sprayKitReferencesObject){
+                    sprayDescription = sprayKitReferencesObject[sprayKitDescriptionReference]
+                }
+                if(sprayKitNameReference && sprayKitNameReference in sprayKitReferencesObject){
+                    sprayDisplayName = sprayKitReferencesObject[sprayKitNameReference]
+                }
+                const sprayKitName = sprayPairing.sprayKitName;
+                if (sprayKitName.includes('phase')) {
+                    sprayDisplayName = sprayDisplayName + (' Phase ' + sprayKitName.split('phase')[1].charAt(0))
+                }
+                combinedSprayKit = {
+                    ...combinedSprayKit,
+                    itemDisplayName: sprayPairing?.sprayCollectionName,
+                    sprayDescription: sprayDescription,
+                    sprayDisplayName: sprayDisplayName,
+                    fullItemDisplayName: sprayPairing?.sprayCollectionName + ' | ' + sprayDisplayName
+                }
+                completeSpraysArray.push(combinedSprayKit)
+            }
+        })
+        return completeSpraysArray;
+    }
+
     private static buildSkinWeaponArray(clientLootListsJsonObject: ArrayLike<unknown>): paintKitItemPairing[] {
         const paintKitWeaponPairingArray = []
         for (const value of Object.values(clientLootListsJsonObject)) {
@@ -282,20 +345,37 @@ export class FileManager {
     }
 
     private static buildStickerArray(clientLootListsJsonObject: ArrayLike<unknown>, stickerSignaturesToggleValue: boolean, stickerTeamLogosToggleValue: boolean, currentStickerRaritySet: string): stickerKitItemPairing[] {
-        const stickerKitStickerPairingArray = []
+        const stickerKitCollectionPairingArray = []
         let keyNumInArray = 0;
         for (const value of Object.values(clientLootListsJsonObject)) {
             // @ts-ignore - clientLootListObject is raw VDF and it or it's contents cannot be typed yet
             for (const key of Object.keys(value)) {
                 const processedStickerJsonObject = FileManager.createJsonObjectFromSticker(Object.keys(clientLootListsJsonObject)[keyNumInArray], key, stickerSignaturesToggleValue, stickerTeamLogosToggleValue, currentStickerRaritySet);
                 if (processedStickerJsonObject) {
-                    stickerKitStickerPairingArray.push(processedStickerJsonObject)
+                    stickerKitCollectionPairingArray.push(processedStickerJsonObject)
                 }
             }
 
             keyNumInArray++;
         }
-        return stickerKitStickerPairingArray;
+        return stickerKitCollectionPairingArray;
+    }
+
+    private static buildSprayArray(clientLootListsJsonObject: ArrayLike<unknown>, currentSprayRaritySet: string): sprayKitItemPairing[] {
+        const sprayKitCollectionPairingArray = []
+        let keyNumInArray = 0;
+        for (const value of Object.values(clientLootListsJsonObject)) {
+            // @ts-ignore - clientLootListObject is raw VDF and it or it's contents cannot be typed yet
+            for (const key of Object.keys(value)) {
+                const processedSprayJsonObject = FileManager.createJsonObjectFromSpray(Object.keys(clientLootListsJsonObject)[keyNumInArray], key, currentSprayRaritySet);
+                if (processedSprayJsonObject) {
+                    sprayKitCollectionPairingArray.push(processedSprayJsonObject)
+                }
+            }
+
+            keyNumInArray++;
+        }
+        return sprayKitCollectionPairingArray;
     }
 
     private static createJsonObjectFromSkinWeapon(skinWeaponPairingString: string): paintKitItemPairing | undefined {
@@ -319,7 +399,7 @@ export class FileManager {
                 ? 4
                 : (stickerCollectionName.toLowerCase().includes('holo') || stickerString.toLowerCase().includes('holo') || stickerCollectionName.toLowerCase().includes('mythical') || stickerString.toLowerCase().includes('mythical')
                     ? 3
-                    : 0)
+                    : 0) // standard/rare
             const stickerRarityName = stickerRarityId === 4 ? 'Legendary' : (stickerRarityId === 3 ? 'Mythical' : 'Rare')
             const stickerRarityDisplayName = stickerRarityId === 4 ? 'Foil' : (stickerRarityId === 3 ? 'Holo' : 'Standard')
 
@@ -350,8 +430,8 @@ export class FileManager {
                     stickerString.toLowerCase().includes('rmr2020') ||
                     stickerString.toLowerCase().includes('stockh2021') ||
                     stickerString.toLowerCase().includes('antwerp2022'))) {
-                        return undefined
-                    }
+                    return undefined
+                }
 
                 return {
                     stickerKitName: stickerString,
@@ -372,6 +452,51 @@ export class FileManager {
                         stickerRarityId: stickerRarityId,
                         stickerRarityName: stickerRarityName,
                         stickerRarityDisplayName: stickerRarityDisplayName
+                    }
+                };
+            }
+        } else {
+            return undefined;
+        }
+    }
+
+    private static createJsonObjectFromSpray(sprayCollectionName: string, sprayPairingString: string, currentSprayRaritySet: string): sprayKitItemPairing | undefined {
+        if (sprayPairingString.includes('spray')) {
+            var sprayString = sprayPairingString.replace('[', '').split("]")[0];
+            const sprayRarityId = sprayCollectionName.toLowerCase().includes('legendary') || sprayString.toLowerCase().includes('legendary')
+                ? 4
+                : (sprayCollectionName.toLowerCase().includes('mythical') || sprayString.toLowerCase().includes('mythical')
+                    ? 3
+                    : (sprayCollectionName.toLowerCase().includes('rare') || sprayString.toLowerCase().includes('rare')
+                        ? 0
+                        : -1)) // common
+            const sprayRarityName = sprayRarityId === 4 ? 'Legendary' : (sprayRarityId === 3 ? 'Mythical' : (sprayRarityId === 0 ? 'Rare' : 'Common'))
+            const sprayRarityDisplayName = sprayRarityName
+
+            if (sprayRarityDisplayName.toLowerCase() !== currentSprayRaritySet.toLowerCase())
+                return undefined
+
+            if (sprayCollectionName)
+            {
+                return {
+                    sprayKitName: sprayString,
+                    sprayCollectionName: sprayCollectionName,
+                    sprayRarity: {
+                        sprayRarityId: sprayRarityId,
+                        sprayRarityName: sprayRarityName,
+                        sprayRarityDisplayName: sprayRarityDisplayName
+                    }
+                };
+            }
+            else
+            {
+                return {
+                    sprayKitName: sprayString,
+                    sprayCollectionName: 'other',
+                    sprayRarity: {
+                        sprayRarityId: sprayRarityId,
+                        sprayRarityName: sprayRarityName,
+                        sprayRarityDisplayName: sprayRarityDisplayName
                     }
                 };
             }
@@ -489,6 +614,27 @@ export class FileManager {
         return false
     }
 
+    public saveSprayMapToFolder(mapToSavePath: string, sprayKitFinishStyleId: string): boolean {
+        if (sprayKitFinishStyleId !== undefined) {
+            const file_path = this.csgoInstallDir + SPRAY_MATERIALS_FOLDERS_PATH + sprayKitFinishStyleId;
+            try {
+                mkdirSync(file_path, {recursive: true});
+            } catch (e) {
+                console.log(sprayKitFinishStyleId + ' folder already exists!');
+            }
+            try {
+                const pathToCopyTo = path.join(file_path, path.basename(mapToSavePath));
+                copyFileSync(mapToSavePath, pathToCopyTo);
+                console.log("Successfully copied vtf file to " + pathToCopyTo);
+                return true;
+            } catch (e) {
+                console.error(e)
+                return false;
+            }
+        }
+        return false
+    }
+
     public replaceSkinWithCustom(objectToReplace: paintKit, customSkinString: paintKit, normalMapToggle: boolean): boolean {
         let skinToAdd: paintKit = JSON.parse(JSON.stringify(customSkinString))
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
@@ -548,8 +694,7 @@ export class FileManager {
         }
     }
 
-    public replaceStickerWithCustom(objectToReplace: stickerKit, customStickerString: weaponDecal, customItemName: string, customItemDescription: string, vmtName: string): boolean {
-        let stickerToAdd: weaponDecal = JSON.parse(JSON.stringify(customStickerString))
+    public replaceStickerWithCustom(objectToReplace: stickerKit, customItemName: string, customItemDescription: string, vmtName: string): boolean {
         let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
         if (objectToReplace.item_name !== undefined) {
             let stringSplit = itemsTextFile.split(objectToReplace.item_name)
@@ -563,6 +708,30 @@ export class FileManager {
             let stringSplit = itemsTextFile.split(objectToReplace.sticker_material)
             const rarityFolderName = objectToReplace.item_rarity.toLowerCase() === 'legendary' ? 'Foil' : (objectToReplace.item_rarity.toLowerCase() === 'mythical' ? 'Holo' : 'Standard')
             itemsTextFile = stringSplit[0] + rarityFolderName + "/" + vmtName + stringSplit[1]
+        }
+        try {
+            writeFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    public replaceSprayWithCustom(objectToReplace: sprayKit, customItemName: string, customItemDescription: string, vtfName: string): boolean {
+        let itemsTextFile = readFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, 'ascii');
+        if (objectToReplace.item_name !== undefined) {
+            let stringSplit = itemsTextFile.split(objectToReplace.item_name)
+            itemsTextFile = stringSplit[0] + customItemName + stringSplit[1]
+        }
+        if (objectToReplace.description_string !== undefined) {
+            let stringSplit = itemsTextFile.split(objectToReplace.description_string)
+            itemsTextFile = stringSplit[0] + customItemDescription + stringSplit[1]
+        }
+        if (objectToReplace.item_rarity !== undefined && objectToReplace.sticker_material !== undefined) {
+            let stringSplit = itemsTextFile.split(objectToReplace.sticker_material)
+            const rarityFolderName = objectToReplace.item_rarity.toLowerCase() === 'legendary' ? 'Legendary' : (objectToReplace.item_rarity.toLowerCase() === 'mythical' ? 'Mythical' : (objectToReplace.item_rarity.toLowerCase() === 'rare' ? 'Rare' : 'Common'))
+            itemsTextFile = stringSplit[0] + rarityFolderName + "/" + vtfName + stringSplit[1]
         }
         try {
             writeFileSync(this.csgoInstallDir + ITEMS_GAME_FILE_PATH, itemsTextFile, 'ascii');
@@ -631,4 +800,6 @@ export class FileManager {
     }
 
     public setCurrentStickerRaritySet = (rarity: string) => this.currentStickerRaritySet = rarity;
+
+    public setCurrentSprayRaritySet = (rarity: string) => this.currentSprayRaritySet = rarity;
 }

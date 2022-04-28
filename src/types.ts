@@ -3,6 +3,7 @@ export const ITEMS_GAME_FILE_PATH: string = "\\csgo\\scripts\\items\\items_game.
 export const WEAPON_SKIN_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\paints\\";
 export const STICKER_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\stickers\\";
 export const STICKER_MATERIALS_IN_VMT_FOLDERS_PATH: string = "models\\weapons\\customization\\stickers\\";
+export const SPRAY_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\sprays\\";
 export const CSGO_EXECUTABLE_NAME: string = "\\csgo.exe";
 
 export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = [
@@ -59,6 +60,13 @@ export const STICKER_RARITY_FOLDERS: stickerRarity[] = [
     {stickerRarityId: 4, stickerRarityName: "Foil", stickerRarityDisplayName: "Legendary"},
 ]
 
+export const SPRAY_RARITY_FOLDERS: sprayRarity[] = [
+    {sprayRarityId: -1, sprayRarityName: "Common", sprayRarityDisplayName: "Common"}, // what should sprayRarityId be ??
+    {sprayRarityId: 0, sprayRarityName: "Rare", sprayRarityDisplayName: "Rare"},
+    {sprayRarityId: 3, sprayRarityName: "Mythical", sprayRarityDisplayName: "Mythical"},
+    {sprayRarityId: 4, sprayRarityName: "Legendary", sprayRarityDisplayName: "Legendary"},
+]
+
 export interface finishStyle {
     finishStyleId: string;
     finishStyleName: string;
@@ -68,6 +76,12 @@ export interface stickerRarity {
     stickerRarityId: number;
     stickerRarityName: string;
     stickerRarityDisplayName: string;
+}
+
+export interface sprayRarity {
+    sprayRarityId: number;
+    sprayRarityName: string;
+    sprayRarityDisplayName: string;
 }
 
 export interface paintableWeapon {
@@ -85,6 +99,12 @@ export interface stickerKitItemPairing {
     stickerKitName: string;
     stickerCollectionName: string;
     stickerRarity: stickerRarity;
+}
+
+export interface sprayKitItemPairing {
+    sprayKitName: string;
+    sprayCollectionName: string;
+    sprayRarity: sprayRarity;
 }
 
 export interface referencedLanguageString {
@@ -173,11 +193,13 @@ export interface sprayKit {
     name?: string;
     item_name?: string;
     description_string?: string;
-    sticker_material?: string;
+    sticker_material?: string; // sprays use sticker_material in items_game.txt
     item_rarity?: string;
     itemShortName?: string;
+    itemDisplayName?: string;
     sprayDescription?: string;
     sprayDisplayName?: string;
+    fullItemDisplayName?: string;
     sprayKitId?: string;
     vmt_path?: string;
 }

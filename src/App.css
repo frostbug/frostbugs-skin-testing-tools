@@ -4,7 +4,8 @@
     margin-right: 5px !important;
 }
 
-#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio {
+#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio,
+#sprayRarityCommonRadio, #sprayRarityRareRadio, #sprayRarityMythicalRadio, #sprayRarityLegendaryRadio {
     padding: 0;
     margin-top: 6px !important;
     margin-bottom: 6px !important;
@@ -14,7 +15,8 @@
 }
 
 #weaponLabel, #diffuseWeaponLabel, #normalWeaponLabel,
-#stickerLabel, #rarityStickerLabel, #diffuseStickerLabel, #diffuseStickerExponentLabel, #signaturesStickerLabel, #teamLogosStickerLabel {
+#stickerLabel, #rarityStickerLabel, #diffuseStickerLabel, #diffuseStickerExponentLabel, #signaturesStickerLabel, #teamLogosStickerLabel,
+#sprayLabel, #raritySprayLabel, #diffuseSprayLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
@@ -30,18 +32,23 @@
     display: none;
 }
 
-#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText {
+#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText,
+#sprayRarityCommonRadioText, #sprayRarityRareRadioText, #sprayRarityMythicalRadioText, #sprayRarityLegendaryRadioText {
     padding: 0;
     margin-right: 14px !important;
     display: inline-block;
 }
 
-#inputDiv #inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil {
+#inputDiv,
+#inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil,
+#inputDivSprayDiffuse {
     margin-left: 10px;
     margin-right: 10px;
 }
 
-#diffuseFileInput, #normalFileInput, #diffuseStickerFileInput, #diffuseStickerExponentFileInput {
+#diffuseFileInput, #normalFileInput,
+#diffuseStickerFileInput, #diffuseStickerExponentFileInput,
+#diffuseSprayFileInput {
     display: inline-block;
 }
 
