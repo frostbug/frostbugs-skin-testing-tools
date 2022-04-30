@@ -55,10 +55,10 @@ export const FINISH_STYLE_FOLDERS: finishStyle[] = [
 ]
 
 export const STICKER_RARITY_FOLDERS: stickerRarity[] = [
-    {stickerRarityId: 0, stickerRarityName: "Standard", stickerRarityDisplayName: "Rare"}, // does it only use 0 ??
+    {stickerRarityId: 0, stickerRarityName: "Standard", stickerRarityDisplayName: "Rare"}, // 0 = glossy, 1 = paper-backed, 2 = color-replace
     {stickerRarityId: 3, stickerRarityName: "Holo", stickerRarityDisplayName: "Mythical"},
     {stickerRarityId: 4, stickerRarityName: "Foil", stickerRarityDisplayName: "Legendary"},
-    {stickerRarityId: 5, stickerRarityName: "Gold", stickerRarityDisplayName: "Ancient"}, // it should actually be 4, the same as foil, wtf
+    {stickerRarityId: 5, stickerRarityName: "Gold", stickerRarityDisplayName: "Ancient"}, // it is actually still foil, therefore it should really also be 4
 ]
 
 export const SPRAY_RARITY_FOLDERS: sprayRarity[] = [
@@ -206,7 +206,7 @@ export interface sprayKit {
 }
 // sticker VMTs
 export interface weaponDecal {
-    $decalstyle?: number;
+    $decalstyle?: number; // 0 = glossy, 1 = paper-backed, 2 = color-replace, 3 = holographic, 4 = embossed foil
     $basetexture?: string;
     $holomask?: string; // holo
     $holospectrum?: string; // holo
