@@ -1,6 +1,9 @@
 export const CSGO_ENGLISH_FILE_PATH: string = "\\csgo\\resource\\csgo_english.txt";
 export const ITEMS_GAME_FILE_PATH: string = "\\csgo\\scripts\\items\\items_game.txt";
-export const MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\paints\\";
+export const WEAPON_SKIN_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\paints\\";
+export const STICKER_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\models\\weapons\\customization\\stickers\\";
+export const STICKER_MATERIALS_IN_VMT_FOLDERS_PATH: string = "models\\weapons\\customization\\stickers\\";
+export const SPRAY_MATERIALS_FOLDERS_PATH: string = "\\csgo\\materials\\decals\\sprays\\";
 export const CSGO_EXECUTABLE_NAME: string = "\\csgo.exe";
 
 export const PAINTABLE_WEAPON_ARRAY: Array<paintableWeapon> = [
@@ -51,9 +54,37 @@ export const FINISH_STYLE_FOLDERS: finishStyle[] = [
     {finishStyleId: "9", finishStyleName: "gunsmith"}
 ]
 
+export const STICKER_RARITY_FOLDERS: stickerRarity[] = [
+    {stickerRarityId: 0, stickerRarityName: "Rare", stickerRarityNameReal: 'Rare', stickerRarityDisplayName: "Standard"}, // 0 = glossy, 1 = paper-backed, 2 = color-replace
+    {stickerRarityId: 3, stickerRarityName: "Mythical", stickerRarityNameReal: 'Mythical', stickerRarityDisplayName: "Holo"},
+    {stickerRarityId: 4, stickerRarityName: "Legendary", stickerRarityNameReal: 'Legendary', stickerRarityDisplayName: "Foil"},
+    {stickerRarityId: 5, stickerRarityName: "Ancient", stickerRarityNameReal: 'Ancient', stickerRarityDisplayName: "Gold"}, // it is actually still foil, therefore it should really also be 4
+    {stickerRarityId: 6, stickerRarityName: "Mythical2", stickerRarityNameReal: 'Mythical', stickerRarityDisplayName: "Glitter"},
+]
+
+export const SPRAY_RARITY_FOLDERS: sprayRarity[] = [
+    {sprayRarityId: -1, sprayRarityName: "Common", sprayRarityDisplayName: "Common"}, // what should sprayRarityId be ??
+    {sprayRarityId: 0, sprayRarityName: "Rare", sprayRarityDisplayName: "Rare"},
+    {sprayRarityId: 3, sprayRarityName: "Mythical", sprayRarityDisplayName: "Mythical"},
+    {sprayRarityId: 4, sprayRarityName: "Legendary", sprayRarityDisplayName: "Legendary"},
+]
+
 export interface finishStyle {
     finishStyleId: string;
     finishStyleName: string;
+}
+
+export interface stickerRarity {
+    stickerRarityId: number;
+    stickerRarityName: string;
+    stickerRarityNameReal: string; // glitter stickers are given a fake 'Mythical2' stickerRarityName due to holo stickers also using the 'Mythical' rarity
+    stickerRarityDisplayName: string;
+}
+
+export interface sprayRarity {
+    sprayRarityId: number;
+    sprayRarityName: string;
+    sprayRarityDisplayName: string;
 }
 
 export interface paintableWeapon {
@@ -65,6 +96,18 @@ export interface paintableWeapon {
 export interface paintKitItemPairing {
     itemShortName: string;
     paintKitName: string;
+}
+
+export interface stickerKitItemPairing {
+    stickerKitName: string;
+    stickerCollectionName: string;
+    stickerRarity: stickerRarity;
+}
+
+export interface sprayKitItemPairing {
+    sprayKitName: string;
+    sprayCollectionName: string;
+    sprayRarity: sprayRarity;
 }
 
 export interface referencedLanguageString {
@@ -131,6 +174,65 @@ export interface textFileItem {
 
     itemId?: string;
     itemDisplayName?: string;
+}
+export interface stickerKit {
+    name?: string;
+    item_name?: string;
+    description_string?: string;
+    sticker_material?: string;
+    item_rarity?: string;
+    tournament_event_id?: string;
+    tournament_team_id?: string;
+    tournament_player_id?: string;
+    itemShortName?: string;
+    itemDisplayName?: string;
+    stickerDescription?: string;
+    stickerDisplayName?: string;
+    fullItemDisplayName?: string;
+    stickerKitId?: string;
+    vmt_path?: string;
+}
+export interface sprayKit {
+    name?: string;
+    item_name?: string;
+    description_string?: string;
+    sticker_material?: string; // sprays use sticker_material in items_game.txt
+    item_rarity?: string;
+    itemShortName?: string;
+    itemDisplayName?: string;
+    sprayDescription?: string;
+    sprayDisplayName?: string;
+    fullItemDisplayName?: string;
+    sprayKitId?: string;
+    vmt_path?: string;
+}
+// sticker VMTs
+export interface weaponDecal {
+    $decalstyle?: number; // 0 = glossy, 1 = paper-backed, 2 = color-replace, 3 = holographic, 4 = embossed foil, 5 = gold, 6 = glitter
+    $basetexture?: string;
+    $normalmap?: string; // foil/gold/glitter
+    $holomask?: string; // holo
+    $holospectrum?: string; // holo
+    $glittermask?: string; // glitter
+    $glitternormal?: string; // glitter
+    $glittercube?: string; // glitter
+    $wearbias?: number;
+	$wearremapmin?: number;
+	$wearremapmid?: number;
+	$wearremapmax?: number;
+    $unwearstrength?: number;
+    $desatbasetint?: number; // gold
+    $glitterscale?: number; // glitter
+    $colortint?: string;
+    $envmap?: string;
+    $envmaptint?: string;
+    $phong?: number;
+    $phongexponent?: number;
+    $phongfresnelranges?: string;
+    $phongalbedotint?: number;
+    $phongboost?: number;
+    $phongalbedoboost?: number;
+    $phongexponenttexture?: string; // is this correct for Exponent VTF ??
 }
 
 export const screenshotScript = "sv_cheats 1; bot_kick; mp_warmup_end; mp_freezetime 0; mp_roundtime 60; mp_roundtime_defuse 999; mp_roundtime_hostage 999; mp_buy_anywhere 1; mp_buytime 999; sv_infinite_ammo 2; mp_startmoney 16000; mp_restartgame 1; mp_ignore_round_win_conditions 1; cl_drawhud 0"

@@ -1,10 +1,42 @@
-#normalCheckBox {
+#normalCheckBox, #stickerSignaturesCheckBox #stickerTeamLogosCheckBox {
     margin-top: 18px !important;
     margin-left: -35px !important;
     margin-right: 5px !important;
 }
 
-#weaponLabel {
+#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio, #stickerRarityGoldRadio, #stickerRarityGlitterRadio,
+#sprayRarityCommonRadio, #sprayRarityRareRadio, #sprayRarityMythicalRadio, #sprayRarityLegendaryRadio {
+    padding: 0;
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+    display: inline-block;
+}
+
+#sprayRarityCommonRadio {
+    accent-color: #b0c3d9;
+}
+
+#stickerRarityStandardRadio, #sprayRarityRareRadio {
+    accent-color: #4b69ff;
+}
+
+#stickerRarityHoloRadio, #stickerRarityGlitterRadio, #sprayRarityMythicalRadio {
+    accent-color: #8847ff;
+}
+
+#stickerRarityFoilRadio, #sprayRarityLegendaryRadio {
+    accent-color: #d32ee6;
+}
+
+#stickerRarityGoldRadio {
+    accent-color: #eb4b4b;
+}
+
+#weaponLabel, #diffuseWeaponLabel, #normalWeaponLabel,
+#stickerLabel, #rarityStickerLabel, #diffuseStickerLabel, #diffuseStickerExponentLabel, #signaturesStickerLabel, #teamLogosStickerLabel,
+#sprayLabel, #raritySprayLabel, #diffuseSprayLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
@@ -12,25 +44,56 @@
     display: inline-block;
 }
 
-#diffuseWeaponLabel {
+#diffuseStickerHoloLabel, #diffuseStickerFoilLabel, #diffuseStickerGoldLabel, #diffuseStickerGlitterLabel, #diffuse2StickerGlitterLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
     margin-left: 6px !important;
-    display: inline-block;
+    display: none;
 }
 
-#normalWeaponLabel {
+#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText, #stickerRarityGoldRadioText, #stickerRarityGlitterRadioText,
+#sprayRarityCommonRadioText, #sprayRarityRareRadioText, #sprayRarityMythicalRadioText, #sprayRarityLegendaryRadioText {
     padding: 0;
-    margin-top: 14px !important;
-    margin-bottom: 6px !important;
-    margin-left: 6px !important;
+    margin-right: 14px !important;
     display: inline-block;
 }
 
-#inputDiv {
+#sprayRarityCommonRadioText {
+    color: #b0c3d9;
+}
+
+#stickerRarityStandardRadioText, #sprayRarityRareRadioText {
+    color: #4b69ff;
+}
+
+#stickerRarityHoloRadioText, #stickerRarityGlitterRadioText, #sprayRarityMythicalRadioText {
+    color: #8847ff;
+}
+
+#stickerRarityFoilRadioText, #sprayRarityLegendaryRadioText {
+    color: #d32ee6;
+}
+
+#stickerRarityGoldRadioText {
+    color: #eb4b4b;
+}
+
+#inputDiv,
+#inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil, #inputDivStickerDiffuseGold, #inputDivStickerDiffuseGlitter, #inputDivStickerDiffuse2Glitter,
+#inputDivSprayDiffuse {
     margin-left: 10px;
     margin-right: 10px;
+}
+
+#diffuseFileInput, #normalFileInput,
+#diffuseStickerFileInput, #diffuseStickerExponentFileInput,
+#diffuseSprayFileInput {
+    display: inline-block;
+}
+
+#diffuseStickerHoloFileInput, #diffuseStickerFoilFileInput, #diffuseStickerGoldFileInput, #diffuseStickerGlitterFileInput, #diffuse2StickerGlitterFileInput {
+    display: none;
 }
 
 #hyperlinkButton {
@@ -57,15 +120,7 @@ p {
     float: right;
 }
 
-#weaponSkin {
-    font-size: 0.9rem;
-}
-
-#currentGloves {
-    font-size: 0.9rem;
-}
-
-#newGloves {
+#weaponSkin, #currentGloves, #newGloves {
     font-size: 0.9rem;
 }
 

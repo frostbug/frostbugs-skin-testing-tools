@@ -17,9 +17,9 @@ Also special thanks to these workshoppers who offered support during development
 ### What does this tool do?
 This tool automates the task of adding your custom skin to the CSGO game files for screenshot/testing purposes. 
 
-After selecting your csgo exe file at the top of the tool, a list of skins is generated from your items.txt that you can swap out for your own custom designs. 
+After selecting your csgo exe file at the top of the tool, a list of skins is generated from your items_game.txt that you can swap out for your own custom designs. 
 
-This tool edits your items.txt files and copies your vtf files into your CSGO install folder, just the same as you would do manually if you wanted to test your skins.
+This tool edits your items_game.txt files and copies your vtf files into your CSGO install folder, just the same as you would do manually if you wanted to test your skins.
 
 Please note that this tool does NOT touch or edit your csgo exe file, the file is only used for reference to find where the text and texture files that need to be edited/swapped.
 
