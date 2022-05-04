@@ -4,7 +4,7 @@
     margin-right: 5px !important;
 }
 
-#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio, #stickerRarityGoldRadio,
+#stickerRarityStandardRadio, #stickerRarityHoloRadio, #stickerRarityFoilRadio, #stickerRarityGoldRadio, #stickerRarityGlitterRadio,
 #sprayRarityCommonRadio, #sprayRarityRareRadio, #sprayRarityMythicalRadio, #sprayRarityLegendaryRadio {
     padding: 0;
     margin-top: 6px !important;
@@ -22,7 +22,7 @@
     accent-color: #4b69ff;
 }
 
-#stickerRarityHoloRadio, #sprayRarityMythicalRadio {
+#stickerRarityHoloRadio, #stickerRarityGlitterRadio, #sprayRarityMythicalRadio {
     accent-color: #8847ff;
 }
 
@@ -44,7 +44,7 @@
     display: inline-block;
 }
 
-#diffuseStickerHoloLabel, #diffuseStickerFoilLabel, #diffuseStickerGoldLabel {
+#diffuseStickerHoloLabel, #diffuseStickerFoilLabel, #diffuseStickerGoldLabel, #diffuseStickerGlitterLabel, #diffuse2StickerGlitterLabel {
     padding: 0;
     margin-top: 14px !important;
     margin-bottom: 6px !important;
@@ -52,7 +52,7 @@
     display: none;
 }
 
-#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText, #stickerRarityGoldRadioText,
+#stickerRarityStandardRadioText, #stickerRarityHoloRadioText, #stickerRarityFoilRadioText, #stickerRarityGoldRadioText, #stickerRarityGlitterRadioText,
 #sprayRarityCommonRadioText, #sprayRarityRareRadioText, #sprayRarityMythicalRadioText, #sprayRarityLegendaryRadioText {
     padding: 0;
     margin-right: 14px !important;
@@ -67,7 +67,7 @@
     color: #4b69ff;
 }
 
-#stickerRarityHoloRadioText, #sprayRarityMythicalRadioText {
+#stickerRarityHoloRadioText, #stickerRarityGlitterRadioText, #sprayRarityMythicalRadioText {
     color: #8847ff;
 }
 
@@ -80,7 +80,7 @@
 }
 
 #inputDiv,
-#inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil, #inputDivStickerDiffuseGold,
+#inputDivStickerDiffuseStandard, #inputDivStickerDiffuseExponent, #inputDivStickerDiffuseHolo, #inputDivStickerDiffuseFoil, #inputDivStickerDiffuseGold, #inputDivStickerDiffuseGlitter, #inputDivStickerDiffuse2Glitter,
 #inputDivSprayDiffuse {
     margin-left: 10px;
     margin-right: 10px;
@@ -92,7 +92,7 @@
     display: inline-block;
 }
 
-#diffuseStickerHoloFileInput, #diffuseStickerFoilFileInput, #diffuseStickerGoldFileInput {
+#diffuseStickerHoloFileInput, #diffuseStickerFoilFileInput, #diffuseStickerGoldFileInput, #diffuseStickerGlitterFileInput, #diffuse2StickerGlitterFileInput {
     display: none;
 }
 

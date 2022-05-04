@@ -55,10 +55,11 @@ export const FINISH_STYLE_FOLDERS: finishStyle[] = [
 ]
 
 export const STICKER_RARITY_FOLDERS: stickerRarity[] = [
-    {stickerRarityId: 0, stickerRarityName: "Standard", stickerRarityDisplayName: "Rare"}, // 0 = glossy, 1 = paper-backed, 2 = color-replace
-    {stickerRarityId: 3, stickerRarityName: "Holo", stickerRarityDisplayName: "Mythical"},
-    {stickerRarityId: 4, stickerRarityName: "Foil", stickerRarityDisplayName: "Legendary"},
-    {stickerRarityId: 5, stickerRarityName: "Gold", stickerRarityDisplayName: "Ancient"}, // it is actually still foil, therefore it should really also be 4
+    {stickerRarityId: 0, stickerRarityName: "Rare", stickerRarityNameReal: 'Rare', stickerRarityDisplayName: "Standard"}, // 0 = glossy, 1 = paper-backed, 2 = color-replace
+    {stickerRarityId: 3, stickerRarityName: "Mythical", stickerRarityNameReal: 'Mythical', stickerRarityDisplayName: "Holo"},
+    {stickerRarityId: 4, stickerRarityName: "Legendary", stickerRarityNameReal: 'Legendary', stickerRarityDisplayName: "Foil"},
+    {stickerRarityId: 5, stickerRarityName: "Ancient", stickerRarityNameReal: 'Ancient', stickerRarityDisplayName: "Gold"}, // it is actually still foil, therefore it should really also be 4
+    {stickerRarityId: 6, stickerRarityName: "Mythical2", stickerRarityNameReal: 'Mythical', stickerRarityDisplayName: "Glitter"},
 ]
 
 export const SPRAY_RARITY_FOLDERS: sprayRarity[] = [
@@ -76,6 +77,7 @@ export interface finishStyle {
 export interface stickerRarity {
     stickerRarityId: number;
     stickerRarityName: string;
+    stickerRarityNameReal: string; // glitter stickers are given a fake 'Mythical2' stickerRarityName due to holo stickers also using the 'Mythical' rarity
     stickerRarityDisplayName: string;
 }
 
@@ -206,17 +208,21 @@ export interface sprayKit {
 }
 // sticker VMTs
 export interface weaponDecal {
-    $decalstyle?: number; // 0 = glossy, 1 = paper-backed, 2 = color-replace, 3 = holographic, 4 = embossed foil
+    $decalstyle?: number; // 0 = glossy, 1 = paper-backed, 2 = color-replace, 3 = holographic, 4 = embossed foil, 5 = gold, 6 = glitter
     $basetexture?: string;
+    $normalmap?: string; // foil/gold/glitter
     $holomask?: string; // holo
     $holospectrum?: string; // holo
-    $normalmap?: string; // gold/foil
+    $glittermask?: string; // glitter
+    $glitternormal?: string; // glitter
+    $glittercube?: string; // glitter
     $wearbias?: number;
 	$wearremapmin?: number;
 	$wearremapmid?: number;
 	$wearremapmax?: number;
     $unwearstrength?: number;
     $desatbasetint?: number; // gold
+    $glitterscale?: number; // glitter
     $colortint?: string;
     $envmap?: string;
     $envmaptint?: string;

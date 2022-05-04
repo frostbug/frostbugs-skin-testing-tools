@@ -269,7 +269,7 @@ export class FileManager {
     private createCompleteStickerArray(stickerKitArray: stickerKit[], stickerKitCollectionPairingArray: stickerKitItemPairing[], stickerKitReferencesObject: any): stickerKit[] {
         const completeStickersArray: stickerKit[] = [];
         stickerKitCollectionPairingArray.forEach(stickerPairing => {
-            let combinedStickerKit = stickerKitArray.find(stickerKit => stickerKit.name === stickerPairing.stickerKitName && stickerKit.item_rarity?.toLowerCase() === stickerPairing.stickerRarity.stickerRarityName.toLowerCase())
+            let combinedStickerKit = stickerKitArray.find(stickerKit => stickerKit.name === stickerPairing.stickerKitName && stickerKit.item_rarity?.toLowerCase() === stickerPairing.stickerRarity.stickerRarityNameReal.toLowerCase())
             if (combinedStickerKit !== undefined) {
                 const stickerKitDescriptionReference = combinedStickerKit?.description_string?.replace("#", "").toUpperCase()
                 const stickerKitNameReference = combinedStickerKit?.item_name?.replace("#", "").toUpperCase()
@@ -395,15 +395,18 @@ export class FileManager {
     private static createJsonObjectFromSticker(stickerCollectionName: string, stickerPairingString: string, stickerSignaturesToggleValue: boolean, stickerTeamLogosToggleValue: boolean, currentStickerRaritySet: string): stickerKitItemPairing | undefined {
         if (stickerPairingString.includes('sticker')) {
             var stickerString = stickerPairingString.replace('[', '').split("]")[0];
-            const stickerRarityId = stickerCollectionName.toLowerCase().includes('gold') || stickerString.toLowerCase().includes('gold') || stickerCollectionName.toLowerCase().includes('ancient') || stickerString.toLowerCase().includes('ancient')
-                ? 5
-                : (stickerCollectionName.toLowerCase().includes('foil') || stickerString.toLowerCase().includes('foil') || stickerCollectionName.toLowerCase().includes('legendary') || stickerString.toLowerCase().includes('legendary')
-                    ? 4
-                    : (stickerCollectionName.toLowerCase().includes('holo') || stickerString.toLowerCase().includes('holo') || stickerCollectionName.toLowerCase().includes('mythical') || stickerString.toLowerCase().includes('mythical')
-                        ? 3
-                        : 0)) // standard/rare
-            const stickerRarityName = stickerRarityId === 5 ? 'Ancient' : (stickerRarityId === 4 ? 'Legendary' : (stickerRarityId === 3 ? 'Mythical' : 'Rare'))
-            const stickerRarityDisplayName = stickerRarityId === 5 ? 'Gold' : (stickerRarityId === 4 ? 'Foil' : (stickerRarityId === 3 ? 'Holo' : 'Standard'))
+            const stickerRarityId = stickerCollectionName.toLowerCase().includes('glitter') || stickerString.toLowerCase().includes('glitter')
+                ? 6
+                : (stickerCollectionName.toLowerCase().includes('gold') || stickerString.toLowerCase().includes('gold') || stickerCollectionName.toLowerCase().includes('ancient') || stickerString.toLowerCase().includes('ancient')
+                    ? 5
+                    : (stickerCollectionName.toLowerCase().includes('foil') || stickerString.toLowerCase().includes('foil') || stickerCollectionName.toLowerCase().includes('legendary') || stickerString.toLowerCase().includes('legendary')
+                        ? 4
+                        : (stickerCollectionName.toLowerCase().includes('holo') || stickerString.toLowerCase().includes('holo') || stickerCollectionName.toLowerCase().includes('mythical') || stickerString.toLowerCase().includes('mythical') // Glitter stickers should hopefully not reach this point (they are also mythical)
+                            ? 3
+                            : 0))) // standard/rare
+            const stickerRarityName = stickerRarityId === 6 ? 'Mythical2' : (stickerRarityId === 5 ? 'Ancient' : (stickerRarityId === 4 ? 'Legendary' : (stickerRarityId === 3 ? 'Mythical' : 'Rare')))
+            const stickerRarityNameReal = stickerRarityName === 'Mythical2' ? 'Mythical' : stickerRarityName;
+            const stickerRarityDisplayName = stickerRarityId === 6 ? 'Glitter' : (stickerRarityId === 5 ? 'Gold' : (stickerRarityId === 4 ? 'Foil' : (stickerRarityId === 3 ? 'Holo' : 'Standard')))
 
             if (stickerRarityDisplayName.toLowerCase() !== currentStickerRaritySet.toLowerCase())
                 return undefined
@@ -441,6 +444,7 @@ export class FileManager {
                     stickerRarity: {
                         stickerRarityId: stickerRarityId,
                         stickerRarityName: stickerRarityName,
+                        stickerRarityNameReal: stickerRarityNameReal,
                         stickerRarityDisplayName: stickerRarityDisplayName
                     }
                 };
@@ -453,6 +457,7 @@ export class FileManager {
                     stickerRarity: {
                         stickerRarityId: stickerRarityId,
                         stickerRarityName: stickerRarityName,
+                        stickerRarityNameReal: stickerRarityNameReal,
                         stickerRarityDisplayName: stickerRarityDisplayName
                     }
                 };
@@ -593,7 +598,8 @@ export class FileManager {
                 if (!newVmtFileText ||
                     !newVmtFileText.$basetexture ||
                     ((stickerKitFinishStyleId === 'Gold' || stickerKitFinishStyleId === 'Foil') && !newVmtFileText.$normalmap) ||
-                    (stickerKitFinishStyleId === 'Holo' && !newVmtFileText.$holomask)) {
+                    (stickerKitFinishStyleId === 'Holo' && !newVmtFileText.$holomask) ||
+                    (stickerKitFinishStyleId === 'Glitter' && (!newVmtFileText.$normalmap || !newVmtFileText.$glittermask))) {
                     console.log('Could not change vmt paths to point to vtfs in csgo files.');
                 } else {
                     newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$basetexture, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$basetexture).name);
@@ -603,6 +609,8 @@ export class FileManager {
                         newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$normalmap, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$normalmap).name);
                     if (stickerKitFinishStyleId === 'Holo' && newVmtFileText.$holomask)
                         newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$holomask, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$holomask).name);
+                    if (stickerKitFinishStyleId === 'Glitter' && newVmtFileText.$glittermask)
+                        newVmtFileContents = newVmtFileContents.replace(newVmtFileText.$glittermask, STICKER_MATERIALS_IN_VMT_FOLDERS_PATH + stickerKitFinishStyleId + "\\" + path.parse(newVmtFileText.$glittermask).name);
                     writeFileSync(pathToCopyTo, newVmtFileContents, 'ascii');
                     console.log('Changed vmt path to point to vtf in csgo files.');
                 }
@@ -708,7 +716,7 @@ export class FileManager {
         }
         if (objectToReplace.item_rarity !== undefined && objectToReplace.sticker_material !== undefined) {
             let stringSplit = itemsTextFile.split(objectToReplace.sticker_material)
-            const rarityFolderName = objectToReplace.item_rarity.toLowerCase() === 'ancient' ? 'Gold' : (objectToReplace.item_rarity.toLowerCase() === 'legendary' ? 'Foil' : (objectToReplace.item_rarity.toLowerCase() === 'mythical' ? 'Holo' : 'Standard'))
+            const rarityFolderName = objectToReplace.name?.toLowerCase().includes('glitter') ? 'Glitter' : (objectToReplace.item_rarity.toLowerCase() === 'ancient' ? 'Gold' : (objectToReplace.item_rarity.toLowerCase() === 'legendary' ? 'Foil' : (objectToReplace.item_rarity.toLowerCase() === 'mythical' ? 'Holo' : 'Standard')))
             itemsTextFile = stringSplit[0] + rarityFolderName + "/" + vmtName + stringSplit[1]
         }
         try {
